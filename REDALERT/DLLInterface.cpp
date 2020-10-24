@@ -185,6 +185,7 @@ class DLLExportClass {
 		static void Convert_Type(const ObjectClass *object, CNCObjectStruct &object_out);
 		static void DLL_Draw_Intercept(int shape_number, int x, int y, int width, int height, int flags, const ObjectClass *object, DirType rotation, long scale, const char *shape_file_name = NULL, char override_owner = HOUSE_NONE);
 		static void DLL_Draw_Pip_Intercept(const ObjectClass* object, int pip);
+		static void DLL_Draw_Line_Intercept(int x, int y, int x1, int y1, unsigned char color, int frame);
 		static bool Place(uint64 player_id, int buildable_type, int buildable_id, short cell_x, short cell_y);
 		static bool Cancel_Placement(uint64 player_id, int buildable_type, int buildable_id);
 		static bool Place_Super_Weapon(uint64 player_id, int buildable_type, int buildable_id, int x, int y);
@@ -3325,6 +3326,11 @@ void DLL_Draw_Pip_Intercept(const ObjectClass* object, int pip)
 	DLLExportClass::DLL_Draw_Pip_Intercept(object, pip);
 }
 
+void DLL_Draw_Line_Intercept(int x, int y, int x1, int y1, unsigned char color, int frame)
+{
+	DLLExportClass::DLL_Draw_Line_Intercept(x, y, x1, y1, color, frame);
+}
+
 
 void DLLExportClass::DLL_Draw_Intercept(int shape_number, int x, int y, int width, int height, int flags, const ObjectClass *object, DirType rotation, long scale, const char *shape_file_name, char override_owner)
 {
@@ -3695,7 +3701,21 @@ void DLLExportClass::DLL_Draw_Pip_Intercept(const ObjectClass* object, int pip)
 	}
 }
 
+void DLLExportClass::DLL_Draw_Line_Intercept(int x, int y, int x1, int y1, unsigned char color, int frame)
+{
+	CNCObjectStruct& root_object = ObjectList->Objects[TotalObjectCount];
+	if (root_object.NumLines < MAX_OBJECT_LINES) {
+		root_object.Lines[root_object.NumLines].X = x;
+		root_object.Lines[root_object.NumLines].Y = y;
+		root_object.Lines[root_object.NumLines].X1 = x1;
+		root_object.Lines[root_object.NumLines].Y1 = y1;
+		root_object.Lines[root_object.NumLines].Frame = frame;
+		root_object.Lines[root_object.NumLines].Color = color;
 
+		SortOrder++;
+		root_object.NumLines++;
+	}
+}
 
 
 /**************************************************************************************************
@@ -6627,6 +6647,34 @@ if (debug_output) {
 		}
 	}
 
+	/*
+	** Render wall placement cursor as temporary smudges.
+	** This reduces the visual glitches associated with the asynchronous build preview updates.
+	** pchote - "Modern Wall Building" mod.
+	*/
+	if (cell_ptr->IsCursorHere && ((BuildingTypeClass*)Map.PendingObject)->IsWall && cell != Map.ZoneCell) {
+
+		CNCDynamicMapEntryStruct& flag_entry = dynamic_map->Entries[entry_index++];
+
+		strncpy(flag_entry.AssetName, cell_ptr->Is_Clear_To_Build() ? "PLACEMENT_GOOD" : "PLACEMENT_BAD", CNC_OBJECT_ASSET_NAME_LENGTH);
+		flag_entry.AssetName[CNC_OBJECT_ASSET_NAME_LENGTH - 1] = 0;
+		flag_entry.Type = -1;
+		flag_entry.Owner = cell_ptr->Owner;
+		flag_entry.DrawFlags = SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING;
+		flag_entry.PositionX = xpixel + (ICON_PIXEL_W / 2);
+		flag_entry.PositionY = ypixel + (ICON_PIXEL_H / 2);
+		flag_entry.Width = 24;
+		flag_entry.Height = 24;
+		flag_entry.CellX = Cell_X(cell);
+		flag_entry.CellY = Cell_Y(cell);
+		flag_entry.ShapeIndex = 0;
+		flag_entry.IsSmudge = true;
+		flag_entry.IsOverlay = false;
+		flag_entry.IsResource = false;
+		flag_entry.IsSellable = false;
+		flag_entry.IsTheaterShape = false;
+		flag_entry.IsFlag = false;
+	}
 
 	if (cell_ptr->IsFlagged) {
 

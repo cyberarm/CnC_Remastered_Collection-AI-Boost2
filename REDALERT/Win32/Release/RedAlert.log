@@ -1,0 +1,4 @@
+﻿  HOUSE.CPP
+     Creating library ..\bin\Win32\RedAlert.lib and object ..\bin\Win32\RedAlert.exp
+  LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+  RedAlert.vcxproj -> C:\a-Git\AI-Boost\RedAlert\..\bin\Win32\RedAlert.dll

@@ -2534,16 +2534,26 @@ crate_money:
 			**	Create a squad of miscellaneous composition.
 			*/
 			case CRATE_SQUAD:
-				for (int index = 0; index < 5; index++) {
-					static InfantryType _inf[] = {
-						INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,
-						INFANTRY_E2,
-						INFANTRY_E3,
-						INFANTRY_RENOVATOR
-					};
-					if (!InfantryTypeClass::As_Reference(_inf[Random_Pick(0, ARRAY_SIZE(_inf)-1)]).Create_And_Place(Cell_Number(), object->Owner())) {
-						if (index == 0) {
-							goto crate_money;
+				for (int index = 0; index < Rule.AIGroupSize; index++) {
+					if (Rule.EngineerInstantCapture) {
+						//By Bast75, disabled for Engineer (INFANTRY_RENOVATOR)  if EngineerInstantCapture=true, don't make it a group
+						static InfantryType _inf[] = {
+							INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E2,INFANTRY_E3
+						};
+						if (!InfantryTypeClass::As_Reference(_inf[Random_Pick(0, ARRAY_SIZE(_inf)-1)]).Create_And_Place(Cell_Number(), object->Owner())) {
+							if (index == 0) {
+								goto crate_money;
+							}
+						}
+					}
+					else {
+						static InfantryType _inf[] = {
+							INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E2,INFANTRY_E3,INFANTRY_RENOVATOR
+						};
+						if (!InfantryTypeClass::As_Reference(_inf[Random_Pick(0, ARRAY_SIZE(_inf) - 1)]).Create_And_Place(Cell_Number(), object->Owner())) {
+							if (index == 0) {
+								goto crate_money;
+							}
 						}
 					}
 				}

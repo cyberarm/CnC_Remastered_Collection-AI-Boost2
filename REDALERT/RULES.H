@@ -75,6 +75,92 @@ class RulesClass {
 		bool Objects(CCINIClass & ini);
 		bool Difficulty(CCINIClass & ini);
 
+
+		//By Bast75
+		int AIBoostIQLevel = 5;
+		int AIBOostIQLevelMCVFallback = 2;
+		int AIAttackInterval = 4;
+		int AIUnitProductionSlowDownCash = 5000;
+		int AISlowdownPercentage = 70;
+		bool AIAllowDynamicBaseGrow = true;
+		int AIMinimalDefenceSoAllUnitsCanAttack = 3;
+		bool AIAllowBaseGrowByDeployedMCV = true;
+		int AIMaxConYardsAndMCVs = 2;
+		double AIHarvesterMultiplyer = 1.5;
+		int AIMaxEngineers = 15;
+		int AIGroupSize = 5;
+		int AIMadTankSaveToDeployDistance = 22;
+		int AIMadTankCloseEnoughToEnemyDistance = 18;
+		bool AIMadTankWriteDebugInfoToFile = false;
+		bool EngineerInstantCapture = true;
+		bool ChronoKillsCargo = false;
+		int AIHumanGroundWarTankTrigger = 20;
+		int AIVesselMultiLimit = 3;
+		int AISovietVesselSubPercentage = 50;
+		int AIAlliesVesselPTPercentage = 30;
+		int AIAlliesVesselDDPercentage = 66;
+		int AIPowerPlusMinimal = 50;
+		int AIPowerPlusExtra = 500;
+		int AIPowerPlusSellValue = 1000;
+		int AIRefineryLimitOverwrite = 20; // Newer build more Refs as this
+		//Basic
+		int AIDogHouseMinimalBasic = 2;
+		int AIBarracksMinimalBasic = 2;
+		int AIWarFactoryMinimalBasic = 2;
+		int AINavalMinimalBasic = 2;
+		int AIHelipadMinimalBasic = 2;
+		int AIAirDefenceMinimalBasic = 2;
+		int AIFlameTurretMinimalBasic = 2;
+		int AIGunTeslaMinimalBasic = 2;
+		int AIGapMinimalBasic = 2;
+		int AINukeMinimalBasic = 2;
+		int AIRepairBayBasic = 2;
+		//int AIMaxMCVsBasic = 2;
+		int AIMaxBuildingsBasic = 2;
+		int AIMaxTanksBasic = 2;
+		int AIMaxNavalBasic = 2;
+		int AIMaxInfantryBasic = 2;
+		int AIMaxAirBasic = 2;
+
+		//Mix
+		int AIDogHouseMinimalMix = 2;
+		int AIBarracksMinimalMix = 2;
+		int AIWarFactoryMinimalMix = 2;
+		int AINavalMinimalMix = 2;
+		int AIHelipadMinimalMix = 2;
+		int AIAirDefenceMinimalMix = 2;
+		int AIFlameTurretMinimalMix = 2;
+		int AIGunTeslaMinimalMix = 2;
+		int AIGapMinimalMix = 2;
+		int AINukeMinimalMix = 2;
+		int AIRepairBayMix = 2;
+		//int AIMaxMCVsMix = 2;
+		int AIMaxBuildingsMix = 2;
+		int AIMaxTanksMix = 2;
+		int AIMaxNavalMix = 2;
+		int AIMaxInfantryMix = 2;
+		int AIMaxAirMix = 2;
+
+		//Naval
+		int AIDogHouseMinimalNaval = 2;
+		int AIBarracksMinimalNaval = 2;
+		int AIWarFactoryMinimalNaval = 2;
+		int AINavalMinimalNaval = 2;
+		int AIHelipadMinimalNaval = 2;
+		int AIAirDefenceMinimalNaval = 2;
+		int AIFlameTurretMinimalNaval = 2;
+		int AIGunTeslaMinimalNaval = 2;
+		int AIGapMinimalNaval = 2;
+		int AINukeMinimalNaval = 2;
+		int AIRepairBayNaval = 2;
+		//int AIMaxMCVsNaval = 2;
+		int AIMaxBuildingsNaval = 2;
+		int AIMaxTanksNaval = 2;
+		int AIMaxNavalNaval = 2;
+		int AIMaxInfantryNaval = 2;
+		int AIMaxAirNaval = 2;
+		int AIGroundUnitSlowDown = 98;
+
 		/*
 		**	This specifies the turbo boost speed for missiles when they are fired upon
 		**	aircraft and the weapon is specified as having a turbo boost bonus.
@@ -890,6 +976,52 @@ class RulesClass {
 			RB_SELECTED = 0,
 			RB_ALWAYS,
 		} ResourceBarDisplayMode;
+
+		// More QoL Improvements - mod by Rampastring
+
+		/*
+		**	When looking for refineries, the harvester will prefer
+		**	a distant free refinery over a closer occupied refinery only
+		**	if their distance difference in cells is smaller than this.
+		*/
+		int MaxFreeRefineryDistanceBias;
+
+		/*
+		**	If a refinery is already occupied by a returning harvester and
+		**	another harvester is also looking to dock, allow the new harvester
+		**	to take over the refinery if the difference in distance to the refinery
+		**	between the existing harvester and the new harvester is at least
+		**	this many tiles.
+		*/
+		int MinHarvesterQueueJumpDistance;
+
+		/*
+		**	The maximum distance that walls will extend to when produced.
+		*/
+		int MaxWallExtensionDistance;
+
+		/*
+		**	Wall extension does not automatically increase the cost of walls.
+		**	As such, you can actually get multiple wall pieces for the price of one.
+		**	To offset it, a wall's sell price is divided by this.
+		*/
+		int WallSellPriceDivisor;
+
+		/*
+		**	Should repair facilities automatically kick
+		**	out units once fully repaired?
+		*/
+		bool AutoRepairFacilityKickOut;
+
+		/*
+		**	The AI completely surrenders if it has already entered fire-sale
+		**	mode and has fewer objects left than this.
+		*/
+		int AISurrenderObjectCountThreshold;
+
+
+		// Some additional space for save game compatibility.
+		unsigned char SaveLoadPadding[43];
 };
 
 
