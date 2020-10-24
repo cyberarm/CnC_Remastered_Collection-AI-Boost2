@@ -116,8 +116,8 @@ RulesClass::RulesClass(void) :
 	RefineryRatio(".16"),
 	BaseSizeAdd(3),
 	PowerSurplus(50),
-	InfantryReserve(2000),
-	InfantryBaseMult(2),
+	InfantryReserve(2000), //Bast75, was 2000, less means more tanks
+	InfantryBaseMult(2), //Bast75, was 2
 	ChronoDuration(3),
 	WaterCrateChance(".2"),
 	SoloCrateMoney(2000),
@@ -145,7 +145,7 @@ RulesClass::RulesClass(void) :
 	IQCrush(2),
 	IQScatter(3),
 	IQContentScan(4),
-	IQAircraft(4),
+	IQAircraft(5),
 	IQHarvester(3),
 	IQSellBack(2),
 	SilverCrate(CRATE_HEAL_BASE),
@@ -269,7 +269,13 @@ RulesClass::RulesClass(void) :
 	TiberiumShortScan(0x0600),
 	TiberiumLongScan(0x2000),
 	HealthBarDisplayMode(HB_SELECTED),
-	ResourceBarDisplayMode(RB_SELECTED)
+	ResourceBarDisplayMode(RB_SELECTED),
+	MaxFreeRefineryDistanceBias(10),
+	MinHarvesterQueueJumpDistance(7),
+	MaxWallExtensionDistance(4),
+	WallSellPriceDivisor(3),
+	AutoRepairFacilityKickOut(true),
+	AISurrenderObjectCountThreshold(8)
 {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	NewUnitsEnabled = SecretUnitsEnabled = 0;
@@ -384,6 +390,8 @@ bool RulesClass::General(CCINIClass & ini)
 	static char const * const GENERAL = "General";
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	static char const * const AFTERMATH = "Aftermath";
+	//static char const * const MOREQOL = "MoreQoL";
+	static char const * const MOREQOL = "AIBoost";
 
 	if(ini.Is_Present(AFTERMATH)) {
 //debugprint( "NewUnitsEnabled previously %i\n", NewUnitsEnabled );
@@ -408,6 +416,8 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 #endif
+
+	bool GeneralDone = false; //By Bast75, it is set when general.ini is loaded succesfull.
 
 	if (ini.Is_Present(GENERAL)) {
 		TurboBoost = ini.Get_Fixed(GENERAL, "TurboBoost", TurboBoost);
@@ -514,9 +524,105 @@ bool RulesClass::General(CCINIClass & ini)
 		//ChronalVortex.Set_Speed ( ini.Get_Int (GENERAL, "VortexSpeed", ChronalVortex.Get_Speed() ) );
 		//ChronalVortex.Set_Damage ( ini.Get_Int (GENERAL, "VortexDamage", ChronalVortex.Get_Damage() ) );
 
-		return(true);
+		GeneralDone = true; //By Bast75
+		//return(true);
 	}
-	return(false);
+
+	if (ini.Is_Present(MOREQOL)) {
+		MaxFreeRefineryDistanceBias = ini.Get_Int(MOREQOL, "MaxFreeRefineryDistanceBias", MaxFreeRefineryDistanceBias);
+		MinHarvesterQueueJumpDistance = ini.Get_Int(MOREQOL, "MinHarvesterQueueJumpDistance", MinHarvesterQueueJumpDistance);
+		MaxWallExtensionDistance = ini.Get_Int(MOREQOL, "MaxWallExtensionDistance", MaxWallExtensionDistance);
+		WallSellPriceDivisor = ini.Get_Int(MOREQOL, "WallSellPriceDivisor", WallSellPriceDivisor);
+		AutoRepairFacilityKickOut = ini.Get_Bool(MOREQOL, "AutoRepairFacilityKickOut", AutoRepairFacilityKickOut);
+		AISurrenderObjectCountThreshold = ini.Get_Int(MOREQOL, "AISurrenderObjectCountThreshold", AISurrenderObjectCountThreshold);
+
+		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
+		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
+		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
+		AIHarvesterMultiplyer = ini.Get_Int(MOREQOL, "AIHarvesterMultiplyer", 1.2);
+		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 15);
+		AIGroupSize = ini.Get_Int(MOREQOL, "AIMaxEngineers", 5);
+		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
+		AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
+		AIMaxConYardsAndMCVs = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVs", 2);
+		AIUnitProductionSlowDownCash = ini.Get_Int(MOREQOL, "AIUnitProductionSlowDownCash", 5000);
+		AISlowdownPercentage = ini.Get_Int(MOREQOL, "AISlowdownPercentage", 70);
+		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
+		AIMinimalDefenceSoAllUnitsCanAttack = ini.Get_Int(MOREQOL, "AIMinimalDefenceSoAllUnitsCanAttack", 3);
+		AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
+		AIMadTankSaveToDeployDistance = ini.Get_Int(MOREQOL, "AIMadTankSaveToDeployDistance", 22);
+		AIMadTankCloseEnoughToEnemyDistance = ini.Get_Int(MOREQOL, "AIMadTankCloseEnoughToEnemyDistance", 18);
+		AIMadTankWriteDebugInfoToFile = ini.Get_Bool(MOREQOL, "AIMadTankWriteDebugInfoToFile", false);
+		AIVesselMultiLimit = ini.Get_Int(MOREQOL, "AIVesselMultiLimit", 2);
+		AISovietVesselSubPercentage = ini.Get_Int(MOREQOL, "AISovietVesselSubPercentage", 50);
+		AIAlliesVesselPTPercentage = ini.Get_Int(MOREQOL, "AIAlliesVesselPTPercentage", 33);
+		AIAlliesVesselDDPercentage = ini.Get_Int(MOREQOL, "AIAlliesVesselDDPercentage", 66);
+		AIHumanGroundWarTankTrigger = ini.Get_Int(MOREQOL, "AIHumanGroundWarTankTrigger", 10);
+		AIPowerPlusMinimal = ini.Get_Int(MOREQOL, "AIPowerPlusMinimal", 50);
+		AIPowerPlusExtra = ini.Get_Int(MOREQOL, "AIPowerPlusExtra", 150);
+		AIPowerPlusSellValue = ini.Get_Int(MOREQOL, "AIPowerPlusSellValue", 500);
+
+		AIDogHouseMinimalBasic = ini.Get_Int(MOREQOL, "AIDogHouseMinimalBasic", 2);
+		AIDogHouseMinimalMix = ini.Get_Int(MOREQOL, "AIDogHouseMinimalMix", 2);
+		AIDogHouseMinimalNaval = ini.Get_Int(MOREQOL, "AIDogHouseMinimalNaval", 2);
+		AIBarracksMinimalBasic = ini.Get_Int(MOREQOL, "AIBarracksMinimalBasic", 2);
+		AIBarracksMinimalMix = ini.Get_Int(MOREQOL, "AIBarracksMinimalMix", 2);
+		AIBarracksMinimalNaval = ini.Get_Int(MOREQOL, "AIBarracksMinimalNaval", 2);
+		AIWarFactoryMinimalBasic = ini.Get_Int(MOREQOL, "AIWarFactoryMinimalBasic", 2);
+		AIWarFactoryMinimalMix = ini.Get_Int(MOREQOL, "AIWarFactoryMinimalMix", 2);
+		AIWarFactoryMinimalNaval = ini.Get_Int(MOREQOL, "AIWarFactoryMinimalNaval", 2);
+		AINavalMinimalBasic = ini.Get_Int(MOREQOL, "AINavalMinimalBasic", 2);
+		AINavalMinimalMix = ini.Get_Int(MOREQOL, "AINavalMinimalMix", 2);
+		AINavalMinimalNaval = ini.Get_Int(MOREQOL, "AINavalMinimalNaval", 2);
+		AIHelipadMinimalBasic = ini.Get_Int(MOREQOL, "AIHelipadMinimalBasic", 2);
+		AIHelipadMinimalMix = ini.Get_Int(MOREQOL, "AIHelipadMinimalMix", 2);
+		AIHelipadMinimalNaval = ini.Get_Int(MOREQOL, "AIHelipadMinimalNaval", 2);
+		AIAirDefenceMinimalBasic = ini.Get_Int(MOREQOL, "AIAirDefenceMinimalBasic", 2);
+		AIAirDefenceMinimalMix = ini.Get_Int(MOREQOL, "AIAirDefenceMinimalMix", 2);
+		AIAirDefenceMinimalNaval = ini.Get_Int(MOREQOL, "AIAirDefenceMinimalNaval", 2);
+		AIFlameTurretMinimalBasic = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalBasic", 2);
+		AIFlameTurretMinimalMix = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalMix", 2);
+		AIFlameTurretMinimalNaval = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalNaval", 2);
+		AIGunTeslaMinimalBasic = ini.Get_Int(MOREQOL, "AIGunTeslaMinimalBasic", 2);
+		AIGunTeslaMinimalMix = ini.Get_Int(MOREQOL, "AIGunTeslaMinimalMix", 2);
+		AIGunTeslaMinimalNaval = ini.Get_Int(MOREQOL, "AIGunTeslaMinimalNaval", 2);
+		AIGapMinimalBasic = ini.Get_Int(MOREQOL, "AIGapMinimalBasic", 1);
+		AIGapMinimalMix = ini.Get_Int(MOREQOL, "AIGapMinimalMix", 1);
+		AIGapMinimalNaval = ini.Get_Int(MOREQOL, "AIGapMinimalNaval", 1);
+		AINukeMinimalBasic = ini.Get_Int(MOREQOL, "AINukeMinimalBasic", 1);
+		AINukeMinimalMix = ini.Get_Int(MOREQOL, "AINukeMinimalMix", 1);
+		AINukeMinimalNaval = ini.Get_Int(MOREQOL, "AINukeMinimalNaval", 1);
+		AIRepairBayBasic = ini.Get_Int(MOREQOL, "AIRepairBayBasic", 1);
+		AIRepairBayMix = ini.Get_Int(MOREQOL, "AIRepairBayMix", 1);
+		AIRepairBayNaval = ini.Get_Int(MOREQOL, "AIRepairBayNaval", 1);
+		AIMaxBuildingsBasic = ini.Get_Int(MOREQOL, "AIMaxBuildingsBasic", 75);
+		AIMaxBuildingsMix = ini.Get_Int(MOREQOL, "AIMaxBuildingsMix", 75);
+		AIMaxBuildingsNaval = ini.Get_Int(MOREQOL, "AIMaxBuildingsNaval", 75);
+		AIMaxTanksBasic = ini.Get_Int(MOREQOL, "AIMaxTanksBasic", 75);
+		AIMaxTanksMix = ini.Get_Int(MOREQOL, "AIMaxTanksMix", 75);
+		AIMaxTanksNaval = ini.Get_Int(MOREQOL, "AIMaxTanksNaval", 75);
+		AIMaxNavalBasic = ini.Get_Int(MOREQOL, "AIMaxNavalBasic", 75);
+		AIMaxNavalMix = ini.Get_Int(MOREQOL, "AIMaxNavalMix", 75);
+		AIMaxNavalNaval = ini.Get_Int(MOREQOL, "AIMaxNavalNaval", 75);
+		AIMaxInfantryBasic = ini.Get_Int(MOREQOL, "AIMaxInfantryBasic", 75);
+		AIMaxInfantryMix = ini.Get_Int(MOREQOL, "AIMaxInfantryMix", 75);
+		AIMaxAirBasic = ini.Get_Int(MOREQOL, "AIMaxAirBasic", 75);
+		AIMaxAirMix = ini.Get_Int(MOREQOL, "AIMaxAirMix", 75);
+		AIMaxAirNaval = ini.Get_Int(MOREQOL, "AIMaxAirNaval", 75);
+		AIGroundUnitSlowDown = ini.Get_Int(MOREQOL, "AIGroundUnitSlowDown", 98);
+		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 20);
+	}
+
+	//By Bast75, make sure its not overwritten
+	if (EngineerInstantCapture) {
+		EngineerDamage = 0;
+		EngineerCaptureLevel = 100;
+	}
+	IsChronoKill = ChronoKillsCargo; //also overwrite with AIBoost settings.
+
+
+	return(GeneralDone);
+	//return(false);
 }
 
 

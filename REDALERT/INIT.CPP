@@ -319,6 +319,10 @@ bool Init_Game(int , char * [])
 		}
 	}
 #endif
+	//Changed by Bast75
+	if (MoreQoLINI.Load(CCFileClass("AIBOOST.INI"), false)) {
+		Rule.Process(MoreQoLINI);
+	}
 
 	Session.MaxPlayers = Rule.MaxPlayers;
 

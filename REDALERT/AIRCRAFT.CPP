@@ -671,11 +671,51 @@ int AircraftClass::Mission_Hunt(void)
 					return(1);
 				} else {
 					if (!Team.Is_Valid()) {
-						if (Session.Type != GAME_NORMAL) {
-							Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+						//if (Session.Type != GAME_NORMAL) {
+						//	Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+						//}
+						//By Bast75, interesting, change it to factories, power, etc?
+						if (Session.Type == GAME_SKIRMISH || 1==1) { //Do always
+							int AiAirAttackChoice = Random_Pick(0, 15);
+							switch (AiAirAttackChoice) {
+							case 0:
+							case 12:
+							case 13:
+								Assign_Target(Greatest_Threat(THREAT_BASE_DEFENSE));
+								break;
+							case 1:
+							case 10:
+							case 11:
+								Assign_Target(Greatest_Threat(THREAT_FACTORIES));
+								break;
+							case 2:
+							case 8:
+							case 9:
+								Assign_Target(Greatest_Threat(THREAT_POWER));
+								break;
+							case 3:
+								Assign_Target(Greatest_Threat(THREAT_GROUND));
+								break;
+							case 4:
+								Assign_Target(Greatest_Threat(THREAT_BOATS));
+								break;
+							case 5:
+								Assign_Target(Greatest_Threat(THREAT_NORMAL));
+								break;
+							case 6:
+								Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+								break;
+							case 7:
+							case 14:
+							case 15:
+								Assign_Target(Greatest_Threat(THREAT_BUILDINGS));
+								break;
+							default:
+								break;
+							}
 						}
 						if (!Target_Legal(TarCom)) {
-							Assign_Target(Greatest_Threat(THREAT_NORMAL));
+							Assign_Target(Greatest_Threat(THREAT_POWER));
 						}
 
 						/*
@@ -844,11 +884,51 @@ int AircraftClass::Mission_Hunt(void)
 			Enter_Idle_Mode();
 		} else {
 			if (!Target_Legal(TarCom)) {
-				if (Session.Type != GAME_NORMAL) {
-					Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+				//if (Session.Type != GAME_NORMAL) {
+				//	Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+				//}
+				//By Bast75, interesting, change it to factories, power, etc?
+				if (Session.Type == GAME_SKIRMISH || 1==1) { //Do always
+					int AiAirAttackChoice = Random_Pick(0, 15);
+					switch (AiAirAttackChoice) {
+					case 0:
+					case 12:
+					case 13:
+						Assign_Target(Greatest_Threat(THREAT_BASE_DEFENSE));
+						break;
+					case 1:
+					case 10:
+					case 11:
+						Assign_Target(Greatest_Threat(THREAT_FACTORIES));
+						break;
+					case 2:
+					case 8:
+					case 9:
+						Assign_Target(Greatest_Threat(THREAT_POWER));
+						break;
+					case 3:
+						Assign_Target(Greatest_Threat(THREAT_GROUND));
+						break;
+					case 4:
+						Assign_Target(Greatest_Threat(THREAT_BOATS));
+						break;
+					case 5:
+						Assign_Target(Greatest_Threat(THREAT_NORMAL));
+						break;
+					case 6:
+						Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+						break;
+					case 7:
+					case 14:
+					case 15:
+						Assign_Target(Greatest_Threat(THREAT_BUILDINGS));
+						break;
+					default:
+						break;
+					}
 				}
 				if (!Target_Legal(TarCom)) {
-					Assign_Target(Greatest_Threat(THREAT_NORMAL));
+					Assign_Target(Greatest_Threat(THREAT_POWER));
 				}
 				if (!Target_Legal(TarCom)) {
 					Enter_Idle_Mode();

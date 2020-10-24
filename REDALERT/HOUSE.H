@@ -425,6 +425,33 @@ class HouseClass {
 		long Credits;
 		long Capacity;
 
+		//By Bast75
+		int AIDogKennelMinimal = 1;
+		int AIBarracksMinimal = 1;
+		int AIWarFactoryMinimal = 1;
+		int AINavalMinimal = 1;
+		int AIHelipadMinimal = 1;
+		int AIAirstripMinimal = 1;
+		int AIAirDefenceMinimal = 1;
+		int AIFlameTurretMinimal = 1;
+		int AIGunTeslaMinimal = 1;
+		int AIRefineryMinimal = 1;
+		int AINukeMinimal = 1;
+		int AIRepairBayMinimal = 1;
+		bool AIDetectHumanGoesNavalWar = false;
+		bool AIDetectHumanGoesGroundWar = false;
+		int AIGapMinimal = 2;
+		int AIPowerPlus = 5;
+		bool AIAttackModeDoClosest = false;
+		int AINrOfMCVsProduced = 0;
+		int AIMaxBuildings = 75;
+		int MCVsProduced = 0;
+		int AIMaxTanksNr = 50;
+		int AIMaxNavalNr = 50;
+		int AIMaxInfantryNr = 50;
+		int AIMaxAirNr = 20;
+		int AIAttackIntervalLoop = 0;
+
 		/*
 		** Stuff to keep track of the total number of units built by this house.
 		*/
