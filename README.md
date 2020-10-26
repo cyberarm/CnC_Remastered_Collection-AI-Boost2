@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 24 okt 2020
+Last update at: 26 okt 2020
 Please re-subscribe to download the newest version.
 
 This is my personal AI-Boost mod for RA.

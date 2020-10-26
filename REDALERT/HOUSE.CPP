@@ -140,6 +140,11 @@
 */
 #include "SidebarGlyphx.h"
 
+/*
+** pchote - "Modern Wall Building" mod.
+*/
+extern bool DLL_Export_Get_Input_Key_State(KeyNumType key);
+
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
 int TFixedIHeapClass<HouseClass::BuildChoiceClass>::Save(Pipe &) const
@@ -3197,9 +3202,33 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell)
 				if (builder) {
 
 					builder->Transmit_Message(RADIO_HELLO, tech);
+
+					/*
+					** If tech is a wall it will be replaced with an overlay and freed by Unlimbo.
+					** We must fetch the overlay type now, while we still can.
+					** pchote - "Modern Wall Building" mod.
+					*/
+					OverlayType otype = OVERLAY_NONE;
+					HousesType house = tech->House->Class->House;
+					if (tech->What_Am_I() == RTTI_BUILDING)
+						otype = ((BuildingClass*)tech)->Class->Overlay_Type();
+
 					if (tech->Unlimbo(Cell_Coord(cell))) {
 						factory->Completed();
 						Abandon_Production(type);
+
+						/*
+						** Add the line-built wall segments to the map.
+						** pchote - "Modern Wall Building" mod.
+						*/
+						bool ctrldown = DLL_Export_Get_Input_Key_State(KN_LCTRL);
+						if (otype != OVERLAY_NONE && !ctrldown)
+						{
+							OverlayTypeClass const & wall = OverlayTypeClass::As_Reference(otype);
+							DirType cardinal[4] = { DIR_N, DIR_E, DIR_S, DIR_W };
+							for (int i = 0; i < 4; i++)
+								Extend_Wall(wall, house, cell, cardinal[i], Rule.MaxWallExtensionDistance);
+						}
 
 						if (PlayerPtr == this) {
 							Sound_Effect(VOC_PLACE_BUILDING_DOWN);
@@ -3227,6 +3256,67 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell)
 	}
 
 	return(true);
+}
+
+
+/***********************************************************************************************
+ * HouseClass::Extend_Wall -- Attempt to extend a line-built wall                              *
+ *                                                                                             *
+ *    This routine implements the wall placement behaviour from OpenRA.                        *
+ *    Step outwards in a specified direction up to a specified number of cells.                *
+ *    If we encounter an overlay of the specified wall type, break and create wall overlay     *
+ *    in the intermediate cells. If a matching wall is not found, or we encounter an           *
+ *    obstacle, return without doing anything.                                                 *
+ *                                                                                             *
+ * INPUT:   wall     -- The overlay type that is being placed down on the map.                 *
+ *                                                                                             *
+ *          house    -- The owner for newly placed wall segments                               *
+ *                                                                                             *
+ *          cell     -- The reference cell to check next to                                    *
+ *                                                                                             *
+ *          dir      -- The direction to step from the reference cell                          *
+ *                                                                                             *
+ *          step     -- The maximum number of steps to check for a connecting wall             *
+ *                                                                                             *
+ * OUTPUT:  Was the wall successfully extended?                                                *
+ *                                                                                             *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   04/29/2020 pchote : Created for the "Modern Wall Building" mod.                           *
+ *=============================================================================================*/
+bool HouseClass::Extend_Wall(OverlayTypeClass const& wall, HousesType house, CELL cell, DirType dir, int step)
+{
+	// Step in the requested direction and abort if it is outside the map
+	CELL adjacent = Adjacent_Cell(cell, dir);
+	if (!Map.In_Radar(adjacent))
+		return false;
+
+	// Check whether the cell contains a connectable wall
+	OverlayType overlay = Map[adjacent].Overlay;
+	if (overlay == wall.Type)
+		return true;
+
+	// Cell is blocked by something else
+	if (!Map[adjacent].Is_Clear_To_Build())
+		return false;
+
+	// Cell does not contain a connectable wall. Does the next?
+	if (step > 1 && Extend_Wall(wall, house, adjacent, dir, step - 1))
+	{
+		// The next cell does indeed have a wall
+		// Place our new connector and tell the caller that there is now a new connectable wall
+		if (wall.Create_And_Place(adjacent, house))
+		{
+			// Set the owner so players can sell line-built walls
+			// For some reason Create_And_Place does not do this for us
+			Map[adjacent].Owner = house;
+			return true;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -4682,11 +4772,6 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass * building) const
 		if (zcell) return(zcell);
 	}
 
-	//By Bast75
-	//The game freezes sometimes, probably when the AI can't place a building.
-	//In BUILDING.CPP (line 2143) it expects a 1 or 0. Why do they return a NULL at this place?
-	//I changed this in a 0 and the freezing problems stays away.  :-)
-	//return(0);
 	return(NULL);
 }
 
@@ -5336,7 +5421,12 @@ bool HouseClass::AI_Attack(UrgencyType)
 		if (v != NULL && !v->IsInLimbo && v->House == this && v->Strength > 0) {
 			if (!shuffle && v->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				v->Scatter(false, true, true);
-				v->Assign_Mission(MISSION_HUNT);
+				if (Percent_Chance(50)) {
+					v->Assign_Mission(MISSION_HUNT);
+				}
+				else {
+					v->Assign_Mission(MISSION_ATTACK);
+				}
 			}
 			else {
 				v->Assign_Mission(MISSION_GUARD_AREA);
@@ -5356,11 +5446,13 @@ bool HouseClass::AI_Attack(UrgencyType)
 			else {
 				u->Scatter(false, true, true);
 				if (*u == UNIT_MCV) {
-					u->Goto_Tiberium(999999); // Find some tiberium
-					u->Assign_Mission(MISSION_MOVE); // go to it
+					if (!(IsTiberiumShort)) {
+						u->Goto_Tiberium(999999); // Find some tiberium
+						u->Assign_Mission(MISSION_MOVE); // go to it
+					}
 					u->Assign_Mission(MISSION_HUNT); // and deploy
 				}
-				if (*u == UNIT_MAD) {
+				else if (*u == UNIT_MAD) {
 					//Lets find the closest building from ourself. (allied buildings included)
 					int ClosestOwnBuilding = -1;
 					for (int index = 0; index < Buildings.Count(); index++) {
@@ -5390,7 +5482,12 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 				//if (!shuffle && u->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				else if ((!shuffle && (forced || Percent_Chance(75)))) {
-					u->Assign_Mission(MISSION_HUNT);
+					if (Percent_Chance(50)) {
+						u->Assign_Mission(MISSION_HUNT);
+					}
+					else {
+						u->Assign_Mission(MISSION_ATTACK);
+					}
 				}
 				else {
 					// If this unit is guarding the base, then cause it to shuffle location instead.
@@ -5411,7 +5508,12 @@ bool HouseClass::AI_Attack(UrgencyType)
 		if (i != NULL && !i->IsInLimbo && i->House == this && i->Strength > 0) {
 			i->Scatter(false, true, true);
 			if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) && (forced || Percent_Chance(75))) {
-				i->Assign_Mission(MISSION_HUNT);
+				if (Percent_Chance(50) && !(*i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF)) {
+					i->Assign_Mission(MISSION_HUNT);
+				}
+				else {
+					i->Assign_Mission(MISSION_ATTACK); // Closest
+				}
 			}
 			else {
 				// If this soldier is guarding the base, then cause it to shuffle location instead.
@@ -5426,7 +5528,12 @@ bool HouseClass::AI_Attack(UrgencyType)
 	}
 
 	// Set new Attack moment
-	Attack = TICKS_PER_MINUTE * Rule.AIAttackInterval;
+	if (Rule.AIAttackInterval > 1) {
+		Attack = Random_Pick(TICKS_PER_MINUTE * (Rule.AIAttackInterval-1), TICKS_PER_MINUTE * (Rule.AIAttackInterval+1));
+	}
+	else {
+		Attack = Random_Pick(TICKS_PER_MINUTE * (Rule.AIAttackInterval), TICKS_PER_MINUTE * (Rule.AIAttackInterval+1));
+	}
 	return(true);
 }
 
@@ -5783,6 +5890,7 @@ int HouseClass::AI_Building(void)
 	}
 
 	if (IsBaseBuilding) {
+		unsigned int HumanBuildingCount = 0;
 		//By Bast75 : Added ground / naval war detection
 		//AIDetectHumanGoesGroundWar = false; // Rescan, this to make sure we still have the correct game mode
 		//AIDetectHumanGoesNavalWar = false; // Rescan, this to make sure we still have the correct game mode
@@ -5790,6 +5898,8 @@ int HouseClass::AI_Building(void)
 			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
 				HouseClass const * hptr = HouseClass::As_Pointer(h);
 				if (hptr != NULL && hptr->IsActive && hptr->IsHuman) {
+					HumanBuildingCount = hptr->CurBuildings;
+
 					if (!AIDetectHumanGoesNavalWar) {
 						if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0) {
 							//Human house has Naval factories, so we are allowed to upgrade our Naval to extreme.
@@ -5811,6 +5921,7 @@ int HouseClass::AI_Building(void)
 			//No Naval, so it must be ground war
 			AIDetectHumanGoesGroundWar = true;
 		}
+		
 
 		BuildChoice.Free_All();
 		BuildChoiceClass * choiceptr;
@@ -6325,13 +6436,17 @@ int HouseClass::AI_Building(void)
 		}
 		***/
 
-		if (!IsHuman) {
-			if ((int)CurBuildings > AIMaxBuildings) {
-				return(TICKS_PER_SECOND);
+
+		if (BQuantity[STRUCT_CONST] < 2) { BuildingSlowdown = Rule.AISlowDown1ConstructionYard; }
+		if (BQuantity[STRUCT_CONST] == 2) { BuildingSlowdown = Rule.AISlowDown1ConstructionYard; }
+		if (BQuantity[STRUCT_CONST] > 2) { BuildingSlowdown = Rule.AISlowDown3PlusConstructionYard; }
+
+
+		if (!IsHuman && (int)HumanBuildingCount > 0 && (int)CurBuildings > Rule.AIBuildingsMinimal) {
+			if ((int)CurBuildings > AIMaxBuildings || (int)CurBuildings > ((int)HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
+				return(TICKS_PER_SECOND * BuildingSlowdown);
 			}
 		}
-
-		if (!IsHuman && BQuantity[STRUCT_MSLO] > 0 && Percent_Chance(Rule.AISlowdownPercentage) && Power > Drain) return(TICKS_PER_SECOND);
 
 		//All done. Lets pick one to build:
 		/*
@@ -6355,7 +6470,7 @@ int HouseClass::AI_Building(void)
 			}
 		}
 	}
-	return(TICKS_PER_SECOND);
+	return(TICKS_PER_SECOND * BuildingSlowdown);
 }
 
 
@@ -6380,15 +6495,18 @@ int HouseClass::AI_Unit(void)
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
 	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
 
+	int WarFactorySlowdown = 1;
+	if (BQuantity[STRUCT_WEAP] < 2) { WarFactorySlowdown = Rule.AISlowDown1Warfactory; }
+	if (BQuantity[STRUCT_WEAP] == 2) { WarFactorySlowdown = Rule.AISlowDown2Warfactory; }
+	if (BQuantity[STRUCT_WEAP] > 2) { WarFactorySlowdown = Rule.AISlowDown3PlusWarfactory; }
+
 	// Make extra harvesters if 2 refs or more.
 	if (IQ >= Rule.IQHarvester && !IsTiberiumShort && !IsHuman && (UQuantity[UNIT_HARVESTER] < (BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer)) && Difficulty != DIFF_HARD) {
 		if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel && BQuantity[STRUCT_REFINERY] > 1) {
 			BuildUnit = UNIT_HARVESTER;
-			return(TICKS_PER_SECOND);
+			return(TICKS_PER_SECOND * WarFactorySlowdown);
 		}
 	}
-
-	if (!IsHuman && (Available_Money() < Rule.AIUnitProductionSlowDownCash || BQuantity[STRUCT_REFINERY < 2]) && Percent_Chance(Rule.AISlowdownPercentage)) return(TICKS_PER_SECOND);
 
 	//Make MCV by Bast75
 	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (MCVsProduced + (int)BQuantity[STRUCT_CONST]) < Rule.AIMaxConYardsAndMCVs) {
@@ -6396,20 +6514,20 @@ int HouseClass::AI_Unit(void)
 			if (MCVsProduced == 0 || Percent_Chance(10)) {
 				MCVsProduced++;
 				BuildUnit = UNIT_MCV;
-				return(TICKS_PER_SECOND);
+				return(TICKS_PER_SECOND * WarFactorySlowdown);
 			}
 		}
 	}
 
 	//AI Max units
 	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
-		return(TICKS_PER_SECOND);
+		return(TICKS_PER_SECOND * WarFactorySlowdown);
 	}
 
 	//Naval war and no ground war? Don't make to much of this, focus more on naval.
 	if (AIDetectHumanGoesNavalWar && !AIDetectHumanGoesGroundWar && !IsHuman) {
 		if (Percent_Chance(Rule.AIGroundUnitSlowDown)) {
-			return(TICKS_PER_SECOND);
+			return(TICKS_PER_SECOND * WarFactorySlowdown);
 		}
 	}
 
@@ -6525,14 +6643,13 @@ int HouseClass::AI_Unit(void)
 			}
 		}
 	}
-	return(TICKS_PER_SECOND);
+	return(TICKS_PER_SECOND * WarFactorySlowdown);
 }
 
 
 int HouseClass::AI_Vessel(void)
 {
 	assert(Houses.ID(this) == ID);
-	if (!IsHuman && (Available_Money() < Rule.AIUnitProductionSlowDownCash || BQuantity[STRUCT_REFINERY < 2]) && Percent_Chance(Rule.AISlowdownPercentage)) return(TICKS_PER_SECOND);
 
 	if (BuildVessel != VESSEL_NONE) return(TICKS_PER_SECOND);
 
@@ -6704,8 +6821,6 @@ int HouseClass::AI_Vessel(void)
 int HouseClass::AI_Infantry(void)
 {
 	assert(Houses.ID(this) == ID);
-
-	if (!IsHuman && (Available_Money() < Rule.AIUnitProductionSlowDownCash || BQuantity[STRUCT_REFINERY < 2]) && Percent_Chance(Rule.AISlowdownPercentage)) return(TICKS_PER_SECOND);
 
 	if (BuildInfantry != INFANTRY_NONE) return(TICKS_PER_SECOND);
 	if (CurInfantry >= Control.MaxInfantry && !IsHuman) return(TICKS_PER_SECOND);
@@ -6946,7 +7061,6 @@ int HouseClass::AI_Infantry(void)
 int HouseClass::AI_Aircraft(void)
 {
 	assert(Houses.ID(this) == ID);
-	if (!IsHuman && Available_Money() < Rule.AIUnitProductionSlowDownCash || BQuantity[STRUCT_REFINERY < 2] && Percent_Chance(Rule.AISlowdownPercentage)) return(TICKS_PER_SECOND);
 
 	if (!IsHuman && IQ >= Rule.IQAircraft) {
 		if (BuildAircraft != AIRCRAFT_NONE) return(TICKS_PER_SECOND);
