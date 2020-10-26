@@ -2626,10 +2626,10 @@ int UnitClass::Mission_Unload(void)
 							} else {
 								if (!House->IsHuman && Session.Type != GAME_NORMAL) {
 									//By Bast75, AI drives MCV to tiberium and then deploy.
-									//if (!House->IsTiberiumShort) {
+									if (!House->IsTiberiumShort) {
 										Goto_Tiberium(999999999);
 										Assign_Mission(MISSION_MOVE);
-									//}
+									}
 									Assign_Mission(MISSION_HUNT);
 								} else {
 									Assign_Mission(MISSION_GUARD);

@@ -451,6 +451,8 @@ class HouseClass {
 		int AIMaxInfantryNr = 50;
 		int AIMaxAirNr = 20;
 		int AIAttackIntervalLoop = 0;
+		int BuildingSlowdown = 1;
+
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.
@@ -872,6 +874,11 @@ class HouseClass {
 		void Tally_Score(void);
 
 		friend class MapEditClass;
+
+		/*
+		** pchote - "Modern Wall Building" mod.
+		*/
+		bool Extend_Wall(OverlayTypeClass const& wall, HousesType house, CELL cell, DirType dir, int step);
 
 	private:
 		void Silo_Redraw_Check(long oldtib, long oldcap);
