@@ -5312,9 +5312,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 {
 	assert(Houses.ID(this) == ID);
 
-	bool shuffle = !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
-	//bool forced = (CurBuildings == 0);
-	bool forced = ((int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX] + (int)BQuantity[STRUCT_FLAME_TURRET]);
+	bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
+	//bool forced = (CurBuildings == 0); // Why only force on no buldings? If we have base defence, we can send all units.
+	bool forced = (Rule.AIMinimalDefenceSoAllUnitsCanAttack < 1 + (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX]);
 	int index;
 
 	// Air units
@@ -5323,6 +5323,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 		if (a != NULL && !a->IsInLimbo && a->House == this && a->Strength > 0) {
 			if (!shuffle && a->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				a->Assign_Mission(MISSION_HUNT);
+			}
+			else {
+				a->Assign_Mission(MISSION_GUARD_AREA);
 			}
 		}
 	}
@@ -5334,6 +5337,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 			if (!shuffle && v->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				v->Scatter(false, true, true);
 				v->Assign_Mission(MISSION_HUNT);
+			}
+			else {
+				v->Assign_Mission(MISSION_GUARD_AREA);
 			}
 		}
 	}
@@ -5383,13 +5389,16 @@ bool HouseClass::AI_Attack(UrgencyType)
 					}
 				}
 				//if (!shuffle && u->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
-				else if (*u == UNIT_MAD || (!shuffle && (forced || Percent_Chance(75)))) {
+				else if ((!shuffle && (forced || Percent_Chance(75)))) {
 					u->Assign_Mission(MISSION_HUNT);
 				}
 				else {
 					// If this unit is guarding the base, then cause it to shuffle location instead.
 					if (Percent_Chance(20) && u->Mission == MISSION_GUARD_AREA && Which_Zone(u) != ZONE_NONE) {
 						u->ArchiveTarget = ::As_Target(Where_To_Go(u));
+					}
+					else {
+						u->Assign_Mission(MISSION_GUARD_AREA);
 					}
 				}
 			}
@@ -5401,13 +5410,16 @@ bool HouseClass::AI_Attack(UrgencyType)
 		InfantryClass * i = Infantry.Ptr(index);
 		if (i != NULL && !i->IsInLimbo && i->House == this && i->Strength > 0) {
 			i->Scatter(false, true, true);
-			if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR) && (forced || Percent_Chance(75))) {
+			if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) && (forced || Percent_Chance(75))) {
 				i->Assign_Mission(MISSION_HUNT);
 			}
 			else {
 				// If this soldier is guarding the base, then cause it to shuffle location instead.
 				if (Percent_Chance(20) && i->Mission == MISSION_GUARD_AREA && Which_Zone(i) != ZONE_NONE) {
 					i->ArchiveTarget = ::As_Target(Where_To_Go(i));
+				}
+				else {
+					i->Assign_Mission(MISSION_GUARD_AREA);
 				}
 			}
 		}
