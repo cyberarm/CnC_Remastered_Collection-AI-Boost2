@@ -109,7 +109,7 @@ class RulesClass {
 		int AIPowerPlusMinimal = 50;
 		int AIPowerPlusExtra = 500;
 		int AIPowerPlusSellValue = 1000;
-		int AIRefineryLimitOverwrite = 20; // Newer build more Refs as this
+		int AIRefineryLimitOverwrite = 10; // Newer build more Refs as this
 		//Basic
 		int AIDogHouseMinimalBasic = 2;
 		int AIBarracksMinimalBasic = 2;

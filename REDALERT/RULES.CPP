@@ -616,7 +616,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxAirMix = ini.Get_Int(MOREQOL, "AIMaxAirMix", 75);
 		AIMaxAirNaval = ini.Get_Int(MOREQOL, "AIMaxAirNaval", 75);
 		AIGroundUnitSlowDown = ini.Get_Int(MOREQOL, "AIGroundUnitSlowDown", 98);
-		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 20);
+		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 10);
 	}
 
 	//By Bast75, make sure its not overwritten
