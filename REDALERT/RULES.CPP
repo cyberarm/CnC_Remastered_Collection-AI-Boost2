@@ -554,7 +554,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIMaxConYardsAndMCVs = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVs", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
-		AIMinimalDefenceSoAllUnitsCanAttack = ini.Get_Int(MOREQOL, "AIMinimalDefenceSoAllUnitsCanAttack", 3);
+		AIAttackMinimalDefence = ini.Get_Int(MOREQOL, "AIAttackMinimalDefence", 6);
 		AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
 		AIMadTankSaveToDeployDistance = ini.Get_Int(MOREQOL, "AIMadTankSaveToDeployDistance", 22);
 		AIMadTankCloseEnoughToEnemyDistance = ini.Get_Int(MOREQOL, "AIMadTankCloseEnoughToEnemyDistance", 18);
@@ -629,6 +629,8 @@ bool RulesClass::General(CCINIClass & ini)
 		IQAircraft = 5;
 		IQHarvester = 5;
 		IQSellBack = 5;
+		ChronoTechLevel = 5;
+		
 	}
 
 	//By Bast75, make sure its not overwritten
