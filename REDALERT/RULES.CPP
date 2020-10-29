@@ -138,16 +138,16 @@ RulesClass::RulesClass(void) :
 	SpyPlaneTechLevel(10),
 	ParaBombTechLevel(10),
 	MaxIQ(5),
-	IQSuperWeapons(4),
+	IQSuperWeapons(5),
 	IQProduction(5),
-	IQGuardArea(4),
-	IQRepairSell(3),
-	IQCrush(2),
-	IQScatter(3),
-	IQContentScan(4),
+	IQGuardArea(5),
+	IQRepairSell(5),
+	IQCrush(5),
+	IQScatter(5),
+	IQContentScan(5),
 	IQAircraft(5),
-	IQHarvester(3),
-	IQSellBack(2),
+	IQHarvester(5),
+	IQSellBack(5),
 	SilverCrate(CRATE_HEAL_BASE),
 	WoodCrate(CRATE_MONEY),
 	WaterCrate(CRATE_MONEY),
@@ -617,6 +617,18 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxAirNaval = ini.Get_Int(MOREQOL, "AIMaxAirNaval", 75);
 		AIGroundUnitSlowDown = ini.Get_Int(MOREQOL, "AIGroundUnitSlowDown", 98);
 		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 10);
+
+		//Set all AI stuff to max
+		IQSuperWeapons = 5;
+		IQProduction = 5;
+		IQGuardArea = 5;
+		IQRepairSell = 5; 
+		IQCrush = 5;
+		IQScatter = 5;
+		IQContentScan = 5;
+		IQAircraft = 5;
+		IQHarvester = 5;
+		IQSellBack = 5;
 	}
 
 	//By Bast75, make sure its not overwritten
