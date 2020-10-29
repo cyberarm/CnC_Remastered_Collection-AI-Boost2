@@ -30,16 +30,12 @@ Extra changes:
 -AI scans for naval objects, if he detects a Naval war it will upscale his Naval and Air stuff.
 -AI knows how to use Thiefs and Spies.
 -AI attacks interval uses different ways. (Hunt, Closest enemy, etc.)
--AI Air units gives higher prio to attack MCV's and Demo Trucks.
 -AI Air units no longer just attack Refineries, it selects random between basedefence, factories, power, buildings, naval units or all threats.
 -AI Scatters all units on new attack launch to unlock stuck/blocked units.
 -AI understands importants of buildings & units a lot better and uses it during attack.
 -AI Knows how to use a MAD Tank.
 -AI Engineers no longer walk in groups. They choose his own targets. Amount of Engineers also editable by .ini file.
--AI Harvester Multiplyer value vs Refineries editable by .ini file.
--AI keeps a few engineers at his base to recapture buildings.
--AI Slowdown editable for nr of Constructions Yards in .ini file.
--AI Customizable limits for AI buildings, units, infantry and vessels (By .ini file)
+-AI Customizable limits for nr of AI buildings,
 -Almost all options are editable by AIBOOST.INI.
 
 

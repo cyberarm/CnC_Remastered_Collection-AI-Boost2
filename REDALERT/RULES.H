@@ -87,7 +87,7 @@ class RulesClass {
 		int AISlowDown2Warfactory = 10;
 		int AISlowDown3PlusWarfactory = 20;
 		bool AIAllowDynamicBaseGrow = true;
-		int AIMinimalDefenceSoAllUnitsCanAttack = 3;
+		int AIAttackMinimalDefence = 6;
 		bool AIAllowBaseGrowByDeployedMCV = true;
 		int AIMaxConYardsAndMCVs = 1;
 		double AIHarvesterMultiplyer = 1.5;
