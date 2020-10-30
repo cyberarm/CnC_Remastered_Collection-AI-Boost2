@@ -438,8 +438,8 @@ class HouseClass {
 		int AIRefineryMinimal = 1;
 		int AINukeMinimal = 1;
 		int AIRepairBayMinimal = 1;
-		bool AIDetectHumanGoesNavalWar = false;
-		bool AIDetectHumanGoesGroundWar = false;
+		bool AIDetectedNavalWar = false;
+		bool AIDetectHumanGroundWar = false;
 		int AIGapMinimal = 2;
 		int AIPowerPlus = 5;
 		bool AIAttackModeDoClosest = false;
