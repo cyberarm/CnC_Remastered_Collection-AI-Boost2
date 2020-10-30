@@ -5458,7 +5458,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 					}
 					u->Assign_Mission(MISSION_HUNT); // and deploy
 				}
-				else if (*u == UNIT_MAD) {
+				else if (*u == UNIT_MAD || *u == UNIT_CHRONOTANK) {
 					//Lets find the closest building from ourself. (allied buildings included)
 					int ClosestOwnBuilding = -1;
 					for (int index = 0; index < Buildings.Count(); index++) {
@@ -5470,19 +5470,33 @@ bool HouseClass::AI_Attack(UrgencyType)
 						}
 					}
 					int ClosestEnemyBuildingDist = -1;
+					int FarthestEnemyBuildingDist = -1;
 					for (int index = 0; index < Buildings.Count(); index++) {
 						BuildingClass * building = Buildings.Ptr(index);
 						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
 							if (ClosestEnemyBuildingDist == -1 || (u->Distance(building) / 265) < ClosestEnemyBuildingDist) {
-								ClosestEnemyBuildingDist = (u->Distance(building) / 265);							}
+								ClosestEnemyBuildingDist = (u->Distance(building) / 265);
+							    FarthestEnemyBuildingDist = index;
+							}
 						}
 					}
-					//If we are far enough from our base. Lets unload our Mad Tank.
-					if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
-						u->Assign_Mission(MISSION_UNLOAD);
+					if (*u == UNIT_CHRONOTANK) {
+						COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
+						CELL TargetCell = Coord_Cell(TargetCoord);
+						CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
+						u->Assign_Mission(MISSION_ATTACK);
+						u->Teleport_To(TargetFreeCell);
+						Sound_Effect(VOC_CHRONO, u->Coord);
+						u->Assign_Mission(MISSION_ATTACK);
 					}
 					else {
-						u->Assign_Mission(MISSION_HUNT);
+						//If we are far enough from our base. Lets unload our Mad Tank.
+						if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
+							u->Assign_Mission(MISSION_UNLOAD);
+						}
+						else {
+							u->Assign_Mission(MISSION_HUNT);
+						}
 					}
 				}
 				//if (!shuffle && u->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
@@ -5729,24 +5743,24 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		UrgencyType	Urgency;
 	} _types[] = {
 		{STRUCT_STORAGE,URGENCY_LOW},
-		{STRUCT_GAP, URGENCY_MEDIUM},
+		{STRUCT_GAP, URGENCY_LOW},
+		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
+		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
 		{STRUCT_KENNEL, URGENCY_MEDIUM},
+		{STRUCT_PILLBOX, URGENCY_MEDIUM},
+		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
+		{STRUCT_FLAME_TURRET, URGENCY_MEDIUM},
+		{STRUCT_TURRET, URGENCY_MEDIUM},
+		{STRUCT_TESLA, URGENCY_MEDIUM},
 		{STRUCT_ADVANCED_TECH, URGENCY_MEDIUM},
 		{STRUCT_SOVIET_TECH, URGENCY_MEDIUM},
 		{STRUCT_RADAR, URGENCY_MEDIUM},
-		{STRUCT_PILLBOX, URGENCY_MEDIUM},
-		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
-		{STRUCT_TURRET, URGENCY_MEDIUM},
-		{STRUCT_FLAME_TURRET, URGENCY_MEDIUM},
-		{STRUCT_TESLA, URGENCY_MEDIUM},
-		{STRUCT_CHRONOSPHERE, URGENCY_HIGH},
-		{STRUCT_IRON_CURTAIN, URGENCY_HIGH},
+		{STRUCT_AIRSTRIP, URGENCY_MEDIUM},
+		{STRUCT_HELIPAD, URGENCY_MEDIUM},
+		{STRUCT_SHIP_YARD, URGENCY_MEDIUM},
+		{STRUCT_SUB_PEN, URGENCY_MEDIUM},
+		{STRUCT_REPAIR, URGENCY_MEDIUM},
 		{STRUCT_POWER, URGENCY_HIGH},
-		{STRUCT_AIRSTRIP, URGENCY_HIGH},
-		{STRUCT_HELIPAD, URGENCY_HIGH},
-		{STRUCT_SHIP_YARD, URGENCY_HIGH},
-		{STRUCT_SUB_PEN, URGENCY_HIGH},
-		{STRUCT_REPAIR, URGENCY_CRITICAL},
 		{STRUCT_ADVANCED_POWER, URGENCY_CRITICAL},
 		{STRUCT_WEAP, URGENCY_CRITICAL},
 		{STRUCT_BARRACKS, URGENCY_CRITICAL},
@@ -5892,37 +5906,6 @@ int HouseClass::AI_Building(void)
 
 	if (IsBaseBuilding) {
 		unsigned int HumanBuildingCount = 0;
-		//By Bast75 : Added ground / naval war detection
-		//AIDetectHumanGoesGroundWar = false; // Rescan, this to make sure we still have the correct game mode
-		//AIDetectHumanGoesNavalWar = false; // Rescan, this to make sure we still have the correct game mode
-		if (!AIDetectHumanGoesGroundWar) {
-			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-				HouseClass const * hptr = HouseClass::As_Pointer(h);
-				if (hptr != NULL && hptr->IsActive && hptr->IsHuman) {
-					HumanBuildingCount = hptr->CurBuildings;
-
-					if (!AIDetectHumanGoesNavalWar) {
-						if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0) {
-							//Human house has Naval factories, so we are allowed to upgrade our Naval to extreme.
-							AIDetectHumanGoesNavalWar = true;
-						}
-					}
-					//else if (!AIDetectHumanGoesGroundWar) {
-					//	if (hptr->BQuantity[STRUCT_WEAP] > 1 || hptr->BQuantity[STRUCT_TENT] > 1 || hptr->BQuantity[STRUCT_BARRACKS] > 1 || (int)hptr->ActiveUScan > Rule.AIHumanGroundWarTankTrigger) {
-					//		//human house has multiple warfactories and/or multiple barracks/tents, or more as x tanks -> groundwar enabled
-							AIDetectHumanGoesGroundWar = true;
-					//	}
-					//}
-					//We found human, stop scanning houses.
-					break;
-				}
-			}
-		}
-		if (!AIDetectHumanGoesNavalWar) {
-			//No Naval, so it must be ground war
-			AIDetectHumanGoesGroundWar = true;
-		}
-		
 
 		BuildChoice.Free_All();
 		BuildChoiceClass * choiceptr;
@@ -5939,6 +5922,7 @@ int HouseClass::AI_Building(void)
 		level = Control.TechLevel;
 		unsigned int current = 0;
 		int prio = 0; //Used to calculate prio.
+		//int PlayerCount = 0; // How many players do we have on this map?
 
 		//check airthreat
 		bool airthreat = false;
@@ -5947,19 +5931,59 @@ int HouseClass::AI_Building(void)
 			airthreat = true;
 			airthreat_quantity = enemy->CurAircraft;
 		}
-		if (!airthreat) {
-			for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-				HouseClass * h = HouseClass::As_Pointer(house);
-				if (h != NULL && !Is_Ally(house) && h->AScan != 0) {
-					airthreat = true;
-					break;
+		//if (!airthreat) {
+		//	for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
+		//		HouseClass * h = HouseClass::As_Pointer(house);
+		//		if (h != NULL && !Is_Ally(house) && h->AScan != 0) {
+		//			airthreat = true;
+		//			break;
+		//		}
+		//	}
+		//}
+
+		//By Bast75 : Added ground war & naval war detection
+		// Rescan to make sure we still have the correct game mode, but after having a MSLO, we asume it doen't change anymore.
+		if (BQuantity[STRUCT_MSLO] == 0) {
+			AIDetectHumanGroundWar = false; // Rescan to make sure we still have the correct game mode
+			AIDetectedNavalWar = false; // Rescan to make sure we still have the correct game mode
+		}
+		for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+			HouseClass const * hptr = HouseClass::As_Pointer(h);
+			if (hptr != NULL) {
+				//PlayerCount++;
+				if (hptr->IsHuman) {
+					HumanBuildingCount = hptr->CurBuildings;
+					if (BQuantity[STRUCT_MSLO] == 0) {
+						if (!AIDetectHumanGroundWar) {
+							if (hptr->BQuantity[STRUCT_WEAP] > 1 || hptr->BQuantity[STRUCT_TENT] > 1 || hptr->BQuantity[STRUCT_BARRACKS] > 1 || (int)hptr->ActiveUScan > Rule.AIHumanGroundWarTankTrigger) {
+								//human house has multiple warfactories and/or multiple barracks/tents, or more as x tanks -> groundwar enabled
+								AIDetectHumanGroundWar = true;
+							}
+						}
+					}
+				}
+				if (BQuantity[STRUCT_MSLO] == 0) {
+					if (!AIDetectedNavalWar) {
+						if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0 || hptr->VScan != 0) {
+							//a house has naval factories and/or naval units, so we are allowed to upgrade our naval to extreme.
+							AIDetectedNavalWar = true;
+						}
+					}
+				}
+				if (!airthreat) {
+					if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
+						airthreat = true;
+					}
 				}
 			}
 		}
+		if (!AIDetectedNavalWar) {
+			//No Naval, so it must be ground war
+			AIDetectHumanGroundWar = true;
+		}
 
-		//More new stuff by Bast75
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
-		if (!AIDetectHumanGoesNavalWar) {
+		if (!AIDetectedNavalWar) {
 			AIDogKennelMinimal = Rule.AIDogHouseMinimalBasic;
 			AIBarracksMinimal = Rule.AIBarracksMinimalBasic;
 			AIWarFactoryMinimal = Rule.AIWarFactoryMinimalBasic;
@@ -5980,7 +6004,7 @@ int HouseClass::AI_Building(void)
 		}
 		else {
 			//Naval war or mixed
-			if (AIDetectHumanGoesGroundWar) {
+			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
 				AIDogKennelMinimal = Rule.AIDogHouseMinimalMix;
 				AIBarracksMinimal = Rule.AIBarracksMinimalMix;
@@ -6048,11 +6072,11 @@ int HouseClass::AI_Building(void)
 
 		//Allow extra buildings if MCV deployed
 		if (BQuantity[STRUCT_CONST] > 1 && Rule.AIAllowBaseGrowByDeployedMCV) {
-			if (AIDetectHumanGoesGroundWar) {
+			if (AIDetectHumanGroundWar) {
 				AIBarracksMinimal += 1;
 				AIWarFactoryMinimal += 2;
 			}
-			if (AIDetectHumanGoesNavalWar) {
+			if (AIDetectedNavalWar) {
 				AINavalMinimal += 2;
 			}
 			AIHelipadMinimal += 2;
@@ -6077,20 +6101,17 @@ int HouseClass::AI_Building(void)
 		if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
 
 		//Update refinery limit depending on number of warfactories, conyard and naval stuff
-		//old
-		//AIRefineryMinimal = (BQuantity[STRUCT_WEAP] * 2) + 3 + (BQuantity[STRUCT_CONST] * 2) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
-		
-		//new
 		//RefineryLimit = 2 + NrOfWarFactories + NrOfConstructionYards + NrOfNavalYardsAndSubPens
-		AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
+		//AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
+		AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
 
 
 		//Switch from infantry rush to tank/air/naval rush?
-		if (AIDetectHumanGoesNavalWar) {
+		if (AIDetectedNavalWar) {
 			//naval & air
 			Rule.InfantryReserve = 999000; //Build unlimited infantry if more cash than this
 			Rule.InfantryBaseMult = 1; // nr of infantry * nr of buildings
-			if (AIDetectHumanGoesGroundWar) {
+			if (AIDetectHumanGroundWar) {
 				//naval & air & ground units
 				Rule.InfantryReserve = 12000;
 				Rule.InfantryBaseMult = 3;
@@ -6114,7 +6135,7 @@ int HouseClass::AI_Building(void)
 		else {
 			AIPowerPlus = Rule.AIPowerPlusMinimal;
 		}
-		if (BQuantity[STRUCT_REFINERY] < 1) {
+		if (BQuantity[STRUCT_WEAP] < 1) {
 			AIPowerPlus = 50;
 		}
 
@@ -6172,7 +6193,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-
 		//refinery
 		if (BQuantity[STRUCT_REFINERY] < AIRefineryMinimal && BQuantity[STRUCT_REFINERY] < Rule.AIRefineryLimitOverwrite) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
@@ -6185,29 +6205,27 @@ int HouseClass::AI_Building(void)
 						+ (int)BQuantity[STRUCT_TURRET]
 						+ (int)BQuantity[STRUCT_PILLBOX]
 						+ (int)BQuantity[STRUCT_CAMOPILLBOX]) {
-						prio = 2;
+						prio = prio + 1;
 					}
 					if ((int)BQuantity[STRUCT_WEAP] > 0) {
 						prio = prio + 1;
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
-						prio = 3;
-					}
-					if (money < 5000) {
 						prio = prio + 1;
 					}
+					if ((int)BQuantity[STRUCT_MSLO] > 0) {
+						prio = prio + 1;
+					}
+					if (airthreat) {
+						prio = prio + 1;
+					}
+					if (AIDetectedNavalWar) {
+						prio = prio + 1;
+					}
+					if (money < 10000 && !IsTiberiumShort && BQuantity[STRUCT_REFINERY] < 8) {
+						prio = prio + 3;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//flame turret
-		if (BQuantity[STRUCT_FLAME_TURRET] < AIFlameTurretMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < 6 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6218,7 +6236,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < 3 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6229,7 +6247,18 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < 3 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//flame turret
+		if (BQuantity[STRUCT_FLAME_TURRET] < AIFlameTurretMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < 3 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6240,7 +6269,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 6 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 3 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6251,7 +6280,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < 5 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6311,25 +6340,23 @@ int HouseClass::AI_Building(void)
 		}
 
 		//naval allies
-		if (AIDetectHumanGoesNavalWar || BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal) {
+		if (BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					if (!AIDetectHumanGoesNavalWar) { prio = 1; }
-					else { prio = 3; }
+					prio = AIDetectedNavalWar ? 4 : 2; //On Naval War go 4, else 2
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SHIP_YARD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
 		//naval soviet
-		if (AIDetectHumanGoesNavalWar || BQuantity[STRUCT_SUB_PEN] < AINavalMinimal) {			
+		if (BQuantity[STRUCT_SUB_PEN] < AINavalMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
-				if (!AIDetectHumanGoesNavalWar) { prio = 1; }
-				else { prio = 3; }
+				prio = AIDetectedNavalWar ? 4 : 2; //On Naval War go 4, else 2
 				*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 			}
 		}
@@ -6352,17 +6379,6 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//repair bay
-		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6396,6 +6412,17 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_MSLO] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//repair bay
+		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6511,15 +6538,20 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Naval war and no ground war? Don't make to much of this, focus more on naval.
-	if (AIDetectHumanGoesNavalWar && !AIDetectHumanGoesGroundWar && !IsHuman) {
+	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
 		if (Percent_Chance(Rule.AIGroundUnitSlowDown)) {
 			return(TICKS_PER_SECOND * WarFactorySlowdown);
 		}
 	}
 
-	// Make extra harvesters if 2 refs or more.
+	// Test
+	//BuildUnit = UNIT_CHRONOTANK;
+	//return(TICKS_PER_SECOND);
+
+
+	// Make extra harvesters
 	if (IQ >= Rule.IQHarvester && !IsTiberiumShort && !IsHuman && (UQuantity[UNIT_HARVESTER] < (BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer)) && Difficulty != DIFF_HARD) {
-		if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel && BQuantity[STRUCT_REFINERY] > 1) {
+		if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
 			BuildUnit = UNIT_HARVESTER;
 			return(TICKS_PER_SECOND * WarFactorySlowdown);
 		}
@@ -6668,7 +6700,7 @@ int HouseClass::AI_Vessel(void)
 	}
 
 	//No more Naval War? Don't build to much of it
-	if (!AIDetectHumanGoesNavalWar && !IsHuman) {
+	if (!AIDetectedNavalWar && !IsHuman) {
 		if (Percent_Chance(90)) {
 			return(TICKS_PER_SECOND);
 		}
@@ -6836,7 +6868,7 @@ int HouseClass::AI_Infantry(void)
 	}
 
 	//Naval war and no ground war? Don't make to much of this, focus more on naval.
-	if (AIDetectHumanGoesNavalWar && !AIDetectHumanGoesGroundWar && !IsHuman) {
+	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
 		if (Percent_Chance(Rule.AIGroundUnitSlowDown)) {
 			return(TICKS_PER_SECOND);
 		}
