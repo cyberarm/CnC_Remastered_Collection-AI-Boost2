@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 26 okt 2020
+Last update at: 31 okt 2020
 Please re-subscribe to download the newest version.
 
 This is my personal AI-Boost mod for RA.
@@ -34,6 +34,7 @@ Extra changes:
 -AI Scatters all units on new attack launch to unlock stuck/blocked units.
 -AI understands importants of buildings & units a lot better and uses it during attack.
 -AI Knows how to use a MAD Tank.
+-AI Knows how to use chronoshifting with a Chrono Tank.
 -AI Engineers no longer walk in groups. They choose his own targets. Amount of Engineers also editable by .ini file.
 -AI Customizable limits for nr of AI buildings,
 -Almost all options are editable by AIBOOST.INI.

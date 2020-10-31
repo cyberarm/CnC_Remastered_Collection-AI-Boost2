@@ -442,7 +442,7 @@ class HouseClass {
 		bool AIDetectHumanGroundWar = false;
 		int AIGapMinimal = 2;
 		int AIPowerPlus = 5;
-		bool AIAttackModeDoClosest = false;
+		//bool AIAttackModeDoClosest = false;
 		int AINrOfMCVsProduced = 0;
 		int AIMaxBuildings = 75;
 		int MCVsProduced = 0;
@@ -452,7 +452,7 @@ class HouseClass {
 		int AIMaxAirNr = 20;
 		int AIAttackIntervalLoop = 0;
 		int BuildingSlowdown = 1;
-		bool AIAttackMode = true;
+		//bool AIAttackMode = true;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.
