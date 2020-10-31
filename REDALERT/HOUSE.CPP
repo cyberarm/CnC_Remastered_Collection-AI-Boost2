@@ -5484,10 +5484,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 						COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 						CELL TargetCell = Coord_Cell(TargetCoord);
 						CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
-						u->Assign_Mission(MISSION_ATTACK);
+						u->Assign_Mission(MISSION_HUNT); // Weird enough this must been set before the jump, otherway they run home.
 						u->Teleport_To(TargetFreeCell);
 						Sound_Effect(VOC_CHRONO, u->Coord);
-						u->Assign_Mission(MISSION_ATTACK);
 					}
 					else {
 						//If we are far enough from our base. Lets unload our Mad Tank.
