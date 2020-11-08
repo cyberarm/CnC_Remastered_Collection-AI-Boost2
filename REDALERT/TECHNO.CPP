@@ -3931,7 +3931,7 @@ void TechnoClass::Renovate(void)
 bool TechnoClass::Captured(HouseClass * newowner)
 {
 	assert(IsActive);
-
+	
 	if (newowner != House) {
 
 		/*

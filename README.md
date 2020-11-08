@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 31 okt 2020
+Last update at: 8 nov 2020
 Please re-subscribe to download the newest version.
 
 This is my personal AI-Boost mod for RA.
@@ -25,9 +25,9 @@ Extra changes:
 -Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
 -Instant capture with Engineer. No damage to building(s)
 -ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
--Rampastring Quality of Live mod reintegrated (waypoints, A* pathfinding, etc.)
 -AI's MCV goes to tiberium and deploys there for extra base, AI limitations for buildings, etc. will grow on each MCV deployment.
--AI scans for naval objects, if he detects a Naval war it will upscale his Naval and Air stuff.
+-AI scans for human Naval objects, if he detects a Naval stuff, it will upscale his Naval and Air stuff.
+-AI lowers tank production if human goes naval and GroundWar is disabled. (Allies still build Chronotanks beacause they can Chronoshift)
 -AI knows how to use Thiefs and Spies.
 -AI attacks interval uses different ways. (Hunt, Closest enemy, etc.)
 -AI Air units no longer just attack Refineries, it selects random between basedefence, factories, power, buildings, naval units or all threats.
@@ -35,20 +35,27 @@ Extra changes:
 -AI understands importants of buildings & units a lot better and uses it during attack.
 -AI Knows how to use a MAD Tank.
 -AI Knows how to use chronoshifting with a Chrono Tank.
--AI Engineers no longer walk in groups. They choose his own targets. Amount of Engineers also editable by .ini file.
--AI Customizable limits for nr of AI buildings,
--Almost all options are editable by AIBOOST.INI.
+-AI Engineers no longer walk in groups. They choose his own targets
+-AI Customizable limits for nr of AI buildings, tanks, etc.
+
+-AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
+C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
+
 
 
 To do / whishes:
--Veterancy for al units!!! (Source code anyone? Github?)
 -AI Minelayer control
--AI Chronotank control
+-AI Chronosphere control in Skirmish
+-AI Iron Curton control in Skirmish
+-Veterancy for al units!!! (Source code anyone? Github?)
+-Change the menu for additional AI levels and game modes. (Source code anyone? Github?)
+-Attack Move command integration. (Source code anyone? Github?)
 -New Units & Buildings available after capturing buildings from other party (Allies vs Soviet)
 
 
 Known issues:
--None?
+-AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
 
-Greetings and have fun.
+
+Greetings, have fun and don't forget to rate my mod.
 Bast75.
