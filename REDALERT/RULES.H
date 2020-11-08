@@ -90,9 +90,9 @@ class RulesClass {
 		int AIAttackMinimalDefence = 6;
 		bool AIAllowBaseGrowByDeployedMCV = true;
 		int AIMaxConYardsAndMCVs = 1;
-		double AIHarvesterMultiplyer = 1.5;
-		int AIBuildingsMultiplier = 3;
-		int AIBuildingsMinimal = 20;
+		double AIHarvesterMultiplyer = 1.3;
+		int AIBuildingsMultiplier = 2;
+		int AIBuildingsMinimal = 30;
 		//int AIUnitMultiplier = 3;
 		int AIMaxEngineers = 15;
 		int AIGroupSize = 5;
