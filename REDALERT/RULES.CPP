@@ -618,6 +618,25 @@ bool RulesClass::General(CCINIClass & ini)
 		AIGroundUnitSlowDown = ini.Get_Int(MOREQOL, "AIGroundUnitSlowDown", 98);
 		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 10);
 
+		AISpeedRush = ini.Get_Int(MOREQOL, "AISpeedRush", 0);
+		AIDogHouseSpeed = ini.Get_Int(MOREQOL, "AIDogHouseSpeed", 1);
+		AIBarracksSpeed = ini.Get_Int(MOREQOL, "AIBarracksSpeed", 1);
+		AIWarFactorySpeed = ini.Get_Int(MOREQOL, "AIWarFactorySpeed", 1);
+		AINavalSpeed = ini.Get_Int(MOREQOL, "AINavalSpeed", 1);
+		AIHelipadSpeed = ini.Get_Int(MOREQOL, "AIHelipadSpeed", 4);
+		AIAirDefenceSpeed = ini.Get_Int(MOREQOL, "AIAirDefenceSpeed", 12);
+		AIFlameTurretSpeed = ini.Get_Int(MOREQOL, "AIFlameTurretSpeed", 16);
+		AIGunTeslaSpeed =  ini.Get_Int(MOREQOL, "AIGunTeslaSpeed", 16);
+		AIRepairBaySpeed = ini.Get_Int(MOREQOL, "AIRepairBaySpeed", 0);
+		AIGapSpeed = ini.Get_Int(MOREQOL, "AIGapSpeed", 0);
+		AINukeSpeed = ini.Get_Int(MOREQOL, "AINukeSpeed", 1);
+		AIMaxBuildingsSpeed = ini.Get_Int(MOREQOL, "AIMaxBuildingsSpeed", 90);
+		AIMaxTanksSpeed = ini.Get_Int(MOREQOL, "AIMaxTanksSpeed", 100);
+		AIMaxNavalSpeed = ini.Get_Int(MOREQOL, "AIMaxNavalSpeed", 125);
+		AIMaxInfantrySpeed = ini.Get_Int(MOREQOL, "AIMaxInfantrySpeed", 10);
+		AIMaxAirSpeed = ini.Get_Int(MOREQOL, "AIMaxAirSpeed", 100);
+		AIRefinerySpeed = ini.Get_Int(MOREQOL, "AIRefinerySpeed", 1);
+
 		//Set all AI stuff to max
 		IQSuperWeapons = 5;
 		IQProduction = 5;
@@ -639,7 +658,6 @@ bool RulesClass::General(CCINIClass & ini)
 		EngineerCaptureLevel = 100;
 	}
 	IsChronoKill = ChronoKillsCargo; //also overwrite with AIBoost settings.
-
 
 	return(GeneralDone);
 	//return(false);

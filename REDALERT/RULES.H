@@ -80,6 +80,7 @@ class RulesClass {
 		int AIBoostIQLevel = 5;
 		int AIBOostIQLevelMCVFallback = 2;
 		int AIAttackInterval = 4;
+		int AISpeedRush = 0;
 		int AISlowDown1ConstructionYard = 1;
 		int AISlowDown2ConstructionYard = 60;
 		int AISlowDown3PlusConstructionYard = 120;
@@ -167,6 +168,25 @@ class RulesClass {
 		int AIMaxInfantryNaval = 2;
 		int AIMaxAirNaval = 2;
 		int AIGroundUnitSlowDown = 98;
+
+		//Speed
+		int AIDogHouseSpeed = 1;
+		int AIBarracksSpeed = 1;
+		int AIWarFactorySpeed = 1;
+		int AINavalSpeed = 1;
+		int AIHelipadSpeed = 4;
+		int AIAirDefenceSpeed = 12;
+		int AIFlameTurretSpeed = 16;
+		int AIGunTeslaSpeed = 16;
+		int AIRepairBaySpeed = 0;
+		int AIGapSpeed = 0;
+		int AINukeSpeed = 1;
+		int AIMaxBuildingsSpeed = 90;
+		int AIMaxTanksSpeed = 100;
+		int AIMaxNavalSpeed = 125;
+		int AIMaxInfantrySpeed = 10;
+		int AIMaxAirSpeed = 100;
+		int AIRefinerySpeed = 1;
 
 		/*
 		**	This specifies the turbo boost speed for missiles when they are fired upon
