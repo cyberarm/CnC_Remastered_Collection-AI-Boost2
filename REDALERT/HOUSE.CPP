@@ -309,6 +309,7 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap)
 		BuildDelay = Rule.Diff[handicap].BuildDelay;
 		BuildSpeedBias = Rule.Diff[handicap].BuildSpeedBias * Rule.GameSpeedBias;
 	}
+
 	return(old);
 }
 
@@ -1362,6 +1363,38 @@ void HouseClass::AI(void)
 	if (this == PlayerPtr && IsToLook) {
 		IsToLook = false;
 		Map.All_To_Look(PlayerPtr);
+	}
+
+	//AISpeedRush set by .ini, instant attack
+	if (Rule.AISpeedRush == 1) {
+		int index;
+		for (index = 0; index < Units.Count(); index++) {
+			UnitClass * unit = Units.Ptr(index);
+			if (unit->House == this && !unit->IsInLimbo) {
+				if (unit->Team) unit->Team->Remove(unit);
+				unit->Assign_Mission(MISSION_HUNT);
+			}
+		}
+		for (index = 0; index < Infantry.Count(); index++) {
+			InfantryClass * infantry = Infantry.Ptr(index);
+			if (infantry->House == this && !infantry->IsInLimbo) {
+				if (infantry->Team) infantry->Team->Remove(infantry);
+				infantry->Assign_Mission(MISSION_HUNT);
+			}
+		}
+		for (index = 0; index < Vessels.Count(); index++) {
+			VesselClass * vessel = Vessels.Ptr(index);
+			if (vessel->House == this && !vessel->IsInLimbo) {
+				if (vessel->Team) vessel->Team->Remove(vessel);
+				vessel->Assign_Mission(MISSION_HUNT);
+			}
+		}
+		for (index = 0; index < Aircraft.Count(); index++) {
+			AircraftClass * a = Aircraft.Ptr(index);
+			if (a != NULL && !a->IsInLimbo && a->House == this && a->Strength > 0) {
+				a->Assign_Mission(MISSION_HUNT);
+			}
+		}
 	}
 }
 
@@ -5429,7 +5462,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 	for (index = 0; index < Vessels.Count(); index++) {
 		VesselClass * v = Vessels.Ptr(index);
 		if (v != NULL && !v->IsInLimbo && v->House == this && v->Strength > 0) {
-			v->Scatter(false, true, true);
+			if (Rule.AISpeedRush == 0 || Percent_Chance(10)) {
+				v->Scatter(false, true, true);
+			}
 			if (v->Is_Weapon_Equipped() && (forced || Percent_Chance(PercentageToSend))) {
 				if (Percent_Chance(80)) {
 					v->Assign_Mission(MISSION_HUNT);
@@ -5462,7 +5497,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 					}
 					u->Assign_Mission(MISSION_HUNT); // and deploy
 				}
-				else if (*u == UNIT_MAD || *u == UNIT_CHRONOTANK) {
+				else if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					//Lets find the closest building from ourself. (allied buildings included)
 					int ClosestOwnBuilding = -1;
 					for (int index = 0; index < Buildings.Count(); index++) {
@@ -5537,6 +5572,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			else {
 				//if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) && (forced || Percent_Chance(90))) {
 				if (forced || Percent_Chance(PercentageToSend)) {
+					if (i->Team) i->Team->Remove(i); //make it not a member of a team
 					if (Percent_Chance(80)) {
 						i->Assign_Mission(MISSION_HUNT);
 					}
@@ -5558,7 +5594,12 @@ bool HouseClass::AI_Attack(UrgencyType)
 	}
 
 	// Set new Attack moment
-	Attack = TICKS_PER_MINUTE * Rule.AIAttackInterval;
+	if (Rule.AIAttackInterval == 0 || Rule.AISpeedRush == 1) {
+		Attack = TICKS_PER_SECOND * 2;
+	}
+	else {
+		Attack = TICKS_PER_MINUTE * Rule.AIAttackInterval;
+	}
 	return(true);
 }
 
@@ -6137,6 +6178,35 @@ int HouseClass::AI_Building(void)
 		}
 		if (BQuantity[STRUCT_REFINERY] < 2) {
 			AIPowerPlus = 5;
+		}
+
+		if (Rule.AISpeedRush == 1) {
+			AIDogKennelMinimal = Rule.AIDogHouseSpeed;
+			AIBarracksMinimal = Rule.AIBarracksSpeed;
+			AIWarFactoryMinimal = Rule.AIWarFactorySpeed;
+			AINavalMinimal = Rule.AINavalSpeed;
+			AIHelipadMinimal = Rule.AIHelipadSpeed;
+			AIAirDefenceMinimal = Rule.AIAirDefenceSpeed;
+			AIFlameTurretMinimal = Rule.AIFlameTurretSpeed;
+			AIGunTeslaMinimal = Rule.AIGunTeslaSpeed;
+			AIGapMinimal = Rule.AIGapSpeed;
+			AINukeMinimal = Rule.AINukeSpeed;
+			AIRepairBayMinimal = Rule.AIRepairBaySpeed;
+			AIMaxBuildings = Rule.AIMaxBuildingsSpeed;
+			Rule.AIMaxConYardsAndMCVs = 1;
+			AIMaxTanksNr = Rule.AIMaxTanksSpeed;
+			AIMaxNavalNr = Rule.AIMaxNavalSpeed;
+			AIMaxInfantryNr = Rule.AIMaxInfantrySpeed;
+			AIMaxAirNr = Rule.AIMaxAirSpeed;
+			Rule.AIRefineryLimitOverwrite = Rule.AIRefinerySpeed;
+			AIDetectHumanGroundWar = true;
+			AIDetectedNavalWar = true;
+			Rule.AISlowDown1ConstructionYard = 1;
+			Rule.AISlowDown2ConstructionYard = 1;
+			Rule.AISlowDown3PlusConstructionYard = 1;
+			Rule.AISlowDown1Warfactory = 1;
+			Rule.AISlowDown2Warfactory = 1;
+			Rule.AISlowDown3PlusWarfactory = 1;
 		}
 
 		//Power
@@ -7119,7 +7189,7 @@ int HouseClass::AI_Aircraft(void)
 		if (CurAircraft >= Control.MaxAircraft) return(TICKS_PER_SECOND);
 		if ((int)CurAircraft > AIMaxAirNr) return(TICKS_PER_SECOND);
 
-		if (Percent_Chance(50)) {
+		if (Percent_Chance(70)) {
 			if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW), ActLike) &&
 				AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW).Level <= (unsigned)Control.TechLevel &&
 				BQuantity[STRUCT_HELIPAD] > AQuantity[AIRCRAFT_LONGBOW] + AQuantity[AIRCRAFT_HIND]) {
@@ -7136,7 +7206,7 @@ int HouseClass::AI_Aircraft(void)
 			}
 		}
 
-		if (Percent_Chance(50)) {
+		if (Percent_Chance(70)) {
 			if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_MIG), ActLike) &&
 				AircraftTypeClass::As_Reference(AIRCRAFT_MIG).Level <= (unsigned)Control.TechLevel &&
 				BQuantity[STRUCT_AIRSTRIP] > AQuantity[AIRCRAFT_MIG] + AQuantity[AIRCRAFT_YAK]) {
