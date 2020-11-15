@@ -108,6 +108,12 @@ class AircraftClass : public FootClass, public FlyClass
 		TARGET New_LZ(TARGET oldlz) const;
 
 		/*
+		**  Check whether helicopter units overlap at given cell
+		**  Kerekupai - RA immersive helis MOD
+		*/
+		TARGET check_Overlap(TARGET oldlz) const;
+
+		/*
 		**	Coordinate inquiry functions. These are used for both display and
 		**	combat purposes.
 		*/

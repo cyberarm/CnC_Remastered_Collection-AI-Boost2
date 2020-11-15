@@ -62,6 +62,7 @@
  *   AircraftClass::Mission_Unload -- Handles unloading cargo.                                 *
  *   AircraftClass::Movement_AI -- Handles aircraft physical movement logic.                   *
  *   AircraftClass::New_LZ -- Find a good landing zone.                                        *
+ *   AircraftClass::check_Overlap -- check overlap with other aircraft (RA immersive helis MOD *
  *   AircraftClass::Overlap_List -- Returns with list of cells the aircraft overlaps.          *
  *   AircraftClass::Paradrop_Cargo -- Drop a passenger by parachute.                           *
  *   AircraftClass::Per_Cell_Process -- Handle the aircraft per cell process.                  *
@@ -672,47 +673,43 @@ int AircraftClass::Mission_Hunt(void)
 				} else {
 					if (!Team.Is_Valid()) {
 						//if (Session.Type != GAME_NORMAL) {
-						//	Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
-						//}
 						//By Bast75, interesting, change it to factories, power, etc?
-						if (Session.Type == GAME_SKIRMISH || 1==1) { //Do always
-							int AiAirAttackChoice = Random_Pick(0, 15);
-							switch (AiAirAttackChoice) {
-							case 0:
-							case 12:
-							case 13:
-								Assign_Target(Greatest_Threat(THREAT_BASE_DEFENSE));
-								break;
-							case 1:
-							case 10:
-							case 11:
-								Assign_Target(Greatest_Threat(THREAT_FACTORIES));
-								break;
-							case 2:
-							case 8:
-							case 9:
-								Assign_Target(Greatest_Threat(THREAT_POWER));
-								break;
-							case 3:
-								Assign_Target(Greatest_Threat(THREAT_GROUND));
-								break;
-							case 4:
-								Assign_Target(Greatest_Threat(THREAT_BOATS));
-								break;
-							case 5:
-								Assign_Target(Greatest_Threat(THREAT_NORMAL));
-								break;
-							case 6:
-								Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
-								break;
-							case 7:
-							case 14:
-							case 15:
-								Assign_Target(Greatest_Threat(THREAT_BUILDINGS));
-								break;
-							default:
-								break;
-							}
+						int AiAirAttackChoice = Random_Pick(0, 15);
+						switch (AiAirAttackChoice) {
+						case 0:
+						case 12:
+						case 13:
+							Assign_Target(Greatest_Threat(THREAT_BASE_DEFENSE));
+							break;
+						case 1:
+						case 10:
+						case 11:
+							Assign_Target(Greatest_Threat(THREAT_FACTORIES));
+							break;
+						case 2:
+						case 8:
+						case 9:
+							Assign_Target(Greatest_Threat(THREAT_POWER));
+							break;
+						case 3:
+							Assign_Target(Greatest_Threat(THREAT_GROUND));
+							break;
+						case 4:
+							Assign_Target(Greatest_Threat(THREAT_BOATS));
+							break;
+						case 5:
+							Assign_Target(Greatest_Threat(THREAT_NORMAL));
+							break;
+						case 6:
+							Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
+							break;
+						case 7:
+						case 14:
+						case 15:
+							Assign_Target(Greatest_Threat(THREAT_BUILDINGS));
+							break;
+						default:
+							break;
 						}
 						if (!Target_Legal(TarCom)) {
 							Assign_Target(Greatest_Threat(THREAT_POWER));
@@ -1893,62 +1890,119 @@ int AircraftClass::Mission_Move(void)
 		**	Take off if necessary.
 		*/
 		case TAKE_OFF:
-			if (!Target_Legal(NavCom)) {
-				Status = VALIDATE_LZ;
-			} else {
-				if (Process_Take_Off()) {
 
-					/*
-					**	After takeoff is complete, break radio contact with any helipad that this
-					**	helicopter is taking off from.
-					*/
-					if (In_Radio_Contact() && Map[Coord].Cell_Building() == Contact_With_Whom()) {
-						Transmit_Message(RADIO_OVER_OUT);
-					}
 
-					Status = FLY_TO_LZ;
+			// Kerekupai: take off without checking if LZ is valid
+			if (Process_Take_Off())
+			{
+
+				/*
+				**	After takeoff is complete, break radio contact with any helipad that this
+				**	helicopter is taking off from.
+				*/
+
+				if (In_Radio_Contact() && Map[Coord].Cell_Building() == Contact_With_Whom())
+				{
+					Transmit_Message(RADIO_OVER_OUT);
 				}
-				return(1);
+
+				Status = FLY_TO_LZ;
+
 			}
+
+			return(1);
+
 			break;
 
-		/*
-		**	Fly toward target.
-		*/
+
+			/*
+			**	Fly toward target.
+			*/
 		case FLY_TO_LZ:
-			if (Is_LZ_Clear(NavCom)) {
+
+			if (Is_Target_Cell(NavCom)) // fix bug where heli would fly away from the map 
+			{
 				int distance = Process_Fly_To(true, NavCom);
 
-				if (distance < 0x0080) {
-					if (Target_Legal(TarCom)) {
+				if (distance < 0x0080)
+				{
+					if (Target_Legal(TarCom))
+					{
 						SecondaryFacing.Set_Desired(Direction(TarCom));
-					} else {
-						SecondaryFacing.Set_Desired(Pose_Dir());
+					}
+					else
+					{
+						// kerekupai: check overlap with other helis
+						NavCom = this->check_Overlap(NavCom);
+						// keep facing towards NavCom
+						SecondaryFacing.Set_Desired(Direction(NavCom)); 
+						if (*this == AIRCRAFT_TRANSPORT && Is_LZ_Clear(NavCom))
+						{
+							// Kerekupai: adjust facing for landing
+							SecondaryFacing.Set_Desired(Pose_Dir()); 
+						}
 					}
 
-					if (distance < 0x0010) {
-						Status = LAND;
+					// Kerekupai: aircraft land on target position (if valid for landing)
+					// using the key "L" for landing
+					if (distance < 0x0010)
+					{
+						bool deploykeydown = false;
+
+						// reinforcement helis of the single player, land automatically
+						if ((IsALoaner && Is_LZ_Clear(NavCom)) ||  // is reinforcement
+							(Session.Type == GAME_NORMAL &&
+								*this == AIRCRAFT_TRANSPORT &&
+								Is_LZ_Clear(NavCom))  // landing zone clear for landing 
+							)
+						{
+							Status = LAND;
+						}
+						else
+						{
+							// check if landing key is pressed
+							if (GetKeyState('L') & 0x8000)
+							{
+								deploykeydown = true;
+							}
+
+							if (this->Is_Selected_By_Player() == true && // if unit selected by player
+								House == PlayerPtr && // if belongs to the player
+								Class->IsFixedWing == false && // if is an helicopter
+								Is_LZ_Clear(NavCom) == true && // clear for landing
+								deploykeydown == true
+								)
+							{
+								Status = LAND;
+							}
+							else if (
+								this->Is_Selected_By_Player() == true && // if unit selected by player
+								House == PlayerPtr && // if belongs to the player
+								Class->IsFixedWing == false && // if is an helicopter
+								Is_LZ_Clear(NavCom) == false && // not clear for landing
+								deploykeydown
+								)
+							{
+								// Kerekupai: Player request landing on forbidden area. 
+								// The heli finds a valid landing zone for landing
+								Assign_Destination(New_LZ(NavCom));
+
+							}
+						}
+
 					}
 					return(1);
 				}
 
-//				SecondaryFacing.Set_Desired(::Direction(Fire_Coord(0), As_Coord(NavCom)));
 				SecondaryFacing.Set_Desired(Direction(NavCom));
 
-			} else {
-				Assign_Destination(New_LZ(NavCom));
-				if (Team.Is_Valid()) {
-					Team->Assign_Mission_Target(NavCom);
-				}
-				if (!Target_Legal(NavCom)) {
-					Status = LAND;
-				}
 			}
+
 			return(1);
 
-		/*
-		**	Land on target.
-		*/
+			/*
+			**	Land on target.
+			*/
 		case LAND:
 			if (IsTakingOff) {
 				Assign_Destination(New_LZ(NavCom));
@@ -1969,6 +2023,64 @@ int AircraftClass::Mission_Move(void)
 	}
 
 	return(MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+}
+
+
+/***********************************************************************************************
+ * AircraftClass::check_Overlap -- Check overlap with other helicopters                        *
+ *                                                                                             *
+ *    Use this routine to avoid overlapping of a group of helis flying towards a destination.  *
+ *
+ *                                                                                             *
+ * INPUT:   oldlz -- Target value of desired landing zone (usually a cell target value).       *
+ *                                                                                             *
+ * OUTPUT:  Returns with the new good landing zone. It might be the same value passed in.      *
+ *                                                                                             *
+ * WARNINGS:   The landing zone might be a goodly distance away from the ideal if there is     *
+ *             extensive blocking terrain in the vicinity.                                     *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   07/23/2020 Kerekupai : Created.                                                           *
+ *=============================================================================================*/
+
+TARGET AircraftClass::check_Overlap(TARGET oldlz) const
+{
+
+	assert(Aircraft.ID(this) == ID);
+	assert(IsActive);
+
+	COORDINATE coord = As_Coord(oldlz);
+
+
+	/*
+	**	Scan outward in a series of concentric rings up to certain distance
+	**	in cells.
+	*/
+	for (int radius = 0; radius < Rule.LZScanRadius / CELL_LEPTON_W; radius++)
+	{
+		FacingType modifier = Random_Pick(FACING_N, FACING_NW);
+		CELL lastcell = -1;
+
+		/*
+		**	Perform a radius scan out from the original center location. Try to
+		**	find a cell that is allowed to be a legal LZ.
+		*/
+		for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++)
+		{
+			CELL newcell = Coord_Cell(Coord_Move(coord, Facing_Dir(facing + modifier), radius * ICON_LEPTON_W));
+
+			if (Map.In_Radar(newcell) && Cell_Seems_Ok(newcell, false))
+			{
+				TARGET newtarget = ::As_Target(newcell);
+
+				if (newcell != lastcell) {
+					return(newtarget);
+				}
+				lastcell = newcell;
+			}
+		}
+	}
+	return(oldlz);
 }
 
 

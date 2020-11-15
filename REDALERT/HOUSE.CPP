@@ -514,7 +514,7 @@ void HouseClass::operator delete(void * ptr)
  *=============================================================================================*/
 #define 	VOX_NOT_READY	VOX_NONE
 HouseClass::HouseClass(HousesType house) :
-	MCVsProduced(0),
+	//MCVsProduced(0),
 
 	RTTI(RTTI_HOUSE),
 	ID(Houses.ID(this)),
@@ -1549,6 +1549,7 @@ void HouseClass::Super_Weapon_Handler(void)
 	**	because of outside circumstances. The chronosphere facility
 	**	being destroyed is a good example of this.
 	*/
+	// Some changes so it works for AI and/or caputered buildings also.
 	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Present()) {
 		if ( (!(ActiveBScan & STRUCTF_CHRONOSPHERE) && !SuperWeapon[SPC_CHRONOSPHERE].Is_One_Time()) || IsDefeated) {
 
@@ -1589,7 +1590,7 @@ void HouseClass::Super_Weapon_Handler(void)
 		if ((ActiveBScan & STRUCTF_CHRONOSPHERE) &&
 //			(ActLike == HOUSE_GOOD || Session.Type != GAME_NORMAL) &&
 			(unsigned)Control.TechLevel >= BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
-//			Control.TechLevel >= Rule.ChronoTechLevel &&
+			Control.TechLevel >= Rule.ChronoTechLevel &&
 			(IsHuman || IQ >= Rule.IQSuperWeapons)) {
 
 			SuperWeapon[SPC_CHRONOSPHERE].Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -6525,25 +6526,25 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		/**********
-		//iron curtain
-		b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
-		if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_IRON_CURTAIN] < 1) {
-			choiceptr = BuildChoice.Alloc();
-			if (choiceptr != NULL) {
-				*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+		if (1==0) { //disabled, AI doesn't know how to use it in skirmish games...
+			//iron curtain
+			b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_IRON_CURTAIN] < 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
 			}
-		}
 
-		//chronosphere
-		b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
-		if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_CHRONOSPHERE] < 1) {
-			choiceptr = BuildChoice.Alloc();
-			if (choiceptr != NULL) {
-				*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+			//chronosphere
+			b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_CHRONOSPHERE] < 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
 			}
 		}
-		*************/
 
 		if (BQuantity[STRUCT_CONST] < 2) { BuildingSlowdown = Rule.AISlowDown1ConstructionYard; }
 		if (BQuantity[STRUCT_CONST] == 2) { BuildingSlowdown = Rule.AISlowDown1ConstructionYard; }

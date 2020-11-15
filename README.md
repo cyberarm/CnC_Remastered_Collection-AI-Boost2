@@ -1,9 +1,22 @@
 # AI-Boost for Red Alert
-Last update at: 9 nov 2020
-Please re-subscribe to download the newest version.
+Last update at: 15 nov 2020
+
+Please follow the steps below to update and reactivate the mod:
+- Disable the mod in the Mods Menu
+- Unsubscribe from the mod in the in-game Workshop Mods menu
+- Quit and restart the game
+- Re-subscribe to the mod via the Workshop Mods menu
+- Activate the mod and restart the game as prompted
+- The updated mod should then work as intended
+
+
 
 This is my personal AI-Boost mod for RA.
-I've added some changes to improve the AI on top of the Rampastring Quality of Live MOD. (waypoints, etc.)
+I've added some changes to improve the AI on top of several other mods like:
+-The Rampastring Quality of Live MOD. (waypoints, etc.)
+-Engineer instant capture
+-Additional Zoom Levels
+-RA Immersive Helis Mod
 
 The AI handles his cash flow and building priorities/limits a lot smarter.
 It doesn't wait for the player to let his base grow and/or tech up to the highest level.
@@ -42,7 +55,6 @@ Extra changes:
 C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
 
 
-
 To do / whishes:
 -AI Minelayer control
 -AI Chronosphere control in Skirmish
@@ -59,3 +71,4 @@ Known issues:
 
 Greetings, have fun and don't forget to rate my mod.
 Bast75.
+
