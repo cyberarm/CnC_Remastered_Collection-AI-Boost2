@@ -443,7 +443,7 @@ class HouseClass {
 		int AIGapMinimal = 2;
 		int AIPowerPlus = 5;
 		//bool AIAttackModeDoClosest = false;
-		int AINrOfMCVsProduced = 0;
+		//int AINrOfMCVsProduced = 0;
 		int AIMaxBuildings = 75;
 		int MCVsProduced = 0;
 		int AIMaxTanksNr = 50;
