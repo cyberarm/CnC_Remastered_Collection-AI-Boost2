@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 15 nov 2020
+Last update at: 20 nov 2020
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -16,7 +16,8 @@ I've added some changes to improve the AI on top of several other mods like:
 -The Rampastring Quality of Live MOD. (waypoints, etc.)
 -Engineer instant capture
 -Additional Zoom Levels
--RA Immersive Helis Mod
+-RA Immersive Helis Mod (And all Air units have a sight)
+-Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 
 The AI handles his cash flow and building priorities/limits a lot smarter.
 It doesn't wait for the player to let his base grow and/or tech up to the highest level.
@@ -67,6 +68,7 @@ To do / whishes:
 
 Known issues:
 -AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
+-Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
 
 
 Greetings, have fun and don't forget to rate my mod.

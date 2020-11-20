@@ -3247,6 +3247,31 @@ bool BuildingClass::Captured(HouseClass * newowner)
 			}
 		}
 
+		//By Bast75, give house tech to house that captured this building:
+		if (newowner->HasStolenTech == 0 && Rule.AllowTechStealing) {
+			if (
+				((House->ActLike == HOUSE_ENGLAND || House->ActLike == HOUSE_SPAIN || House->ActLike == HOUSE_GREECE
+					|| House->ActLike == HOUSE_GERMANY || House->ActLike == HOUSE_FRANCE || House->ActLike == HOUSE_TURKEY || House->ActLike == HOUSE_JP)
+					&&
+					(newowner->ActLike == HOUSE_USSR || newowner->ActLike == HOUSE_UKRAINE)
+					) // i am Soviet and caputered allied or JP=techstolen house
+				||
+				((newowner->ActLike == HOUSE_ENGLAND || newowner->ActLike == HOUSE_SPAIN || newowner->ActLike == HOUSE_GREECE
+					|| newowner->ActLike == HOUSE_GERMANY || newowner->ActLike == HOUSE_FRANCE || newowner->ActLike == HOUSE_TURKEY)
+					&&
+					(House->ActLike == HOUSE_USSR || House->ActLike == HOUSE_UKRAINE || House->ActLike == HOUSE_JP)
+					) // i am Allied and Soviet or JP=techstolen house
+				) {
+				if (newowner->IsHuman) {
+					Speak(VOX_NEW_CONSTRUCT);
+				}
+				else if (House->IsHuman) {
+					Speak(VOX_BUILDING_INFILTRATED);
+				}
+				newowner->SetStolenTech(); // we become JP house = tech stolen house
+			}
+		}
+
 		/*
 		** Make sure the capturer isn't spying on his own building, and if
 		** it was a radar facility, update the target house's RadarSpied field.

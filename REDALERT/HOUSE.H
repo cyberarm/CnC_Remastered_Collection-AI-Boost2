@@ -453,6 +453,8 @@ class HouseClass {
 		int AIAttackIntervalLoop = 0;
 		int BuildingSlowdown = 1;
 		//bool AIAttackMode = true;
+		int HasStolenTech = 0;
+		void SetStolenTech(void);
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.

@@ -743,6 +743,21 @@ HouseStaticClass::HouseStaticClass(void) :
 {
 }
 
+//By Bast75
+//Change house to Stolen Tech House
+void HouseClass::SetStolenTech() {
+	if (Rule.AllowTechStealing) {
+		HasStolenTech = 1;
+		ActLike = HOUSE_JP;
+		for (int indexOwn = 0; indexOwn < Buildings.Count(); indexOwn++) {
+			BuildingClass * OwnBuilding = Buildings.Ptr(indexOwn);
+			if (OwnBuilding != NULL && OwnBuilding->House == this && OwnBuilding->Strength > 0) {
+				OwnBuilding->House->ActLike = HOUSE_JP;
+				OwnBuilding->House->HasStolenTech = 1;
+			}
+		}
+	}
+}
 
 /***********************************************************************************************
  * HouseClass::Can_Build -- General purpose build legality checker.                            *
@@ -1640,7 +1655,7 @@ void HouseClass::Super_Weapon_Handler(void)
 		**	facility available, then make the iron curtain available as well.
 		*/
 		if ((ActiveBScan & STRUCTF_IRON_CURTAIN) &&
-			(ActLike == HOUSE_USSR || ActLike == HOUSE_UKRAINE || Session.Type != GAME_NORMAL) && 
+			(ActLike == HOUSE_USSR || ActLike == HOUSE_UKRAINE || Session.Type != GAME_NORMAL || HasStolenTech == 1) &&
 			(IsHuman || IQ >= Rule.IQSuperWeapons)) {
 
 			SuperWeapon[SPC_IRON_CURTAIN].Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -6012,9 +6027,15 @@ int HouseClass::AI_Building(void)
 						AIDetectedNavalWar = true;
 					}
 				}
-				if (!airthreat) {
-					if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
-						airthreat = true;
+				else {
+					if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalMinimalBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalMinimalBasic) {
+						//A AI house has switched to Navalwar=true, so we are allowed to switch too.
+						AIDetectedNavalWar = true;
+					}
+					if (!airthreat) {
+						if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
+							airthreat = true;
+						}
 					}
 				}
 			}
