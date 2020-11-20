@@ -549,6 +549,9 @@ bool RulesClass::General(CCINIClass & ini)
 		AISlowDown2Warfactory = ini.Get_Int(MOREQOL, "AISlowDown2Warfactory", 10);
 		AISlowDown3PlusWarfactory = ini.Get_Int(MOREQOL, "AISlowDown3PlusWarfactory", 20);
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 15);
+
+		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
+
 		AIGroupSize = ini.Get_Int(MOREQOL, "AIMaxEngineers", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
 		AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);

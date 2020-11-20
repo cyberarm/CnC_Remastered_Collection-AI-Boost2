@@ -97,6 +97,8 @@ class RulesClass {
 		//int AIUnitMultiplier = 3;
 		int AIMaxEngineers = 15;
 		int AIGroupSize = 5;
+		bool AllowTechStealing = true;
+
 		int AIMadTankSaveToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;
 		bool AIMadTankWriteDebugInfoToFile = false;
