@@ -2938,7 +2938,12 @@ int UnitClass::Mission_Harvest(void)
 			/*
 			** Look for ore where we last found some - mine the same patch
 			*/
-			if (Target_Legal(ArchiveTarget)) {
+
+			// By Bast75, added a memory chance:
+			// Default this was always remember. This results in harvesters going further and further while closer Tiberium could be available.
+			// Do not remember last location and scan for closest tiberium from unload area
+			// Or do remember and start here again with harvesting.
+			if (Target_Legal(ArchiveTarget) && Percent_Chance(Rule.HarvesterMemoryValue)) {
 				Assign_Destination(ArchiveTarget);
 				ArchiveTarget = 0;
 			}

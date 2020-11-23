@@ -551,6 +551,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 15);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
+		HarvesterMemoryValue = ini.Get_Int(MOREQOL, "HarvesterMemoryValue", 30);
 
 		AIGroupSize = ini.Get_Int(MOREQOL, "AIMaxEngineers", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);

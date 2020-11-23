@@ -756,6 +756,9 @@ void HouseClass::SetStolenTech() {
 				OwnBuilding->House->HasStolenTech = 1;
 			}
 		}
+		if (IsHuman) {
+			//How do we reset the sidebar? Now the Human has to redeploy Contruction Yard to MCV and back to update the sidebar.
+		}
 	}
 }
 
