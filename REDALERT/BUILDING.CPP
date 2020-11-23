@@ -1205,11 +1205,14 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir)
 			Map.Flag_To_Redraw(false);
 		}
 
-		if ((Class->Ownable & (HOUSEF_GOOD | HOUSEF_BAD)) != (HOUSEF_GOOD | HOUSEF_BAD)) {
-			if (Class->Ownable & HOUSEF_GOOD) {
-				ActLike = HOUSE_GREECE;
-			} else {
-				ActLike = HOUSE_USSR;
+		if (House->HasStolenTech == 0) { // By Bast75, only when not in stolen tech mode. Otherwise we will loose tech.
+			if ((Class->Ownable & (HOUSEF_GOOD | HOUSEF_BAD)) != (HOUSEF_GOOD | HOUSEF_BAD)) {
+				if (Class->Ownable & HOUSEF_GOOD) {
+					ActLike = HOUSE_GREECE;
+				}
+				else {
+					ActLike = HOUSE_USSR;
+				}
 			}
 		}
 
