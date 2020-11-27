@@ -2534,9 +2534,10 @@ crate_money:
 			**	Create a squad of miscellaneous composition.
 			*/
 			case CRATE_SQUAD:
-				for (int index = 0; index < Rule.AIGroupSize; index++) {
+				//By Bast75, disabled for Engineer (INFANTRY_RENOVATOR)  if EngineerInstantCapture=true, don't make it a group
+				// Also made the groupsize changable
+				for (int index = 0; index < Rule.InfantryGroupSize; index++) {
 					if (Rule.EngineerInstantCapture) {
-						//By Bast75, disabled for Engineer (INFANTRY_RENOVATOR)  if EngineerInstantCapture=true, don't make it a group
 						static InfantryType _inf[] = {
 							INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E1,INFANTRY_E2,INFANTRY_E3
 						};

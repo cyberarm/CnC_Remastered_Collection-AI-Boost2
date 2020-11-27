@@ -1057,7 +1057,7 @@ void TechnoClass::Per_Cell_Process(PCPType why)
 		**	flagged so that they won't travel back off the map again.
 		*/
 		if (!IsLocked && Map.In_Radar(cell)) {
-	  		IsLocked = true;
+			IsLocked = true;
 		}
 
 		/*
@@ -3245,7 +3245,7 @@ BulletClass * TechnoClass::Fire_At(TARGET target, int which)
 		firespeed *= Rule.TurboBoost;
 	}
 
- 	bullet = new BulletClass(weapon->Bullet->Type, target, this, firepower, WarheadType(weapon->WarheadPtr->ID), firespeed);
+	bullet = new BulletClass(weapon->Bullet->Type, target, this, firepower, WarheadType(weapon->WarheadPtr->ID), firespeed);
 
 	if (bullet != NULL) {
 
@@ -3284,7 +3284,7 @@ BulletClass * TechnoClass::Fire_At(TARGET target, int which)
 				break;
 		}
 
-  		/*
+		/*
 		**	Play any sound effect tied to this weapon type.
 		*/
 		Sound_Effect(weapon->Sound, Fire_Coord(which));
@@ -5068,7 +5068,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const * enemy)
 	** on a rescue mission.
 	*/
 	for (int index = 0; index < Infantry.Count() && desired > 0; index++) {
-	 	InfantryClass * infantry = Infantry.Ptr(index);
+		InfantryClass * infantry = Infantry.Ptr(index);
 		if (infantry != NULL && infantry->Owner() == Owner()) {
 
 			/*
@@ -5153,7 +5153,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass const * enemy)
 	** on a rescue mission.
 	*/
 	for (int index = 0; index < Units.Count() && desired > 0; index++) {
-	 	UnitClass * unit = Units.Ptr(index);
+		UnitClass * unit = Units.Ptr(index);
 		if (unit != NULL && unit->Owner() == Owner()) {
 
 			/*
@@ -6744,7 +6744,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass & ini)
 #if defined (GERMAN)||(FRENCH)
 
 		for(int xx=0; NewName[xx] != NULL; xx++){
-		    if(!strcmp(NewName[xx], buffer)){
+			if(!strcmp(NewName[xx], buffer)){
 			memcpy(buffer, "", sizeof(buffer));
 			memcpy(buffer, NewName[xx+1], sizeof(buffer));
 			break;

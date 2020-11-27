@@ -3885,7 +3885,7 @@ int BuildingClass::Mission_Deconstruction(void)
 			if (IsReadyToCommence) {
 				House->IsRecalcNeeded = true;
 
-  				// MBL 05.06.2020 - "Structure Sold" is being heard when selecting/moving a redepolyable Con Yard to turn back into an MCV (RA only), so moving below
+				// MBL 05.06.2020 - "Structure Sold" is being heard when selecting/moving a redepolyable Con Yard to turn back into an MCV (RA only), so moving below
 				#if 0
 				// MBL 04.06.2020: Fix being heard by wrong player
 				// if (IsOwnedByPlayer) Speak(VOX_STRUCTURE_SOLD);

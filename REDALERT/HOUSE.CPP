@@ -1112,7 +1112,7 @@ void HouseClass::AI(void)
 		if (SpeakMaxedDelay == 0 && IsMaxedOut) {
 			IsMaxedOut = false;
 			if ((Capacity - Tiberium) < 300 && Capacity > 500 && (ActiveBScan & (STRUCTF_REFINERY | STRUCTF_CONST))) {
- 				Speak(VOX_NEED_MO_CAPACITY);
+				Speak(VOX_NEED_MO_CAPACITY);
 				SpeakMaxedDelay = Options.Normalize_Delay(TICKS_PER_MINUTE * Rule.SpeakDelay);
 			}
 		}
@@ -2722,7 +2722,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	/*
 	** Loop through all of the building objects on the map
 	** and see which ones are available.
- 	*/
+	*/
 	BuildingClass * bestptr = NULL;
 	int best = -1;
 
@@ -5534,7 +5534,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
 							if (ClosestEnemyBuildingDist == -1 || u->Distance(building)< ClosestEnemyBuildingDist) {
 								ClosestEnemyBuildingDist = u->Distance(building);
-							    FarthestEnemyBuildingDist = index;
+								FarthestEnemyBuildingDist = index;
 							}
 						}
 					}
@@ -5586,13 +5586,17 @@ bool HouseClass::AI_Attack(UrgencyType)
 		if (i != NULL && !i->IsInLimbo && i->House == this && i->Strength > 0) {
 			i->Scatter(false, true, true);
 			if (*i == INFANTRY_MEDIC || *i == INFANTRY_MECHANIC) {
-				i->Assign_Mission(MISSION_GUARD_AREA);
+				//i->Assign_Mission(MISSION_GUARD_AREA);
+				i->Assign_Mission(MISSION_HUNT);
+			}
+			else if (*i == INFANTRY_RENOVATOR) {
+				i->Assign_Mission(MISSION_HUNT);
 			}
 			else {
 				//if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) && (forced || Percent_Chance(90))) {
-				if (forced || Percent_Chance(PercentageToSend)) {
-					if (i->Team) i->Team->Remove(i); //make it not a member of a team
-					if (Percent_Chance(80)) {
+				if (forced || Percent_Chance(PercentageToSend) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
+					//if (i->Team) i->Team->Remove(i); //make it not a member of a team
+					if (Percent_Chance(80) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
 						i->Assign_Mission(MISSION_HUNT);
 					}
 					else {
@@ -6970,6 +6974,7 @@ int HouseClass::AI_Infantry(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildInfantry != INFANTRY_NONE) return(TICKS_PER_SECOND);
+
 	if (CurInfantry >= Control.MaxInfantry && !IsHuman) return(TICKS_PER_SECOND);
 
 	//AI Max infantry
@@ -7122,7 +7127,7 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_TANYA:
-						typetrack[count].Value = 1 - max(IQuantity[index], 0);
+						typetrack[count].Value = 3 - max(IQuantity[index], 0);
 						break;
 
 					case INFANTRY_DOG: // added the Dog by Bast75
@@ -7130,15 +7135,11 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_MEDIC: // added the Medic by Bast75.
-						if (CurInfantry > 5) {
-							typetrack[count].Value = 1 - max(IQuantity[index], 0);
-						}
+						typetrack[count].Value = 5 - max(IQuantity[index], 0); // make 5 of them?
 						break;
 
 					case INFANTRY_MECHANIC: // added the Mechanic by Bast75.
-						if (CurInfantry > 5) {
-							typetrack[count].Value = 1 - max(IQuantity[index], 0);
-						}
+						typetrack[count].Value = 5 - max(IQuantity[index], 0); // make 5 of them?
 						break;
 
 					case INFANTRY_SHOCK: // added the Shocktrooper by Bast75.
@@ -7146,15 +7147,11 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_THIEF: // added the Thief by Bast75.
-						if (CurInfantry > 10) {
-							typetrack[count].Value = 1 - max(IQuantity[index], 0);
-						}
+						typetrack[count].Value = 1 - max(IQuantity[index], 0); // make 1 of them?
 						break;
 
 					case INFANTRY_SPY: // added the Spy by Bast75. Disabled again, The AI always sees everything, so no spy needed.
-						if (CurInfantry > 10) {
-							typetrack[count].Value = 1 - max(IQuantity[index], 0);
-						}
+						typetrack[count].Value = 1 - max(IQuantity[index], 0);
 						break;
 
 					default:
