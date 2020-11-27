@@ -1208,6 +1208,7 @@ void InfantryClass::Assign_Target(TARGET target)
 			target = TARGET_NONE;
 		}
 	}
+
 	FootClass::Assign_Target(target);
 
 	/*
@@ -1705,7 +1706,9 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const
 #else
 		InfantryClass * targ = As_Infantry(target);
 #endif
-		if (targ == NULL || targ->Health_Ratio() >= Rule.ConditionGreen) {
+		//By Bast75, medic and mechanic have negative combat damage, they should not attack enemies. Otherwise they heal them
+		//if (targ == NULL || targ->Health_Ratio() >= Rule.ConditionGreen) {
+		if (targ == NULL || targ->Health_Ratio() >= Rule.ConditionGreen || !targ->House->Is_Ally(this)) {
 			return(FIRE_ILLEGAL);
 		}
 	}
@@ -2265,7 +2268,7 @@ bool InfantryClass::Start_Driver(COORDINATE & headto)
 		/*
 		**	Remove the occupation bit from the infantry's current location.
 		*/
-  		Clear_Occupy_Bit(Coord);
+		Clear_Occupy_Bit(Coord);
 
 		/*
 		**	Set the occupation bit for the new headto location.
@@ -2952,7 +2955,7 @@ ActionType InfantryClass::What_Action(ObjectClass const * object) const
 		if (House->Is_Ally(object)) {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			if( (object->What_Am_I() == RTTI_INFANTRY && object != this && *this == INFANTRY_MEDIC) ||
-			    (*this == INFANTRY_MECHANIC && (object->What_Am_I() == RTTI_UNIT || object->What_Am_I() == RTTI_AIRCRAFT) ) ) {
+				(*this == INFANTRY_MECHANIC && (object->What_Am_I() == RTTI_UNIT || object->What_Am_I() == RTTI_AIRCRAFT) ) ) {
 
 					if (object->Health_Ratio() < Rule.ConditionGreen) {
 // If it's a mechanic force-moving into an APC, don't try to heal it.

@@ -2920,6 +2920,12 @@ int UnitClass::Mission_Harvest(void)
 		return(1);
 	}
 
+	// By Bast75, added a memory chance:
+	// Default this was always remember. This results in harvesters going further and further while closer Tiberium could be available.
+	// Do not remember last location and scan for closest tiberium from unload area
+	// Or do remember and start here again with harvesting.
+	bool HarvesterUsesMemory = Percent_Chance(Rule.HarvesterMemoryValue);
+
 	switch (Status) {
 
 		/*
@@ -2939,11 +2945,11 @@ int UnitClass::Mission_Harvest(void)
 			** Look for ore where we last found some - mine the same patch
 			*/
 
-			// By Bast75, added a memory chance:
-			// Default this was always remember. This results in harvesters going further and further while closer Tiberium could be available.
-			// Do not remember last location and scan for closest tiberium from unload area
-			// Or do remember and start here again with harvesting.
-			if (Target_Legal(ArchiveTarget) && Percent_Chance(Rule.HarvesterMemoryValue)) {
+			if (!HarvesterUsesMemory) {
+				ArchiveTarget = TARGET_NONE;
+			}
+
+			if (Target_Legal(ArchiveTarget)) {
 				Assign_Destination(ArchiveTarget);
 				ArchiveTarget = 0;
 			}

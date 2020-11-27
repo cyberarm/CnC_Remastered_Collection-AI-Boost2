@@ -92,12 +92,12 @@ class RulesClass {
 		bool AIAllowBaseGrowByDeployedMCV = true;
 		int AIMaxConYardsAndMCVs = 1;
 		double AIHarvesterMultiplyer = 1.3;
-		int HarvesterMemoryValue = 30;
+		int HarvesterMemoryValue = 10;
 		int AIBuildingsMultiplier = 2;
 		int AIBuildingsMinimal = 30;
 		//int AIUnitMultiplier = 3;
 		int AIMaxEngineers = 15;
-		int AIGroupSize = 5;
+		int InfantryGroupSize = 5;
 		bool AllowTechStealing = true;
 
 		int AIMadTankSaveToDeployDistance = 22;
