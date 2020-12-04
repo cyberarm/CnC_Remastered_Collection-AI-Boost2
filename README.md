@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 27 nov 2020
+Last update at: 4 dec 2020
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -14,6 +14,7 @@ This is my personal AI-Boost mod for RA.
 I've added some changes to improve the AI on top of several other mods like:
 -The Rampastring Quality of Live MOD. (waypoints, etc.)
 -Engineer instant capture
+-Engineers automatically choose new target after capturing.
 -Additional Zoom Levels
 -RA Immersive Helis Mod (And all Air units have a sight)
 -Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
