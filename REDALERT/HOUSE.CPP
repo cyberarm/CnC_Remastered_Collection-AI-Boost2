@@ -5499,6 +5499,23 @@ bool HouseClass::AI_Attack(UrgencyType)
 	}
 
 	// Tank units
+	//Calculate chronoshift target:
+	int FarthestEnemyBuildingDist = -1;
+	for (int index = 0; index < Buildings.Count(); index++) {
+		BuildingClass * Ownbuilding = Buildings.Ptr(index);
+		if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+			for (int index = 0; index < Buildings.Count(); index++) {
+				BuildingClass * building = Buildings.Ptr(index);
+				if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+					if (FarthestEnemyBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(70))) {
+						FarthestEnemyBuildingDist = index;
+					}
+				}
+			}
+			break; // we have a own building, so don't do a new calculation again.
+		}
+	}
+	//Do the tanks
 	for (index = 0; index < Units.Count(); index++) {
 		UnitClass * u = Units.Ptr(index);
 		if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
@@ -5517,27 +5534,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 					u->Assign_Mission(MISSION_HUNT); // and deploy
 				}
 				else if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
-					//Lets find the closest building from ourself. (allied buildings included)
-					int ClosestOwnBuilding = -1;
-					for (int index = 0; index < Buildings.Count(); index++) {
-						BuildingClass * building = Buildings.Ptr(index);
-						if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
-							if (ClosestOwnBuilding == -1 || u->Distance(building) < ClosestOwnBuilding) {
-								ClosestOwnBuilding = u->Distance(building);
-							}
-						}
-					}
-					int ClosestEnemyBuildingDist = -1;
-					int FarthestEnemyBuildingDist = -1;
-					for (int index = 0; index < Buildings.Count(); index++) {
-						BuildingClass * building = Buildings.Ptr(index);
-						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-							if (ClosestEnemyBuildingDist == -1 || u->Distance(building)< ClosestEnemyBuildingDist) {
-								ClosestEnemyBuildingDist = u->Distance(building);
-								FarthestEnemyBuildingDist = index;
-							}
-						}
-					}
 					if (*u == UNIT_CHRONOTANK) {
 						COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 						CELL TargetCell = Coord_Cell(TargetCoord);
@@ -5546,7 +5542,26 @@ bool HouseClass::AI_Attack(UrgencyType)
 						u->Teleport_To(TargetFreeCell);
 						Sound_Effect(VOC_CHRONO, u->Coord);
 					}
-					else {
+					if (*u == UNIT_MAD) {
+						//Lets find the closest building from ourself. (allied buildings included)
+						int ClosestOwnBuilding = -1;
+						for (int index = 0; index < Buildings.Count(); index++) {
+							BuildingClass * building = Buildings.Ptr(index);
+							if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
+								if (ClosestOwnBuilding == -1 || u->Distance(building) < ClosestOwnBuilding) {
+									ClosestOwnBuilding = u->Distance(building);
+								}
+							}
+						}
+						int ClosestEnemyBuildingDist = -1;
+						for (int index = 0; index < Buildings.Count(); index++) {
+							BuildingClass * building = Buildings.Ptr(index);
+							if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+								if (ClosestEnemyBuildingDist == -1 || u->Distance(building) < ClosestEnemyBuildingDist) {
+									ClosestEnemyBuildingDist = u->Distance(building);
+								}
+							}
+						}
 						//If we are far enough from our base. Lets unload our Mad Tank.
 						ClosestOwnBuilding = ClosestOwnBuilding / 265;
 						ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
@@ -5586,8 +5601,8 @@ bool HouseClass::AI_Attack(UrgencyType)
 		if (i != NULL && !i->IsInLimbo && i->House == this && i->Strength > 0) {
 			i->Scatter(false, true, true);
 			if (*i == INFANTRY_MEDIC || *i == INFANTRY_MECHANIC) {
-				//i->Assign_Mission(MISSION_GUARD_AREA);
-				i->Assign_Mission(MISSION_HUNT);
+				i->Assign_Mission(MISSION_GUARD_AREA);
+				//i->Assign_Mission(MISSION_HUNT);
 			}
 			else if (*i == INFANTRY_RENOVATOR) {
 				i->Assign_Mission(MISSION_HUNT);
@@ -6767,8 +6782,11 @@ int HouseClass::AI_Unit(void)
 				else {
 					counter[index] = 1;
 				}
-				if (utype->Type == UNIT_DEMOTRUCK || utype->Type == UNIT_MAD) { // Overwrite for there 2 units. Don't do it to extreme.
+				if (utype->Type == UNIT_DEMOTRUCK) { // Don't do it to extreme.
 					counter[index] = 15;
+				}
+				if (utype->Type == UNIT_MAD) { // Don't do it to extreme.
+					counter[index] = 5;
 				}
 			}
 			else {
@@ -7109,7 +7127,7 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_E2:// grenadier
-						typetrack[count].Value = 1;
+						typetrack[count].Value = 2;
 						break;
 
 					case INFANTRY_E3:// rocket soldier

@@ -872,9 +872,15 @@ void InfantryClass::Per_Cell_Process(PCPType why)
 				} else {
 	#endif
 					if (!Target_Legal(NavCom)) {
-						Enter_Idle_Mode();
-						if (Map[Coord].Cell_Building()) {
-							Scatter(0, true);
+						//By Bast75. AI infantry like the Engineers should keep attacking
+						if (!House->IsHuman) {
+							Assign_Mission(MISSION_HUNT);
+						}
+						else {
+							Enter_Idle_Mode();
+							if (Map[Coord].Cell_Building()) {
+								Scatter(0, true);
+							}
 						}
 					}
 	#ifdef OBSOLETE
