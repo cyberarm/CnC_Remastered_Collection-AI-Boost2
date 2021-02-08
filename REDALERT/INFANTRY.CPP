@@ -1853,6 +1853,11 @@ void InfantryClass::Enter_Idle_Mode(bool )
 			}
 		}
 	}
+	if (order == MISSION_GUARD) {
+		// Attack Move by Butch: As Infantry does GUARD at the end, the Mission_Move method where usually the reset starts is never called
+		// therefore this hack
+		ResetAttackMove();
+	}
 	Assign_Mission(order);
 }
 
@@ -2486,8 +2491,9 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const
 
 	/*
 	**	Human controlled infantry don't automatically fire upon buildings.
+	**  Attack Move by Butch: In attack move mode, attack the buildings as well
 	*/
-	if (Is_Weapon_Equipped() && House->IsHuman) {
+	if (Is_Weapon_Equipped() && House->IsHuman && !AttackMove) {
 		threat = threat & ~THREAT_BUILDINGS;
 	}
 
