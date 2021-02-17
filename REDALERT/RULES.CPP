@@ -542,13 +542,9 @@ bool RulesClass::General(CCINIClass & ini)
 		AIHarvesterMultiplyer = ini.Get_Int(MOREQOL, "AIHarvesterMultiplyer", 1.2);
 		AIBuildingsMultiplier = ini.Get_Int(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIBuildingsMinimal = ini.Get_Int(MOREQOL, "AIBuildingsMinimal", 20);
-		AISlowDown1ConstructionYard = ini.Get_Int(MOREQOL, "AISlowDown1ConstructionYard", 1);
-		AISlowDown2ConstructionYard = ini.Get_Int(MOREQOL, "AISlowDown2ConstructionYard", 10);
-		AISlowDown3PlusConstructionYard = ini.Get_Int(MOREQOL, "AISlowDown3PlusConstructionYard", 20);
-		AISlowDown1Warfactory = ini.Get_Int(MOREQOL, "AISlowDown1Warfactory", 1);
-		AISlowDown2Warfactory = ini.Get_Int(MOREQOL, "AISlowDown2Warfactory", 10);
-		AISlowDown3PlusWarfactory = ini.Get_Int(MOREQOL, "AISlowDown3PlusWarfactory", 20);
+		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 15);
+		AINoShroud = ini.Get_Bool(MOREQOL, "AINoShroud", false);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
 		HarvesterMemoryValue = ini.Get_Int(MOREQOL, "HarvesterMemoryValue", 10);
@@ -556,7 +552,6 @@ bool RulesClass::General(CCINIClass & ini)
 		InfantryGroupSize = ini.Get_Int(MOREQOL, "InfantryGroupSize", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
 		AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
-		AIMaxConYardsAndMCVs = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVs", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
 		AIAttackMinimalDefence = ini.Get_Int(MOREQOL, "AIAttackMinimalDefence", 6);
 		AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
@@ -621,6 +616,12 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxAirNaval = ini.Get_Int(MOREQOL, "AIMaxAirNaval", 75);
 		AIGroundUnitSlowDown = ini.Get_Int(MOREQOL, "AIGroundUnitSlowDown", 98);
 		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 10);
+		AIWarFactoryLimitON = ini.Get_Int(MOREQOL, "AIWarFactoryLimitON", 4);
+		AIWarFactoryLimitOFF = ini.Get_Int(MOREQOL, "AIWarFactoryLimitOFF", 2);
+		AIMaxConYardsAndMCVsON = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsON", 4);
+		AIMaxConYardsAndMCVsOFF = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsOFF", 2);
+		AIVesselCarrierLimitON = ini.Get_Int(MOREQOL, "AIVesselCarrierLimitON", 4);
+		AIVesselCarrierLimitOFF = ini.Get_Int(MOREQOL, "AIVesselCarrierLimitOFF", 2);
 
 		AISpeedRush = ini.Get_Int(MOREQOL, "AISpeedRush", 0);
 		AIDogHouseSpeed = ini.Get_Int(MOREQOL, "AIDogHouseSpeed", 1);

@@ -5986,6 +5986,18 @@ int HouseClass::AI_Building(void)
 
 	if (BuildStructure != STRUCT_NONE) return(TICKS_PER_SECOND);
 
+	// Set maximum of War Factory/Yard/Vessel Carrier according to fast build On/Off - Mini Franki
+	if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
+		AIWarFactoryLimit = Rule.AIWarFactoryLimitON;
+		AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsON;
+		AIVesselCarrierLimit = Rule.AIVesselCarrierLimitON;
+	}
+	if (NewUnitsEnabled && (Rule.AIAftermathfastbuild == 0)) {
+		AIWarFactoryLimit = Rule.AIWarFactoryLimitOFF;
+		AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsOFF;
+		AIVesselCarrierLimit = Rule.AIVesselCarrierLimitOFF;
+	}
+
 	if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
 		BaseNodeClass * node = Base.Next_Buildable();
 		if (node) {
@@ -6227,8 +6239,8 @@ int HouseClass::AI_Building(void)
 		if (Rule.AISpeedRush == 1) {
 			AIDogKennelMinimal = Rule.AIDogHouseSpeed;
 			AIBarracksMinimal = Rule.AIBarracksSpeed;
-			AIWarFactoryMinimal = Rule.AIWarFactorySpeed;
-			AINavalMinimal = Rule.AINavalSpeed;
+			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
+			AIVesselCarrierLimit = Rule.AINavalSpeed;
 			AIHelipadMinimal = Rule.AIHelipadSpeed;
 			AIAirDefenceMinimal = Rule.AIAirDefenceSpeed;
 			AIFlameTurretMinimal = Rule.AIFlameTurretSpeed;
@@ -6237,7 +6249,7 @@ int HouseClass::AI_Building(void)
 			AINukeMinimal = Rule.AINukeSpeed;
 			AIRepairBayMinimal = Rule.AIRepairBaySpeed;
 			AIMaxBuildings = Rule.AIMaxBuildingsSpeed;
-			Rule.AIMaxConYardsAndMCVs = 1;
+			AIMaxConYardsAndMCVs = 1;
 			AIMaxTanksNr = Rule.AIMaxTanksSpeed;
 			AIMaxNavalNr = Rule.AIMaxNavalSpeed;
 			AIMaxInfantryNr = Rule.AIMaxInfantrySpeed;
@@ -6245,12 +6257,6 @@ int HouseClass::AI_Building(void)
 			Rule.AIRefineryLimitOverwrite = Rule.AIRefinerySpeed;
 			AIDetectHumanGroundWar = true;
 			AIDetectedNavalWar = true;
-			Rule.AISlowDown1ConstructionYard = 1;
-			Rule.AISlowDown2ConstructionYard = 1;
-			Rule.AISlowDown3PlusConstructionYard = 1;
-			Rule.AISlowDown1Warfactory = 1;
-			Rule.AISlowDown2Warfactory = 1;
-			Rule.AISlowDown3PlusWarfactory = 1;
 		}
 
 		//Power
@@ -6380,7 +6386,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 4 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 6 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6388,7 +6394,7 @@ int HouseClass::AI_Building(void)
 		//tesla
 		if (BQuantity[STRUCT_TESLA] < AIGunTeslaMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < 3 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
@@ -6397,25 +6403,50 @@ int HouseClass::AI_Building(void)
 		}
 
 		//warfactory, 1st one high prio, then build 4 defences, then nr 2 and 3 high prio. More is medium
-		if (BQuantity[STRUCT_WEAP] < AIWarFactoryMinimal) {
+		if (BQuantity[STRUCT_WEAP] < AIWarFactoryMinimal && BQuantity[STRUCT_WEAP] < AIWarFactoryLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					prio = 1;
 					if (BQuantity[STRUCT_REFINERY] > 2) {
-						prio = 2;
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_CONST] > 1) {
+						prio = prio + 1;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = 4;
+						prio = prio + 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
+		//repair bay
+		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//Construction Yard
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CONST] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+	
 		//naval allies
-		if (BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal) {
+		if (BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal && (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6433,7 +6464,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//naval soviet
-		if (BQuantity[STRUCT_SUB_PEN] < AINavalMinimal) {
+		if (BQuantity[STRUCT_SUB_PEN] < AINavalMinimal && (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6451,7 +6482,7 @@ int HouseClass::AI_Building(void)
 		//radar
 		if (BQuantity[STRUCT_RADAR] < 1) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_RADAR);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
@@ -6536,17 +6567,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//repair bay
-		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
 		//gap
 		if (BQuantity[STRUCT_GAP] < AIGapMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
@@ -6589,14 +6609,10 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		if (BQuantity[STRUCT_CONST] < 2) { BuildingSlowdown = Rule.AISlowDown1ConstructionYard; }
-		if (BQuantity[STRUCT_CONST] == 2) { BuildingSlowdown = Rule.AISlowDown1ConstructionYard; }
-		if (BQuantity[STRUCT_CONST] > 2) { BuildingSlowdown = Rule.AISlowDown3PlusConstructionYard; }
-
 		if (!IsHuman && (int)HumanBuildingCount > 0 && (int)CurBuildings > Rule.AIBuildingsMinimal) {
 			// AI goes over minimal allowed, now check if not to much:
 			if ((int)CurBuildings > AIMaxBuildings || (int)CurBuildings > ((int)HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
-				return(TICKS_PER_SECOND * BuildingSlowdown);
+				return(TICKS_PER_SECOND);
 			}
 		}
 
@@ -6622,7 +6638,7 @@ int HouseClass::AI_Building(void)
 			}
 		}
 	}
-	return(TICKS_PER_SECOND * BuildingSlowdown);
+	return(TICKS_PER_SECOND);
 }
 
 
@@ -6647,31 +6663,25 @@ int HouseClass::AI_Unit(void)
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
 	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
 
-	int WarFactorySlowdown = 1;
-	if (BQuantity[STRUCT_WEAP] < 2) { WarFactorySlowdown = Rule.AISlowDown1Warfactory; }
-	if (BQuantity[STRUCT_WEAP] == 2) { WarFactorySlowdown = Rule.AISlowDown2Warfactory; }
-	if (BQuantity[STRUCT_WEAP] > 2) { WarFactorySlowdown = Rule.AISlowDown3PlusWarfactory; }
-
 	//AI Max units
 	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
-		return(TICKS_PER_SECOND * WarFactorySlowdown);
+		return(TICKS_PER_SECOND);
 	}
 
 	// Make extra harvesters
 	if (IQ >= Rule.IQHarvester && !IsTiberiumShort && !IsHuman && (UQuantity[UNIT_HARVESTER] < (BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer))) {
 		if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
 			BuildUnit = UNIT_HARVESTER;
-			return(TICKS_PER_SECOND * WarFactorySlowdown);
+			return(TICKS_PER_SECOND);
 		}
 	}
 
 	//Make MCV by Bast75
-	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (MCVsProduced + (int)BQuantity[STRUCT_CONST]) < Rule.AIMaxConYardsAndMCVs) {
+	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 		if (UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) {
-			if (MCVsProduced == 0 || Percent_Chance(10)) {
-				MCVsProduced++;
+			if (Percent_Chance(5)) {
 				BuildUnit = UNIT_MCV;
-				return(TICKS_PER_SECOND * WarFactorySlowdown);
+				return(TICKS_PER_SECOND);
 			}
 		}
 	}
@@ -6680,10 +6690,10 @@ int HouseClass::AI_Unit(void)
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
 		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(10)) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
-			return(TICKS_PER_SECOND * WarFactorySlowdown);
+			return(TICKS_PER_SECOND);
 		}
 		if (Percent_Chance(Rule.AIGroundUnitSlowDown)) {
-			return(TICKS_PER_SECOND * WarFactorySlowdown);
+			return(TICKS_PER_SECOND);
 		}
 
 	}
@@ -6775,7 +6785,7 @@ int HouseClass::AI_Unit(void)
 		UnitType index;
 		for (index = UNIT_FIRST; index < UNIT_COUNT; index++) {
 			UnitTypeClass const * utype = &UnitTypeClass::As_Reference(index);
-			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER) { // && utype->Type != UNIT_MAD
+			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER && utype->Type != UNIT_MCV) { // && utype->Type != UNIT_MAD
 				if (utype->PrimaryWeapon != NULL) {
 					counter[index] = 20;
 				}
@@ -6794,7 +6804,7 @@ int HouseClass::AI_Unit(void)
 			}
 			total += counter[index];
 		}
-
+		
 		if (total > 0) {
 			int choice = Random_Pick(0, total - 1);
 			for (index = UNIT_FIRST; index < UNIT_COUNT; index++) {
@@ -6806,35 +6816,29 @@ int HouseClass::AI_Unit(void)
 			}
 		}
 	}
-	return(TICKS_PER_SECOND * WarFactorySlowdown);
+	return(TICKS_PER_SECOND);
 }
 
 
 int HouseClass::AI_Vessel(void)
 {
 	assert(Houses.ID(this) == ID);
-
-	int NavalSlowdown = 1;
-	if (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN] < 2) { NavalSlowdown = Rule.AISlowDown1Warfactory; }
-	if (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN] == 2) { NavalSlowdown = Rule.AISlowDown2Warfactory; }
-	if (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN] > 2) { NavalSlowdown = Rule.AISlowDown3PlusWarfactory; }
-
-
-	if (BuildVessel != VESSEL_NONE) return(TICKS_PER_SECOND * NavalSlowdown);
+	
+	if (BuildVessel != VESSEL_NONE) return(TICKS_PER_SECOND);
 
 	if (CurVessels >= Control.MaxVessel && !IsHuman) {
-		return(TICKS_PER_SECOND * NavalSlowdown);
+		return(TICKS_PER_SECOND);
 	}
 
 	////AI Max vessels
 	if (!IsHuman && (int)CurVessels > AIMaxNavalNr) {
-		return(TICKS_PER_SECOND * NavalSlowdown);
+		return(TICKS_PER_SECOND);
 	}
 
-	//No more Naval War? Don't build to much of it
+	//No more Naval War? Don't build too much of it
 	if (!AIDetectedNavalWar && !IsHuman) {
 		if (Percent_Chance(90)) {
-			return(TICKS_PER_SECOND * NavalSlowdown);
+			return(TICKS_PER_SECOND);
 		}
 	}
 
@@ -6935,39 +6939,39 @@ int HouseClass::AI_Vessel(void)
 		HouseClass const * enemy = NULL;
 		if (Enemy != HOUSE_NONE) {
 			enemy = HouseClass::As_Pointer(Enemy);
-			if (CurVessels > Rule.AIVesselMultiLimit * enemy->ActiveVScan) { return(TICKS_PER_SECOND * NavalSlowdown); } // if we have x times enemy naval, stop making more.
+			if (CurVessels > Rule.AIVesselMultiLimit * enemy->ActiveVScan) { return(TICKS_PER_SECOND); } // if we have x times enemy naval, stop making more.
 		}
 
 		//sovied, x change of first unit, otherwise make the other one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_SS), ActLike) && Percent_Chance(Rule.AISovietVesselSubPercentage))
 		{
 			BuildVessel = VESSEL_SS;
-			return(TICKS_PER_SECOND * NavalSlowdown);
+			return(TICKS_PER_SECOND);
 		}
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_MISSILESUB), ActLike))
 		{
 			BuildVessel = VESSEL_MISSILESUB;
-			return(TICKS_PER_SECOND * NavalSlowdown);
+			return(TICKS_PER_SECOND);
 		}
 
 		//allies, x change of first unit, otherwise x change of second unit, else make the 3rth one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_PT), ActLike) && Percent_Chance(Rule.AIAlliesVesselPTPercentage))
 		{
 			BuildVessel = VESSEL_PT;
-			return(TICKS_PER_SECOND * NavalSlowdown);
+			return(TICKS_PER_SECOND);
 		}
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_DD), ActLike) && Percent_Chance(Rule.AIAlliesVesselDDPercentage))
 		{
 			BuildVessel = VESSEL_DD;
-			return(TICKS_PER_SECOND * NavalSlowdown);
+			return(TICKS_PER_SECOND);
 		}
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_CA), ActLike))
 		{
 			BuildVessel = VESSEL_CA;
-			return(TICKS_PER_SECOND * NavalSlowdown);
+			return(TICKS_PER_SECOND);
 		}
 	}
-	return(TICKS_PER_SECOND * NavalSlowdown);
+	return(TICKS_PER_SECOND);
 }
 
 
