@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 4 dec 2020
+Last update at: 17 nov 2021
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -9,16 +9,21 @@ Please follow the steps below to update and reactivate the mod:
 - Activate the mod and restart the game as prompted
 - The updated mod should then work as intended
 
-
 This is my personal AI-Boost mod for RA.
 I've added some changes to improve the AI on top of several other mods like:
+-Aftermath fast build MOD (Use .ini to enable/disable)
+-AttackMove MOD (Use Shift)
 -The Rampastring Quality of Live MOD. (waypoints, etc.)
 -Engineer instant capture
 -Engineers automatically choose new target after capturing.
 -Additional Zoom Levels
--RA Immersive Helis Mod (And all Air units have a sight)
+-RA Immersive Helis Mod (And all Air units have a sight) (Use L to land)
 -Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 -Harvester have memory of latest harvest location, this is now editable by .ini file
+-Now its possible to have more starting cash! Use the slider.
+-You can now remove toggle with space between old/new graphic in gameconstant.xml.
+ It changes nothing on engine performance so still rendering in the background
+-Added the option to remove shroud from the map
 
 -AI knows how to use Thiefs and Spies.
 -AI knows how to use a MAD Tank.
@@ -49,7 +54,6 @@ You might need a faster pc because of the amount of units etc.  :-)
 
 Extra changes:
 -Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
--Instant capture with Engineer. No damage to building(s)
 -ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
 
 -AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
@@ -61,7 +65,6 @@ To do / whishes:
 -AI Chronosphere control in Skirmish
 -AI Iron Curton control in Skirmish
 -Change the menu for additional AI levels and game modes. (Source code anyone? Github?)
--Attack Move command integration. (Source code anyone? Github?)
 
 
 Known issues:
