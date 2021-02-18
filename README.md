@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 17 nov 2021
+Last update at: 19 nov 2021
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -55,6 +55,7 @@ You might need a faster pc because of the amount of units etc.  :-)
 Extra changes:
 -Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
 -ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
+-The number of starting units & starting cash can be changed using the .ini file.
 
 -AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
 C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
