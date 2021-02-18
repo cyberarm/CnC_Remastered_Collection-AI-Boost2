@@ -551,6 +551,8 @@ bool RulesClass::General(CCINIClass & ini)
 
 		InfantryGroupSize = ini.Get_Int(MOREQOL, "InfantryGroupSize", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
+		AIMoreStartingCash = ini.Get_Int(MOREQOL, "AIMoreStartingCash", 0);
+		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
 		AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
 		AIAttackMinimalDefence = ini.Get_Int(MOREQOL, "AIAttackMinimalDefence", 6);
