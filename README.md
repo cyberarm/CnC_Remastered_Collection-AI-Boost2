@@ -72,6 +72,11 @@ Known issues:
 -Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
 -Harvester go to the opposite side of the map sometimes
 
+Hotfix:
+-Fixed infinit MCV build. Now the max yards/mcvs work
+-Fixed radar & tesla coil power check up. AI dont build radar or tesla in low power situation anymore
+
+
 Greetings, have fun and don't forget to rate my mod.
 Bast75.
 
