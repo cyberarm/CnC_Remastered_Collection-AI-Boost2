@@ -774,12 +774,12 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Set_Multiplayer_Data(int scena
 	DLLExportClass::Init();
 
 	Session.Options.Bases	 	= game_options.MPlayerBases;			// 1 = bases are on for this scenario
-	Session.Options.Credits	 	= game_options.MPlayerCredits;		// # credits everyone gets
+	Session.Options.Credits	 	= game_options.MPlayerCredits + Rule.AIMoreStartingCash;		// # credits everyone gets - Mini Franki
 	Session.Options.Tiberium	= game_options.MPlayerTiberium;		// 1 = tiberium enabled for this scenario
 	Session.Options.Goodies		= game_options.MPlayerGoodies;		// 1 = goodies enabled for this scenario
 	Session.Options.Ghosts		= game_options.MPlayerGhosts;			// 1 = houses with no players will still play
 	//MPlayerSolo			= game_options.MPlayerSolo;			// 1 = allows a single-player net game
-	Session.Options.UnitCount	= game_options.MPlayerUnitCount;		// # units for non-base multiplayer scenarios
+	Session.Options.UnitCount	= game_options.MPlayerUnitCount + Rule.AIMoreStartingUnits;		// # units for non-base multiplayer scenarios - Mini Franki
 
 	Special.IsShadowGrow = game_options.MPlayerShadowRegrow;
 	Special.IsCaptureTheFlag = game_options.CaptureTheFlag;
