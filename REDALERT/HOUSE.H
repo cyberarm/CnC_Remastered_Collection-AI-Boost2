@@ -458,6 +458,8 @@ class HouseClass {
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
 
+		bool HouseHasFlag = false;
+
 		/*
 		** Stuff to keep track of the total number of units built by this house.
 		*/
