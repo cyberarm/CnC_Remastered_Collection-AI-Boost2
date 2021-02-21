@@ -96,6 +96,7 @@ class RulesClass {
 		int AIMaxEngineers = 15;
 		int InfantryGroupSize = 5;
 		bool AllowTechStealing = true;
+		int AIMinimalChronotanksBeforeShift = 5;
 
 		int AIMadTankSaveToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;

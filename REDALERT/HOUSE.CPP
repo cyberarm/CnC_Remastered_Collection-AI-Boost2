@@ -3820,7 +3820,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home)
 		else if (FlagHome != 0) {
 			rc = Map[FlagHome].Flag_Place(Class->House);
 		}
-
+		HouseHasFlag = false; //By Bast75
 		return(rc);
 	}
 	return(false);
@@ -3856,6 +3856,7 @@ bool HouseClass::Flag_Attach(UnitClass * object, bool set_home)
 		*/
 		object->Flag_Attach(Class->House);
 		FlagLocation = object->As_Target();
+		HouseHasFlag = true; //By Bast75
 		return(true);
 	}
 	return(false);
@@ -5507,7 +5508,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			for (int index = 0; index < Buildings.Count(); index++) {
 				BuildingClass * building = Buildings.Ptr(index);
 				if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-					if (FarthestEnemyBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(70))) {
+					if (FarthestEnemyBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(75))) {
 						FarthestEnemyBuildingDist = index;
 					}
 				}
@@ -5515,6 +5516,16 @@ bool HouseClass::AI_Attack(UrgencyType)
 			break; // we have a own building, so don't do a new calculation again.
 		}
 	}
+
+	//count Chronotanks
+	int AICurrentChronotanksNr = 0;
+	for (index = 0; index < Units.Count(); index++) {
+		UnitClass * u = Units.Ptr(index);
+		if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0 && *u == UNIT_CHRONOTANK) {
+			AICurrentChronotanksNr++;
+		}
+	}
+
 	//Do the tanks
 	for (index = 0; index < Units.Count(); index++) {
 		UnitClass * u = Units.Ptr(index);
@@ -5534,7 +5545,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 					u->Assign_Mission(MISSION_HUNT); // and deploy
 				}
 				else if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
-					if (*u == UNIT_CHRONOTANK) {
+					if (*u == UNIT_CHRONOTANK && AICurrentChronotanksNr >= Rule.AIMinimalChronotanksBeforeShift) {
 						COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 						CELL TargetCell = Coord_Cell(TargetCoord);
 						CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
@@ -6022,6 +6033,7 @@ int HouseClass::AI_Building(void)
 
 		level = Control.TechLevel;
 		unsigned int current = 0;
+		int HumanRefs = 0;
 		int prio = 0; //Used to calculate prio.
 		//int PlayerCount = 0; // How many players do we have on this map?
 
@@ -6060,6 +6072,7 @@ int HouseClass::AI_Building(void)
 						//human house has naval factories and/or naval units, so we are allowed to upgrade our naval to extreme.
 						AIDetectedNavalWar = true;
 					}
+					HumanRefs = hptr->BQuantity[STRUCT_REFINERY];
 				}
 				else {
 					if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalMinimalBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalMinimalBasic) {
@@ -6201,8 +6214,17 @@ int HouseClass::AI_Building(void)
 		//RefineryLimit = 2 + NrOfWarFactories + NrOfConstructionYards + NrOfNavalYardsAndSubPens
 		//AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
 		AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
+		if (BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH] > 0)
+		{
+			//We have a techcenter, allow 1 more Ref.
+			AIRefineryMinimal++;
+		}
 
-
+		//If humans has more refs, we go more refs too:
+		if (HumanRefs > AIRefineryMinimal)
+		{
+			AIRefineryMinimal = HumanRefs;
+		}
 		//Switch from infantry rush to tank/air/naval rush?
 		if (AIDetectedNavalWar) {
 			//naval & air
