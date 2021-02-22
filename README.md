@@ -9,10 +9,24 @@ Please follow the steps below to update and reactivate the mod:
 - Activate the mod and restart the game as prompted
 - The updated mod should then work as intended
 
-This is my personal AI-Boost mod for RA.
-I've added some changes to improve the AI on top of several other mods like:
+---
+
+News in this update:
+
+Add:
 -Aftermath fast build MOD (Use .ini to enable/disable)
 -AttackMove MOD (Use Shift)
+-Now its possible to add more starting cash and units! Editable by the .ini file
+-You can now remove toggle with space between old/new graphic in gameconstant.xml.
+-Added the option to remove shroud from the map
+-AI have a limit of yards/wars/vessel carrier according of fast build on/off. Its more realist against a humain even with a massive base
+
+Hotfix:
+-Fixed infinit MCV build. Now the max yards/mcvs work
+-Fixed radar & tesla coil power check up. AI dont build radar or tesla in low power situation anymore
+
+---
+
 -The Rampastring Quality of Live MOD. (waypoints, etc.)
 -Engineer instant capture
 -Engineers automatically choose new target after capturing.
@@ -20,9 +34,6 @@ I've added some changes to improve the AI on top of several other mods like:
 -RA Immersive Helis Mod (And all Air units have a sight) (Use L to land)
 -Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 -Harvester have memory of latest harvest location, this is now editable by .ini file
--Now its possible to add more starting cash and units! Editable by the .ini file
--You can now remove toggle with space between old/new graphic in gameconstant.xml.
--Added the option to remove shroud from the map
 
 -AI knows how to use Thiefs and Spies.
 -AI knows how to use a MAD Tank.
@@ -40,25 +51,25 @@ I've added some changes to improve the AI on top of several other mods like:
 -AI scans for human Naval objects, if he detects a Naval stuff, it will upscale his Naval and Air stuff.
 -AI lowers tank production if human goes naval and GroundWar is disabled. (Allies still build Chronotanks beacause they can Chronoshift)
 -AI Medics and Mechanics now only repairs friendly units.
--AI have a limit of yards/wars/vessel carrier according of fast build on/off. Its more realist against a humain even with a massive base
+-Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
+-ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
 
--The AI monitors what you are doing and uses this on how to react while upgrading his base.
+The AI monitors what you are doing and uses this on how to react while upgrading his base.
 More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this.
 Etc.
 It's totally dynamic. :-)
 
+---
 
 Note:
-The more Tiberium is available on the map, the harder it gets to beat this AI.
-You might need a faster pc because of the amount of units etc.  :-)
 
-Extra changes:
--Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
--ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
+-The more Tiberium is available on the map, the harder it gets to beat this AI.
+You might need a faster pc because of the amount of units etc.  :-)
 
 -AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
 C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
 
+---
 
 To do / whishes:
 -AI Minelayer control
@@ -66,15 +77,10 @@ To do / whishes:
 -AI Iron Curton control in Skirmish
 -Change the menu for additional AI levels and game modes. (Source code anyone? Github?)
 
-
 Known issues:
 -AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
 -Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
 -Harvester go to the opposite side of the map sometimes
-
-Hotfix:
--Fixed infinit MCV build. Now the max yards/mcvs work
--Fixed radar & tesla coil power check up. AI dont build radar or tesla in low power situation anymore
 
 
 Greetings, have fun and don't forget to rate my mod.
