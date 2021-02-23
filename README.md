@@ -54,11 +54,6 @@ Hotfix:
 -Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
 -ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
 
-The AI monitors what you are doing and uses this on how to react while upgrading his base.
-More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this.
-Etc.
-It's totally dynamic. :-)
-
 ---
 
 Note:
@@ -68,6 +63,11 @@ You might need a faster pc because of the amount of units etc.  :-)
 
 -AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
 C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
+
+-The AI monitors what you are doing and uses this on how to react while upgrading his base.
+More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this.
+Etc.
+It's totally dynamic. :-)
 
 ---
 
