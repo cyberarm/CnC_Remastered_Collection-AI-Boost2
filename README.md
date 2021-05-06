@@ -84,7 +84,9 @@ To do / whishes:
 
 Known issues:
 -AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
+
 -Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
+
 -Harvester go to the opposite side of the map sometimes. Use a map surrounded with water to prevent this pathfinding bug.
 
 
