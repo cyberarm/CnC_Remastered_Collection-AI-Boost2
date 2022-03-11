@@ -1,6 +1,6 @@
 .vs/
 .vscode/
-bin/
+bin/Win32/
 !bin/Win32/RedAlert.dll
 !bin/Win32/TiberianDawn.dll
 REDALERT/Win32/
