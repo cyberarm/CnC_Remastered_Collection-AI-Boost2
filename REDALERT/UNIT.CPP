@@ -1,16 +1,16 @@
 //
 // Copyright 2020 Electronic Arts Inc.
 //
-// TiberianDawn.DLL and RedAlert.dll and corresponding source code is free 
-// software: you can redistribute it and/or modify it under the terms of 
-// the GNU General Public License as published by the Free Software Foundation, 
+// TiberianDawn.DLL and RedAlert.dll and corresponding source code is free
+// software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation,
 // either version 3 of the License, or (at your option) any later version.
 
-// TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
-// under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
-// distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed
+// in the hope that it will be useful, but with permitted additional restrictions
+// under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT
+// distributed with this program. You should have received a copy of the
+// GNU General Public License along with permitted additional restrictions
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/UNIT.CPP 1     3/03/97 10:26a Joe_bostic $ */
@@ -2332,6 +2332,31 @@ bool UnitClass::Goto_Tiberium(int rad)
 			}
 
 			/*
+			** 2022-03-10 cyberarm: Fix harvesters sometimes picking a cell which wraps around the
+			**                      map boundry (harvesters travel to the other side of the map)
+			**                      and reduce code duplication
+			**
+			** position: Unit cell position
+			** lastDockingBayCell: either unit position cell or last visited refinery position cell
+			** closestCell: Current best found cell
+			** distance: Distance from lastDockingBayCell to searched cell
+			** closestDistance: Current best distance
+			** j: X or RADIUS
+			** k: RADIUS or X
+			*/
+			auto search_for_nearest_tiberium_cell = [this](CELL position, CELL lastDockingBayCell, CELL &closestCell, int &distance, int &closestDistance, int j, int k)
+			{
+				CELL cell = XY_Cell(Cell_X(position) + j, Cell_Y(position) + k);
+				distance = ::Distance(lastDockingBayCell, cell);
+
+				if (distance < closestDistance && Tiberium_Check(position, j, k))
+				{
+					closestDistance = distance;
+					closestCell = cell;
+				}
+			};
+
+			/*
 			**	Perform a ring search outward from the center.
 			**	Rampastring: Always try to harvest from the cell that's closest
 			**	to our refinery.
@@ -2339,33 +2364,10 @@ bool UnitClass::Goto_Tiberium(int rad)
 			for (int radius = 1; radius < rad; radius++) {
 				int distance = -1;
 				for (int x = -radius; x <= radius; x++) {
-					CELL cell = XY_Cell(Cell_X(center) + x, Cell_Y(center) - radius);
-					distance = ::Distance(lastDockingBayCell, cell);
-					if (distance < closestDistance && Tiberium_Check(cell, 0, 0)) {
-						closestDistance = distance;
-						closestCell = cell;
-					}
-
-					cell = XY_Cell(Cell_X(center) + x, Cell_Y(center) + radius);
-					distance = ::Distance(lastDockingBayCell, cell);
-					if (distance < closestDistance && Tiberium_Check(cell, 0, 0)) {
-						closestDistance = distance;
-						closestCell = cell;
-					}
-
-					cell = XY_Cell(Cell_X(center) - radius, Cell_Y(center) + x);
-					distance = ::Distance(lastDockingBayCell, cell);
-					if (distance < closestDistance && Tiberium_Check(cell, 0, 0)) {
-						closestDistance = distance;
-						closestCell = cell;
-					}
-
-					cell = XY_Cell(Cell_X(center) + radius, Cell_Y(center) + x);
-					distance = ::Distance(lastDockingBayCell, cell);
-					if (distance < closestDistance && Tiberium_Check(cell, 0, 0)) {
-						closestDistance = distance;
-						closestCell = cell;
-					}
+					search_for_nearest_tiberium_cell(center, lastDockingBayCell, closestCell, distance, closestDistance, x, -radius);
+					search_for_nearest_tiberium_cell(center, lastDockingBayCell, closestCell, distance, closestDistance, x, +radius);
+					search_for_nearest_tiberium_cell(center, lastDockingBayCell, closestCell, distance, closestDistance, -radius, x);
+					search_for_nearest_tiberium_cell(center, lastDockingBayCell, closestCell, distance, closestDistance, +radius, x);
 				}
 
 				if (closestDistance < SHRT_MAX) {
@@ -2517,7 +2519,7 @@ int UnitClass::Mission_Unload(void)
 			Transmit_Message(RADIO_OVER_OUT);
 
 			Assign_Mission(MISSION_HARVEST);
-			break;		
+			break;
 
 		case UNIT_APC:
 #ifdef FIXIT_PHASETRANSPORT	//	checked - ajw 9/28/98
@@ -3862,7 +3864,7 @@ int UnitClass::Mission_Move(void)
  * Overridden by Rampastring.
  * Makes harvesters not go idle if their refinery is destroyed.
  */
-int UnitClass::Mission_Enter(void) 
+int UnitClass::Mission_Enter(void)
 {
 	assert(Units.ID(this) == ID);
 	assert(IsActive);
@@ -4528,7 +4530,7 @@ int UnitClass::Offload_Tiberium_Bail(void)
 	if (Tiberium) {
 		Tiberium--;
 
-// MBL 05.15.2020: Note, if the below code is ever reeanbled for some ready, make sure to see fix in 
+// MBL 05.15.2020: Note, if the below code is ever reeanbled for some ready, make sure to see fix in
 // Tiberian Dawn's DriveClass::Offload_Tiberium_Bail() for AI players
 
 #ifdef TOFIX
@@ -5210,12 +5212,12 @@ unsigned int UnitClass::Apply_Temporary_Jamming_Shroud(HouseClass *house_to_appl
 	if (shroud_bits_applied) {
 		Map.Constrained_Look(Coord, 5 * CELL_LEPTON_W, house_to_apply_for);
 	}
-	
+
 	return shroud_bits_applied;
-}	
-	
-	
-			  
+}
+
+
+
 /***********************************************************************************************
  * UnitClass::Unapply_Temporary_Jamming_Shroud -- Remove temporary gap generator shroud effect *
  *                                                                                             *
@@ -5254,7 +5256,7 @@ void UnitClass::Unapply_Temporary_Jamming_Shroud(HouseClass *house_to_unapply_fo
 		}
 		shroud_bits_applied >>= 1;
 	}
-}	
+}
 
 
 
@@ -5264,7 +5266,7 @@ void UnitClass::Unapply_Temporary_Jamming_Shroud(HouseClass *house_to_unapply_fo
 void UnitClass::Shroud_Regen(void)
 {
 	if (Class->IsGapper/*KO && !House->IsPlayerControl*/) {
-		
+
 		int index;
 		int centerx, centery;
 		CELL trycell;
@@ -5312,9 +5314,9 @@ void UnitClass::Shroud_Regen(void)
 			if (House->IsPlayerControl) {
 				Map.Constrained_Look(Coord, 5 * CELL_LEPTON_W, PlayerPtr);
 			}
-		
+
 		} else {
-		
+
 			if (Is_Legacy_Render_Enabled()) {
 				for (int i = 0; i < Session.Players.Count(); i++) {
 					HouseClass *player_house = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
