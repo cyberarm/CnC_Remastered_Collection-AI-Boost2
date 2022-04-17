@@ -14,7 +14,7 @@ Please follow the steps below to update and reactivate the mod:
 News in this update:
 
 Hotfix:
-- Fixed harvesters going to the other side of the map due to their search wrapping around map boundry 
+- Fixed harvesters going to the other side of the map due to their search wrapping around map boundry (thx to Cyberarm!)
 
 ---
 
