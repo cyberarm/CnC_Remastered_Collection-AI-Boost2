@@ -60,23 +60,23 @@ It's totally dynamic. :-)
 
 Note:
 
--The more Tiberium is available on the map, the harder it gets to beat this AI.
+- The more Tiberium is available on the map, the harder it gets to beat this AI.
 You might need a faster pc because of the amount of units etc.  :-)
 
--AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
+- AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
 C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
 
 ---
 
 To do / whishes:
--AI Minelayer control
--AI Chronosphere control in Skirmish
--AI Iron Curton control in Skirmish
--Change the menu for additional AI levels and game modes. (Source code anyone? Github?)
+- AI Minelayer control
+- AI Chronosphere control in Skirmish
+- AI Iron Curton control in Skirmish
+- Change the menu for additional AI levels and game modes. (Source code anyone? Github?)
 
 Known issues:
--AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
--Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
+- AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
+- Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
 
 
 Greetings, have fun and don't forget to rate my mod.
