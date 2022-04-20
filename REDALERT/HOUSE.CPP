@@ -5453,7 +5453,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 	int CurrentDefenceBuildings = (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX];
 	int PercentageToSend = 85;
 	if (CurrentDefenceBuildings > 4) {
-		PercentageToSend = 95;
+		PercentageToSend = 97;
 	}
 	if (CurrentDefenceBuildings > Rule.AIAttackMinimalDefence) {
 		forced = true; // Enough defence, send all units.
@@ -5500,6 +5500,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 	}
 
 	// Tank units
+
 	//Calculate chronoshift target:
 	int FarthestEnemyBuildingDist = -1;
 	for (int index = 0; index < Buildings.Count(); index++) {
