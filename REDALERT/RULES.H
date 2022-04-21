@@ -80,7 +80,8 @@ class RulesClass {
 		int AIMoreStartingCash = 0;
 		int AIMoreStartingUnits = 0;
 		int AIBoostIQLevel = 5;
-		int AIBOostIQLevelMCVFallback = 2;
+		bool AIDynamicBoostIQLevelAllowed = true;
+		//int AIBOostIQLevelMCVFallback = 2;
 		int AIAttackInterval = 4;
 		int AISpeedRush = 0;
 		bool AIAftermathfastbuild = true;
@@ -97,6 +98,7 @@ class RulesClass {
 		int InfantryGroupSize = 5;
 		bool AllowTechStealing = true;
 		int AIMinimalChronotanksBeforeShift = 5;
+		bool AIAllowChronotanksGroupShifting = true;
 
 		int AIMadTankSaveToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;

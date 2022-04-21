@@ -546,15 +546,17 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 15);
 		AINoShroud = ini.Get_Bool(MOREQOL, "AINoShroud", false);
 		AIMinimalChronotanksBeforeShift = ini.Get_Int(MOREQOL, "AIMinimalChronotanksBeforeShift", 5);
+		AIAllowChronotanksGroupShifting = ini.Get_Bool(MOREQOL, "AIAllowChronotanksGroupShifting", true);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
 		HarvesterMemoryValue = ini.Get_Int(MOREQOL, "HarvesterMemoryValue", 10);
 
 		InfantryGroupSize = ini.Get_Int(MOREQOL, "InfantryGroupSize", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
+		AIDynamicBoostIQLevelAllowed = ini.Get_Bool(MOREQOL, "AIDynamicBoostIQLevelAllowed", true);
 		AIMoreStartingCash = ini.Get_Int(MOREQOL, "AIMoreStartingCash", 0);
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
-		AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
+		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
 		AIAttackMinimalDefence = ini.Get_Int(MOREQOL, "AIAttackMinimalDefence", 6);
 		AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
@@ -565,7 +567,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AISovietVesselSubPercentage = ini.Get_Int(MOREQOL, "AISovietVesselSubPercentage", 50);
 		AIAlliesVesselPTPercentage = ini.Get_Int(MOREQOL, "AIAlliesVesselPTPercentage", 33);
 		AIAlliesVesselDDPercentage = ini.Get_Int(MOREQOL, "AIAlliesVesselDDPercentage", 66);
-		AIHumanGroundWarTankTrigger = ini.Get_Int(MOREQOL, "AIHumanGroundWarTankTrigger", 10);
+		AIHumanGroundWarTankTrigger = ini.Get_Int(MOREQOL, "AIHumanGroundWarTankTrigger", 15);
 		AIPowerPlusMinimal = ini.Get_Int(MOREQOL, "AIPowerPlusMinimal", 50);
 		AIPowerPlusExtra = ini.Get_Int(MOREQOL, "AIPowerPlusExtra", 150);
 		AIPowerPlusSellValue = ini.Get_Int(MOREQOL, "AIPowerPlusSellValue", 500);

@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 20 april 2022
+Last update at: 21 april 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -9,17 +9,16 @@ Please follow the steps below to update and reactivate the mod:
 - Activate the mod and restart the game as prompted
 - The updated mod should then work as intended
 
----
-New in this update:
-
-Add:
--The AI uses Chronotanks in groups to make them more effective.
-
+New:
+-The AI uses Chronotanks in groups to make them more effective. Now this can be enabled/disabled using the .ini file.
+-The AI Chronotank minimal groupsize is now editable by the .ini file.
+-AIBoostLevel is dynamic by the number of allies and enemies he personally sees (Can be enabled/disabled using the .ini file.)
+ 
 Hotfix:
-- For the harvesters going to the another side of the map, this should be solved now. Thanks by Cyberarm.
+-Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field.
+ This is fixed now (Thanks to Cyberarm)
 
----
-Older info:
+Older updates:
 -The Rampastring Quality of Live MOD. (waypoints, etc.)
 -Engineer instant capture
 -Engineers automatically choose new target after capturing.

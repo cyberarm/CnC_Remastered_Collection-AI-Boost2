@@ -1928,14 +1928,78 @@ void HouseClass::Harvested(unsigned tiberium)
 
 	long oldtib = Tiberium;
 
-	//By Bast75, this is why the AI is better in RA2. Yes its kind of cheating... Don't tell anyone.
+	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
+	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		if (BQuantity[STRUCT_MSLO] > 0) {
-			tiberium *= Rule.AIBOostIQLevelMCVFallback;
+		if (Rule.AIDynamicBoostIQLevelAllowed && Rule.AIBoostIQLevel > 2) {
+			//Calculate the number of enemies:
+			int EnemyCount = 0;
+			int AlliesCount = 0;
+			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+				HouseClass const * hptr = HouseClass::As_Pointer(h);
+				if (hptr != NULL) {
+					if (!Is_Ally(h)) {
+						EnemyCount++;
+					}
+					else {
+						AlliesCount++;
+					}
+				}
+			}
+			int CurrentBoost = Rule.AIBoostIQLevel + EnemyCount - AlliesCount;
+			if (EnemyCount > 3 && AlliesCount == 0)
+			{
+				CurrentBoost = 3;
+			}
+			if (CurrentBoost > 5) {
+				CurrentBoost = 5;
+			}
+			if (CurrentBoost < 3) {
+				CurrentBoost = 3;
+			}
+			tiberium *= CurrentBoost;
+			/***
+			Calculation Example:
+			AIBoostIQLevel=3
+			CurrentBoost = Rule.AIBoostIQLevel + EnemyCount - AlliesCount;
+			1vs1 -> 3+1-0=4
+			1vs2 -> 3+1-1=3
+			2vs1 -> left:3+1-1=3  right:3+2-0=5
+			2vs2 -> left:3+2-1=4  right:3+2-1=4
+			2vs3 -> left:3+3-1=5  right:3+2-2=3
+			3vs2 -> left:3+2-2=3  right:3+3-1=5
+			3vs3 -> left:3+3-2=4  right:3+3-2=5
+			2vs2vs2 -> left:3+4-1=6(round to 5)  middle:3+4-1=6(round to 5)  right:3+4-1=6(round to 5)
+			3vs3vs3 -> left:3+6-2=7(round to 5)  middle:7(round to 5)  right:7(round to 5)
+			****/
+
+			//switch (EnemyCount)
+			//{
+			//	case 4:
+			//	case 5:
+			//		tiberium *= (Rule.AIBoostIQLevel - 1);
+			//		break;
+			//	case 6:
+			//	case 7:
+			//	case 8:
+			//		tiberium *= (Rule.AIBoostIQLevel - 2);
+			//		break;
+			//	default:
+			//		tiberium *= Rule.AIBoostIQLevel;
+			//		break;
+			//}
+			//tiberium *= Rule.AIBoostIQLevel + (EnemyCount / 2) - (AlliesCount / 2);
 		}
 		else {
 			tiberium *= Rule.AIBoostIQLevel;
 		}
+		//Old boost function:
+		//if (BQuantity[STRUCT_MSLO] > 0) {
+		//	tiberium *= Rule.AIBOostIQLevelMCVFallback;
+		//}
+		//else {
+			//tiberium *= Rule.AIBoostIQLevel;
+		//}
 	}
 
 	Tiberium += tiberium;
@@ -5547,12 +5611,14 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 				else if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					if (*u == UNIT_CHRONOTANK && AICurrentChronotanksNr >= Rule.AIMinimalChronotanksBeforeShift) {
-						COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
-						CELL TargetCell = Coord_Cell(TargetCoord);
-						CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
-						u->Assign_Mission(MISSION_HUNT); // Weird enough this must been set before the jump, otherway they run home.
-						u->Teleport_To(TargetFreeCell);
-						Sound_Effect(VOC_CHRONO, u->Coord);
+						u->Assign_Mission(MISSION_HUNT); // Weird enough this must been set before the jump, otherways they run home.
+						if (Rule.AIAllowChronotanksGroupShifting) {
+							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
+							CELL TargetCell = Coord_Cell(TargetCoord);
+							CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
+							u->Teleport_To(TargetFreeCell);
+							Sound_Effect(VOC_CHRONO, u->Coord);
+						}
 					}
 					if (*u == UNIT_MAD) {
 						//Lets find the closest building from ourself. (allied buildings included)
@@ -6711,7 +6777,7 @@ int HouseClass::AI_Unit(void)
 
 	//Naval war and no ground war? Don't make to much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
-		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(10)) {
+		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(15)) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
 			return(TICKS_PER_SECOND);
 		}
@@ -6816,7 +6882,7 @@ int HouseClass::AI_Unit(void)
 					counter[index] = 1;
 				}
 				if (utype->Type == UNIT_DEMOTRUCK) { // Don't do it to extreme.
-					counter[index] = 15;
+					counter[index] = 12;
 				}
 				if (utype->Type == UNIT_MAD) { // Don't do it to extreme.
 					counter[index] = 5;
