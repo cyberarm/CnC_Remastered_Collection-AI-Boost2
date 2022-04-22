@@ -81,6 +81,8 @@ class RulesClass {
 		int AIMoreStartingUnits = 0;
 		int AIBoostIQLevel = 5;
 		bool AIDynamicBoostIQLevelAllowed = true;
+		int AIDynamicBoostIQMax = 5;
+		int AIDynamicBoostIQMin = 2;
 		//int AIBOostIQLevelMCVFallback = 2;
 		int AIAttackInterval = 4;
 		int AISpeedRush = 0;

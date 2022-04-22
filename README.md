@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 21 april 2022
+Last update at: 22 april 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -10,23 +10,25 @@ Please follow the steps below to update and reactivate the mod:
 - The updated mod should then work as intended
 
 New:
--The AI uses Chronotanks in groups to make them more effective. Now this can be enabled/disabled using the .ini file.
+-The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
 -The AI Chronotank minimal groupsize is now editable by the .ini file.
--AIBoostLevel is dynamic by the number of allies and enemies he personally sees (Can be enabled/disabled using the .ini file.)
+-AIBoostLevel is dynamic by the number of allies/enemies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
  
 Hotfix:
--Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field.
- This is fixed now (Thanks to Cyberarm)
+-Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field. This is fixed now (Thanks to Cyberarm)
+-Naval production by AI was unlimited. An AI tried to build more vessels than all other enemies together resulting in unlimited production when multiple AI's.
+ Now it counts the human vessels only.
 
-Older updates:
+--- 
+
+General Mod info:
 -The Rampastring Quality of Live MOD. (waypoints, etc.)
 -Engineer instant capture
 -Engineers automatically choose new target after capturing.
 -Additional Zoom Levels
--RA Immersive Helis Mod (And all Air units have a sight) (Use L to land)
+-RA Immersive Helis Mod (And all Air units have a sight) (Use 'L' to land)
 -Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 -Harvester have memory of latest harvest location, this is now editable by .ini file
-
 -AI knows how to use Thiefs and Spies.
 -AI knows how to use a MAD Tank.
 -AI knows how to use chronoshifting with a Chrono Tank.
@@ -79,7 +81,7 @@ Known issues:
 -AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
 
 -Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
-It also changes the voices for some countries. Currently we don't know how to correct this.
+ It also changes the voices for some countries. Currently we don't know how to correct this.
 
 Source code:
 https://github.com/Bast75/CnC_Remastered_Collection-AI-Boost2

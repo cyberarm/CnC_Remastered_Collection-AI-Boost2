@@ -1931,64 +1931,43 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		if (Rule.AIDynamicBoostIQLevelAllowed && Rule.AIBoostIQLevel > 2) {
-			//Calculate the number of enemies:
-			int EnemyCount = 0;
-			int AlliesCount = 0;
+		if (Rule.AIDynamicBoostIQLevelAllowed) {
+			//Calculate the number of enemies, friendlies, etc.
+			int CountEnemiesForThisAI = 0;
+			int CountFriendliesForThisAI = 0;
+			//int CountHousesStillAlive = 0;
+			//int IsHumanFriend = 0;
 			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
 				HouseClass const * hptr = HouseClass::As_Pointer(h);
 				if (hptr != NULL) {
-					if (!Is_Ally(h)) {
-						EnemyCount++;
-					}
-					else {
-						AlliesCount++;
+					if (hptr->CurBuildings > 0) {
+						//CountHousesStillAlive++;
+						if (!Is_Ally(h)) {
+							CountEnemiesForThisAI++;
+						}
+						else {
+							CountFriendliesForThisAI++;
+							//if (hptr->IsHuman) {
+							//	IsHumanFriend = 1;
+							//}
+						}
 					}
 				}
 			}
-			int CurrentBoost = Rule.AIBoostIQLevel + EnemyCount - AlliesCount;
-			if (EnemyCount > 3 && AlliesCount == 0)
-			{
-				CurrentBoost = 3;
+			int DynamicBoost = 0;
+			if (CountEnemiesForThisAI - CountFriendliesForThisAI < 0) { DynamicBoost = -1; }
+			if (CountEnemiesForThisAI - CountFriendliesForThisAI < -2) { DynamicBoost = -2; }
+			if (CountEnemiesForThisAI - CountFriendliesForThisAI ==0) { DynamicBoost = 0; }
+			if (CountEnemiesForThisAI - CountFriendliesForThisAI > 0) { DynamicBoost = 1; }
+			if (CountEnemiesForThisAI - CountFriendliesForThisAI > 2) { DynamicBoost = 2; }
+			int TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
+			if (TotalBoost > Rule.AIDynamicBoostIQMax) {
+				TotalBoost = Rule.AIDynamicBoostIQMax;
 			}
-			if (CurrentBoost > 5) {
-				CurrentBoost = 5;
+			if (TotalBoost < Rule.AIDynamicBoostIQMin) {
+				TotalBoost = Rule.AIDynamicBoostIQMin;
 			}
-			if (CurrentBoost < 3) {
-				CurrentBoost = 3;
-			}
-			tiberium *= CurrentBoost;
-			/***
-			Calculation Example:
-			AIBoostIQLevel=3
-			CurrentBoost = Rule.AIBoostIQLevel + EnemyCount - AlliesCount;
-			1vs1 -> 3+1-0=4
-			1vs2 -> 3+1-1=3
-			2vs1 -> left:3+1-1=3  right:3+2-0=5
-			2vs2 -> left:3+2-1=4  right:3+2-1=4
-			2vs3 -> left:3+3-1=5  right:3+2-2=3
-			3vs2 -> left:3+2-2=3  right:3+3-1=5
-			3vs3 -> left:3+3-2=4  right:3+3-2=5
-			2vs2vs2 -> left:3+4-1=6(round to 5)  middle:3+4-1=6(round to 5)  right:3+4-1=6(round to 5)
-			3vs3vs3 -> left:3+6-2=7(round to 5)  middle:7(round to 5)  right:7(round to 5)
-			****/
-
-			//switch (EnemyCount)
-			//{
-			//	case 4:
-			//	case 5:
-			//		tiberium *= (Rule.AIBoostIQLevel - 1);
-			//		break;
-			//	case 6:
-			//	case 7:
-			//	case 8:
-			//		tiberium *= (Rule.AIBoostIQLevel - 2);
-			//		break;
-			//	default:
-			//		tiberium *= Rule.AIBoostIQLevel;
-			//		break;
-			//}
-			//tiberium *= Rule.AIBoostIQLevel + (EnemyCount / 2) - (AlliesCount / 2);
+			tiberium *= TotalBoost;
 		}
 		else {
 			tiberium *= Rule.AIBoostIQLevel;
@@ -6919,7 +6898,7 @@ int HouseClass::AI_Vessel(void)
 		return(TICKS_PER_SECOND);
 	}
 
-	////AI Max vessels
+	////AI Max vessels by ini
 	if (!IsHuman && (int)CurVessels > AIMaxNavalNr) {
 		return(TICKS_PER_SECOND);
 	}
@@ -7025,10 +7004,27 @@ int HouseClass::AI_Vessel(void)
 
 	if (IsBaseBuilding) {
 		//Added by Bast75, this was empy, result no naval units in skirmish. We want them!!!
-		HouseClass const * enemy = NULL;
-		if (Enemy != HOUSE_NONE) {
-			enemy = HouseClass::As_Pointer(Enemy);
-			if (CurVessels > Rule.AIVesselMultiLimit * enemy->ActiveVScan) { return(TICKS_PER_SECOND); } // if we have x times enemy naval, stop making more.
+
+		//This one calculates all the vessels for all enemies, resulting AI keeps producing because they want to have the same as the sum of all enemies.
+		//HouseClass const * enemy = NULL;
+		//if (Enemy != HOUSE_NONE) {
+		//	enemy = HouseClass::As_Pointer(Enemy);
+		//	if (CurVessels > Rule.AIVesselMultiLimit * enemy->ActiveVScan) { return(TICKS_PER_SECOND); } // if we have x times enemy naval, stop making more.
+		//}
+		
+		//New detection method to prevent overproducing vessels for the AI, it just counts the human vessels:
+		if (!IsHuman) {
+			int HumanVessels = 0;
+			for (int indexcounter = 0; indexcounter < Vessels.Count(); indexcounter++) {
+				VesselClass const * vessel = Vessels.Ptr(indexcounter);
+				vessel->House->VScan |= (1L << vessel->Class->Type);
+				if (vessel->House->IsHuman) {
+					HumanVessels++;
+				}
+			}
+			if ((int)CurVessels > (int)(HumanVessels * Rule.AIVesselMultiLimit)) {
+				return(TICKS_PER_SECOND);
+			}
 		}
 
 		//sovied, x change of first unit, otherwise make the other one.
