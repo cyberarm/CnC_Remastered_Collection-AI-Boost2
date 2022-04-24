@@ -1383,6 +1383,25 @@ void HouseClass::AI(void)
 		Map.All_To_Look(PlayerPtr);
 	}
 
+	// Deteft if the game is FFA, by Bast75
+	if (!IsHuman) {
+		ThisIsNotAnFFA = 0; // We assume its an FFA game.
+		//Check if there is an Ally, then it's not FFA.
+		for (HousesType AllHouses = HOUSE_MULTI1; AllHouses < HOUSE_COUNT; AllHouses++) {
+			HouseClass * hptr = HouseClass::As_Pointer(AllHouses);
+			if (hptr != NULL && hptr->IsActive && !hptr->IsDefeated) {
+				for (HousesType AllHouses2 = HOUSE_MULTI1; AllHouses2 < HOUSE_COUNT; AllHouses2++) {
+					HouseClass * hptr2 = HouseClass::As_Pointer(AllHouses2);
+					if (hptr2 != NULL && hptr2->IsActive && !hptr2->IsDefeated) {
+						if (hptr->Is_Ally(hptr2)) {
+							ThisIsNotAnFFA = 1;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	//AISpeedRush set by .ini, instant attack
 	if (Rule.AISpeedRush == 1) {
 		int index;
@@ -1931,17 +1950,18 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		if (Rule.AIDynamicBoostIQLevelAllowed) {
+		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
+		if (Rule.AIDynamicBoostIQLevelAllowed && ThisIsNotAnFFA) {
 			//Calculate the number of enemies, friendlies, etc.
 			int CountEnemiesForThisAI = 0;
 			int CountFriendliesForThisAI = 0;
-			//int CountHousesStillAlive = 0;
+			int CountHousesStillAlive = 0;
 			//int IsHumanFriend = 0;
 			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
 				HouseClass const * hptr = HouseClass::As_Pointer(h);
 				if (hptr != NULL) {
 					if (hptr->CurBuildings > 0) {
-						//CountHousesStillAlive++;
+						CountHousesStillAlive++;
 						if (!Is_Ally(h)) {
 							CountEnemiesForThisAI++;
 						}
@@ -1970,6 +1990,7 @@ void HouseClass::Harvested(unsigned tiberium)
 			tiberium *= TotalBoost;
 		}
 		else {
+			// Dynamic disabled or a FFA game
 			tiberium *= Rule.AIBoostIQLevel;
 		}
 		//Old boost function:

@@ -79,7 +79,7 @@ class RulesClass {
 		//By Bast75
 		int AIMoreStartingCash = 0;
 		int AIMoreStartingUnits = 0;
-		int AIBoostIQLevel = 5;
+		int AIBoostIQLevel = 3;
 		bool AIDynamicBoostIQLevelAllowed = true;
 		int AIDynamicBoostIQMax = 5;
 		int AIDynamicBoostIQMin = 2;

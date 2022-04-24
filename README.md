@@ -13,6 +13,7 @@ New:
 -The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
 -The AI Chronotank minimal groupsize is now editable by the .ini file.
 -AIBoostLevel is dynamic by the number of allies/enemies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
+-FFA detection, it automatically disables Dynamic AI in these cases.
 -Several minor tweaks to increase the intelligence for the AI resultinh cash-cheat could be set back to a lower value. It's more equeal with human now. :-)
  
 Hotfix:
