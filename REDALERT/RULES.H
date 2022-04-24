@@ -92,7 +92,8 @@ class RulesClass {
 		int AIAttackMinimalDefence = 6;
 		bool AIAllowBaseGrowByDeployedMCV = true;
 		double AIHarvesterMultiplyer = 1.3;
-		int HarvesterMemoryValue = 10;
+		int AIHarvesterMemoryValue = 10;
+		int AIHarvesterMaxLimit = 10;
 		int AIBuildingsMultiplier = 2;
 		int AIBuildingsMinimal = 30;
 		//int AIUnitMultiplier = 3;
@@ -108,7 +109,8 @@ class RulesClass {
 		bool EngineerInstantCapture = true;
 		bool ChronoKillsCargo = false;
 		int AIHumanGroundWarTankTrigger = 20;
-		int AIVesselMultiLimit = 3;
+		int AIVesselMultiLimit = 1;
+		int AIVesselBonus = 5;
 		int AISovietVesselSubPercentage = 50;
 		int AIAlliesVesselPTPercentage = 30;
 		int AIAlliesVesselDDPercentage = 66;

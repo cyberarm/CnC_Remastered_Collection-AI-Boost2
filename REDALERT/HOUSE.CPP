@@ -6737,10 +6737,16 @@ int HouseClass::AI_Unit(void)
 	}
 
 	// Make extra harvesters
-	if (IQ >= Rule.IQHarvester && !IsTiberiumShort && !IsHuman && (UQuantity[UNIT_HARVESTER] < (BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer))) {
-		if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
-			BuildUnit = UNIT_HARVESTER;
-			return(TICKS_PER_SECOND);
+	if (!IsHuman) {
+		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
+			if ((int)UQuantity[UNIT_HARVESTER] < (int)Rule.AIHarvesterMaxLimit) {
+				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer)) {
+					if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
+						BuildUnit = UNIT_HARVESTER;
+						return(TICKS_PER_SECOND);
+					}
+				}
+			}
 		}
 	}
 
@@ -6855,7 +6861,7 @@ int HouseClass::AI_Unit(void)
 			UnitTypeClass const * utype = &UnitTypeClass::As_Reference(index);
 			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER && utype->Type != UNIT_MCV) { // && utype->Type != UNIT_MAD
 				if (utype->PrimaryWeapon != NULL) {
-					counter[index] = 20;
+					counter[index] = 20; // default prio level for a unit
 				}
 				else {
 					counter[index] = 1;
@@ -7022,7 +7028,7 @@ int HouseClass::AI_Vessel(void)
 					HumanVessels++;
 				}
 			}
-			if ((int)CurVessels > (int)(HumanVessels * Rule.AIVesselMultiLimit)) {
+			if ((int)CurVessels > (int)(HumanVessels * Rule.AIVesselMultiLimit) && (int)CurVessels > (int)(Rule.AIVesselBonus + HumanVessels)) {
 				return(TICKS_PER_SECOND);
 			}
 		}

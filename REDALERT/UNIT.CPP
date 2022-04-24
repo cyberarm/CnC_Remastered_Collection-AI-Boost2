@@ -2984,7 +2984,7 @@ int UnitClass::Mission_Harvest(void)
 	// Default this was always remember. This results in harvesters going further and further while closer Tiberium could be available.
 	// Do not remember last location and scan for closest tiberium from unload area
 	// Or do remember and start here again with harvesting.
-	bool HarvesterUsesMemory = Percent_Chance(Rule.HarvesterMemoryValue);
+	bool HarvesterUsesMemory = Percent_Chance(Rule.AIHarvesterMemoryValue);
 
 	switch (Status) {
 

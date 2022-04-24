@@ -540,6 +540,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
 		AIHarvesterMultiplyer = ini.Get_Int(MOREQOL, "AIHarvesterMultiplyer", 1.2);
+		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
 		AIBuildingsMultiplier = ini.Get_Int(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIBuildingsMinimal = ini.Get_Int(MOREQOL, "AIBuildingsMinimal", 20);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
@@ -549,7 +550,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIAllowChronotanksGroupShifting = ini.Get_Bool(MOREQOL, "AIAllowChronotanksGroupShifting", true);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
-		HarvesterMemoryValue = ini.Get_Int(MOREQOL, "HarvesterMemoryValue", 10);
+		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 10);
 
 		InfantryGroupSize = ini.Get_Int(MOREQOL, "InfantryGroupSize", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
@@ -565,7 +566,8 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMadTankSaveToDeployDistance = ini.Get_Int(MOREQOL, "AIMadTankSaveToDeployDistance", 22);
 		AIMadTankCloseEnoughToEnemyDistance = ini.Get_Int(MOREQOL, "AIMadTankCloseEnoughToEnemyDistance", 18);
 		AIMadTankWriteDebugInfoToFile = ini.Get_Bool(MOREQOL, "AIMadTankWriteDebugInfoToFile", false);
-		AIVesselMultiLimit = ini.Get_Int(MOREQOL, "AIVesselMultiLimit", 2);
+		AIVesselMultiLimit = ini.Get_Int(MOREQOL, "AIVesselMultiLimit", 1);
+		AIVesselBonus = ini.Get_Int(MOREQOL, "AIVesselBonus", 5);
 		AISovietVesselSubPercentage = ini.Get_Int(MOREQOL, "AISovietVesselSubPercentage", 50);
 		AIAlliesVesselPTPercentage = ini.Get_Int(MOREQOL, "AIAlliesVesselPTPercentage", 33);
 		AIAlliesVesselDDPercentage = ini.Get_Int(MOREQOL, "AIAlliesVesselDDPercentage", 66);

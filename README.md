@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 22 april 2022
+Last update at: 24 april 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -13,12 +13,13 @@ New:
 -The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
 -The AI Chronotank minimal groupsize is now editable by the .ini file.
 -AIBoostLevel is dynamic by the number of allies/enemies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
+-Several minor tweaks to increase the intelligence for the AI resultinh cash-cheat could be set back to a lower value. It's more equeal with human now. :-)
  
 Hotfix:
 -Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field. This is fixed now (Thanks to Cyberarm)
 -Naval production by AI was unlimited. An AI tried to build more vessels than all other enemies together resulting in unlimited production when multiple AI's.
- Now it counts the human vessels only.
-
+ Now it counts the human vessels only. In the .ini file you can edit some settings for this.
+-AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file.
 --- 
 
 General Mod info:
