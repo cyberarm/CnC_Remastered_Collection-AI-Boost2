@@ -458,6 +458,16 @@ class HouseClass {
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
 
+		//For Dynamic AI
+		int IsHumanFriend = 0;
+		int DynamicBoost = 0;
+		int TotalBoost = 0;
+		int CountEnemiesForThisAI = 0;
+		int CountFriendliesForThisAI = 0;
+		int CountHousesStillAlive = 0;
+
+
+
 		bool HouseHasFlag = false;
 
 		/*

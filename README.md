@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 24 april 2022
+Last update at: 25 april 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -13,8 +13,9 @@ New:
 -The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
 -The AI Chronotank minimal groupsize is now editable by the .ini file.
 -AIBoostLevel is dynamic by the number of allies/enemies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
--FFA detection, it automatically disables Dynamic AI in these cases.
--Several minor tweaks to increase the intelligence for the AI resultinh cash-cheat could be set back to a lower value. It's more equeal with human now. :-)
+-FFA detection, it automatically disables Dynamic AI in these cases because there are no teams.
+-Several tweaks to increase the intelligence for the AI a lot. :-)
+-Because of the better intelligence the AI cash-cheat could be set back to a way lower value. It's almost equeal with human now. :-)
  
 Hotfix:
 -Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field. This is fixed now (Thanks to Cyberarm)

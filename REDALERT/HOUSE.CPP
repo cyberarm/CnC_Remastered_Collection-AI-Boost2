@@ -1950,49 +1950,51 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
-		if (Rule.AIDynamicBoostIQLevelAllowed && ThisIsNotAnFFA) {
-			//Calculate the number of enemies, friendlies, etc.
-			int CountEnemiesForThisAI = 0;
-			int CountFriendliesForThisAI = 0;
-			int CountHousesStillAlive = 0;
-			//int IsHumanFriend = 0;
-			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-				HouseClass const * hptr = HouseClass::As_Pointer(h);
-				if (hptr != NULL) {
-					if (hptr->CurBuildings > 0) {
-						CountHousesStillAlive++;
-						if (!Is_Ally(h)) {
-							CountEnemiesForThisAI++;
-						}
-						else {
-							CountFriendliesForThisAI++;
-							//if (hptr->IsHuman) {
-							//	IsHumanFriend = 1;
-							//}
+		//Recalculate all Dynamic stuff:
+		IsHumanFriend = 0;
+		DynamicBoost = 0;
+		TotalBoost = 0;
+		CountEnemiesForThisAI = 0;
+		CountFriendliesForThisAI = 0;
+		CountHousesStillAlive = 0;
+		for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+			HouseClass const * hptr = HouseClass::As_Pointer(h);
+			if (hptr != NULL) {
+				if (hptr->CurBuildings > 0) {
+					CountHousesStillAlive++;
+					if (!Is_Ally(h)) {
+						CountEnemiesForThisAI++;
+					}
+					else {
+						CountFriendliesForThisAI++;
+						if (hptr->IsHuman) {
+							IsHumanFriend = 1;
 						}
 					}
 				}
 			}
-			int DynamicBoost = 0;
+		}
+		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
+		if (Rule.AIDynamicBoostIQLevelAllowed && ThisIsNotAnFFA) {
 			if (CountEnemiesForThisAI - CountFriendliesForThisAI < 0) { DynamicBoost = -1; }
 			if (CountEnemiesForThisAI - CountFriendliesForThisAI < -2) { DynamicBoost = -2; }
 			if (CountEnemiesForThisAI - CountFriendliesForThisAI ==0) { DynamicBoost = 0; }
 			if (CountEnemiesForThisAI - CountFriendliesForThisAI > 0) { DynamicBoost = 1; }
 			if (CountEnemiesForThisAI - CountFriendliesForThisAI > 2) { DynamicBoost = 2; }
-			int TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
+			TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
 			if (TotalBoost > Rule.AIDynamicBoostIQMax) {
 				TotalBoost = Rule.AIDynamicBoostIQMax;
 			}
 			if (TotalBoost < Rule.AIDynamicBoostIQMin) {
 				TotalBoost = Rule.AIDynamicBoostIQMin;
 			}
-			tiberium *= TotalBoost;
+			tiberium *= (TotalBoost);
 		}
 		else {
 			// Dynamic disabled or a FFA game
 			tiberium *= Rule.AIBoostIQLevel;
 		}
+
 		//Old boost function:
 		//if (BQuantity[STRUCT_MSLO] > 0) {
 		//	tiberium *= Rule.AIBOostIQLevelMCVFallback;
@@ -5515,14 +5517,17 @@ bool HouseClass::AI_Attack(UrgencyType)
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
 	bool forced = (CurBuildings == 0); // Why only force on no buldings? If we have enough base defence, we can send all units.
 	int CurrentDefenceBuildings = (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX];
-	int PercentageToSend = 85;
-	if (CurrentDefenceBuildings > 4) {
-		PercentageToSend = 97;
-	}
-	if (CurrentDefenceBuildings > Rule.AIAttackMinimalDefence) {
+	int PercentageToSend;
+	if (CurrentDefenceBuildings > Rule.AIAttackMinimalDefenceSendUnitsSwitchHigh2All) {
+		PercentageToSend = 100; 
 		forced = true; // Enough defence, send all units.
 	}
-	//AIAttackMode = !AIAttackMode; //switch attack mode
+	else if (CurrentDefenceBuildings > Rule.AIAttackMinimalDefenceSendUnitsSwitchLow2High) {
+		PercentageToSend = Rule.AIAttackMinimalDefenceSendUnitsPrecentageHigh; // Medium defence, send high percentage of units.
+	}
+	else {
+		PercentageToSend = Rule.AIAttackMinimalDefenceSendUnitsPrecentageLow; // Low defence, send lowest percentage of units.
+	}
 
 	// Air units
 	for (index = 0; index < Aircraft.Count(); index++) {
@@ -5610,9 +5615,11 @@ bool HouseClass::AI_Attack(UrgencyType)
 					u->Assign_Mission(MISSION_HUNT); // and deploy
 				}
 				else if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
-					if (*u == UNIT_CHRONOTANK && AICurrentChronotanksNr >= Rule.AIMinimalChronotanksBeforeShift) {
-						u->Assign_Mission(MISSION_HUNT); // Weird enough this must been set before the jump, otherways they run home.
-						if (Rule.AIAllowChronotanksGroupShifting) {
+					if (*u == UNIT_CHRONOTANK) {
+						u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
+						// Weird enough this must been set before the jump, otherways they run home after jumping.
+						if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMinimalChronotanksBeforeShift) {
+							//We are allowed to jump, so do it. :-)
 							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 							CELL TargetCell = Coord_Cell(TargetCoord);
 							CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
@@ -5653,7 +5660,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 				//if (!shuffle && u->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				else if (forced || Percent_Chance(PercentageToSend)) {
-					if (Percent_Chance(80)) {
+					if (Percent_Chance(70)) {
 						u->Assign_Mission(MISSION_HUNT);
 					}
 					else {
@@ -5716,6 +5723,64 @@ bool HouseClass::AI_Attack(UrgencyType)
 	else {
 		Attack = TICKS_PER_MINUTE * Rule.AIAttackInterval;
 	}
+
+
+
+	// Some debug stuff by Bast75
+	// Note: Some info is recalculated at harvester unload.
+	if (Rule.Bast75Debugging) {
+		FILE *fp;
+		fp = fopen("aiboost-debug.log", "a+");
+		if (fp) {
+			fprintf(fp, "------------------\n:"); // %d for decimal
+			fprintf(fp, "Game: AISpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
+			fprintf(fp, "Game: ThisIsNotAnFFA: %d\n", ThisIsNotAnFFA); // %d for decimal
+			fprintf(fp, "Game: NavalWar: %d\n", AIDetectedNavalWar); // %d for decimal
+			fprintf(fp, "Game: GroundWar: %d\n", AIDetectHumanGroundWar); // %d for decimal
+			fprintf(fp, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
+			fprintf(fp, "ID: %d\n", ID); // %d for decimal
+			fprintf(fp, "IniName: %s\n", IniName); // %s for strings
+			//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
+			fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
+			fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
+			fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
+			fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
+			fprintf(fp, "Power: %d\n", Power); // %d for decimal
+			fprintf(fp, "Drain: %d\n", Drain); // %d for decimal
+			fprintf(fp, "AIPowerPlus: %d\n", AIPowerPlus); // %d for decimal
+			fprintf(fp, "AIPowerPlusSellValue: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
+			fprintf(fp, "CountEnemiesForThisAI: %d\n", CountEnemiesForThisAI); // %d for decimal
+			fprintf(fp, "CountFriendliesForThisAI: %d\n", CountFriendliesForThisAI); // %d for decimal
+			fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
+			fprintf(fp, "DynamicBoost: %d\n", DynamicBoost); // %d for decimal
+			fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
+
+			fprintf(fp, "Buildings: %d\n", Buildings.Count()); // %d for decimal
+			fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
+			fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
+			fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
+			fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
+			fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
+			fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
+			fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
+			fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
+			fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
+
+			fprintf(fp, "Units: %d\n", Units.Count()); // %d for decimal
+			fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
+			fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
+			fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
+			fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
+
+			fprintf(fp, "Aircrafts: %d\n", Vessels.Count()); // %d for decimal
+			fprintf(fp, "Infantry: %d\n", Infantry.Count()); // %d for decimal
+			fprintf(fp, "Vessels: %d\n", Vessels.Count()); // %d for decimal
+			fclose(fp);
+		}
+	}
+	// End of debugging stuff.
+
+
 	return(true);
 }
 
@@ -6131,7 +6196,7 @@ int HouseClass::AI_Building(void)
 				//PlayerCount++;
 				if (hptr->IsHuman) {
 					HumanBuildingCount = hptr->CurBuildings;
-					if (hptr->BQuantity[STRUCT_WEAP] > 1 || hptr->BQuantity[STRUCT_TENT] > 1 || hptr->BQuantity[STRUCT_BARRACKS] > 1 || (int)hptr->ActiveUScan > Rule.AIHumanGroundWarTankTrigger) {
+					if (hptr->BQuantity[STRUCT_WEAP] > 2 || hptr->BQuantity[STRUCT_TENT] > 2 || hptr->BQuantity[STRUCT_BARRACKS] > 2 || (int)hptr->ActiveUScan > Rule.AIHumanGroundWarTankTrigger) {
 						//human house has multiple warfactories and/or multiple barracks/tents, or more as x tanks -> groundwar enabled
 						AIDetectHumanGroundWar = true;
 					}
@@ -6421,15 +6486,15 @@ int HouseClass::AI_Building(void)
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
-						if ((int)BQuantity[STRUCT_MSLO] > 0) {
-							prio = prio + 1;
-						}
-						if (airthreat) {
-							prio = prio + 1;
-						}
-						if (AIDetectedNavalWar) {
-							prio = prio + 1;
-						}
+					}
+					if ((int)BQuantity[STRUCT_MSLO] > 0) {
+						prio = prio + 1;
+					}
+					if (airthreat) {
+						prio = prio + 1;
+					}
+					if (AIDetectedNavalWar) {
+						prio = prio + 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6783,7 +6848,7 @@ int HouseClass::AI_Unit(void)
 
 	//Naval war and no ground war? Don't make to much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
-		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(15)) {
+		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(23)) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
 			return(TICKS_PER_SECOND);
 		}
@@ -6882,15 +6947,15 @@ int HouseClass::AI_Unit(void)
 			UnitTypeClass const * utype = &UnitTypeClass::As_Reference(index);
 			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER && utype->Type != UNIT_MCV) { // && utype->Type != UNIT_MAD
 				if (utype->PrimaryWeapon != NULL) {
-					counter[index] = 20; // default prio level for a unit
+					counter[index] = 20; // default prio level for a unit with a PrimaryWeapon
 				}
 				else {
-					counter[index] = 1;
+					counter[index] = 1; // default prio level for a unit with no guns.
 				}
-				if (utype->Type == UNIT_DEMOTRUCK) { // Don't do it to extreme.
+				if (utype->Type == UNIT_DEMOTRUCK) { // Give the DemoTruck a own prio level
 					counter[index] = 12;
 				}
-				if (utype->Type == UNIT_MAD) { // Don't do it to extreme.
+				if (utype->Type == UNIT_MAD) { // Give the Mad Tank a own prio level
 					counter[index] = 5;
 				}
 			}
@@ -6921,16 +6986,17 @@ int HouseClass::AI_Vessel(void)
 	
 	if (BuildVessel != VESSEL_NONE) return(TICKS_PER_SECOND);
 
+	// Check if nr of Vessels isn't above game limit
 	if (CurVessels >= Control.MaxVessel && !IsHuman) {
 		return(TICKS_PER_SECOND);
 	}
 
-	////AI Max vessels by ini
+	//AI max vessels set by ini file
 	if (!IsHuman && (int)CurVessels > AIMaxNavalNr) {
 		return(TICKS_PER_SECOND);
 	}
 
-	//No more Naval War? Don't build too much of it
+	//It's not an Nava war, don't build too much of it (90% change of skipping it)
 	if (!AIDetectedNavalWar && !IsHuman) {
 		if (Percent_Chance(90)) {
 			return(TICKS_PER_SECOND);
@@ -7049,21 +7115,12 @@ int HouseClass::AI_Vessel(void)
 					HumanVessels++;
 				}
 			}
-			if ((int)CurVessels > (int)(HumanVessels * Rule.AIVesselMultiLimit) && (int)CurVessels > (int)(Rule.AIVesselBonus + HumanVessels)) {
+			//If AI has more vessels than "HumanVessels * Rule.AIVesselMultiLimit"
+			//Or CurVessels more than "HumanVessels + Rule.AIVesselBonus"
+			//Then we skip producing a new one.
+			if ((int)CurVessels > (int)(HumanVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (int)(HumanVessels + Rule.AIVesselBonus)) {
 				return(TICKS_PER_SECOND);
 			}
-		}
-
-		//sovied, x change of first unit, otherwise make the other one.
-		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_SS), ActLike) && Percent_Chance(Rule.AISovietVesselSubPercentage))
-		{
-			BuildVessel = VESSEL_SS;
-			return(TICKS_PER_SECOND);
-		}
-		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_MISSILESUB), ActLike))
-		{
-			BuildVessel = VESSEL_MISSILESUB;
-			return(TICKS_PER_SECOND);
 		}
 
 		//allies, x change of first unit, otherwise x change of second unit, else make the 3rth one.
@@ -7082,6 +7139,19 @@ int HouseClass::AI_Vessel(void)
 			BuildVessel = VESSEL_CA;
 			return(TICKS_PER_SECOND);
 		}
+
+		//sovied, x change of first unit, otherwise make the other one.
+		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_SS), ActLike) && Percent_Chance(Rule.AISovietVesselSubPercentage))
+		{
+			BuildVessel = VESSEL_SS;
+			return(TICKS_PER_SECOND);
+		}
+		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_MISSILESUB), ActLike))
+		{
+			BuildVessel = VESSEL_MISSILESUB;
+			return(TICKS_PER_SECOND);
+		}
+
 	}
 	return(TICKS_PER_SECOND);
 }

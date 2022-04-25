@@ -529,6 +529,7 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
+		Bast75Debugging = ini.Get_Bool(MOREQOL, "Bast75Debugging", false);
 		MaxFreeRefineryDistanceBias = ini.Get_Int(MOREQOL, "MaxFreeRefineryDistanceBias", MaxFreeRefineryDistanceBias);
 		MinHarvesterQueueJumpDistance = ini.Get_Int(MOREQOL, "MinHarvesterQueueJumpDistance", MinHarvesterQueueJumpDistance);
 		MaxWallExtensionDistance = ini.Get_Int(MOREQOL, "MaxWallExtensionDistance", MaxWallExtensionDistance);
@@ -561,11 +562,15 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
-		AIAttackMinimalDefence = ini.Get_Int(MOREQOL, "AIAttackMinimalDefence", 6);
+		AIAttackMinimalDefenceSendUnitsPrecentageLow = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsPrecentageLow", 80);
+		AIAttackMinimalDefenceSendUnitsPrecentageHigh = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsPrecentageHigh", 95);
+		AIAttackMinimalDefenceSendUnitsSwitchLow2High = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsSwitchLow2High", 4);
+		AIAttackMinimalDefenceSendUnitsSwitchHigh2All = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsSwitchHigh2All", 8);
 		AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
 		AIMadTankSaveToDeployDistance = ini.Get_Int(MOREQOL, "AIMadTankSaveToDeployDistance", 22);
 		AIMadTankCloseEnoughToEnemyDistance = ini.Get_Int(MOREQOL, "AIMadTankCloseEnoughToEnemyDistance", 18);
 		AIMadTankWriteDebugInfoToFile = ini.Get_Bool(MOREQOL, "AIMadTankWriteDebugInfoToFile", false);
+		
 		AIVesselMultiLimit = ini.Get_Int(MOREQOL, "AIVesselMultiLimit", 1);
 		AIVesselBonus = ini.Get_Int(MOREQOL, "AIVesselBonus", 5);
 		AISovietVesselSubPercentage = ini.Get_Int(MOREQOL, "AISovietVesselSubPercentage", 50);

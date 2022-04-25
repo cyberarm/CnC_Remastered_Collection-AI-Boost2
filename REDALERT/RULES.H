@@ -77,6 +77,7 @@ class RulesClass {
 
 
 		//By Bast75
+		bool Bast75Debugging = false;
 		int AIMoreStartingCash = 0;
 		int AIMoreStartingUnits = 0;
 		int AIBoostIQLevel = 3;
@@ -89,7 +90,10 @@ class RulesClass {
 		bool AIAftermathfastbuild = true;
 		bool AINoShroud = false;
 		bool AIAllowDynamicBaseGrow = true;
-		int AIAttackMinimalDefence = 6;
+		int AIAttackMinimalDefenceSendUnitsPrecentageLow = 80;
+		int AIAttackMinimalDefenceSendUnitsPrecentageHigh = 95;
+		int AIAttackMinimalDefenceSendUnitsSwitchLow2High = 4;
+		int AIAttackMinimalDefenceSendUnitsSwitchHigh2All = 8;
 		bool AIAllowBaseGrowByDeployedMCV = true;
 		double AIHarvesterMultiplyer = 1.3;
 		int AIHarvesterMemoryValue = 10;
@@ -124,7 +128,7 @@ class RulesClass {
 		int AIWarFactoryLimitOFF = 2;
 		int AIVesselCarrierLimitON = 4;
 		int AIVesselCarrierLimitOFF = 2;
-		//Basic
+		//Basic (Ground war)
 		int AIDogHouseMinimalBasic = 2;
 		int AIBarracksMinimalBasic = 2;
 		int AIWarFactoryMinimalBasic = 2;
@@ -143,7 +147,7 @@ class RulesClass {
 		int AIMaxInfantryBasic = 2;
 		int AIMaxAirBasic = 2;
 
-		//Mix
+		//Mix (Mix of Ground war and Naval war)
 		int AIDogHouseMinimalMix = 2;
 		int AIBarracksMinimalMix = 2;
 		int AIWarFactoryMinimalMix = 2;
@@ -162,7 +166,7 @@ class RulesClass {
 		int AIMaxInfantryMix = 2;
 		int AIMaxAirMix = 2;
 
-		//Naval
+		//Naval (No Ground war, Naval war -> more focused on Naval and Air)
 		int AIDogHouseMinimalNaval = 2;
 		int AIBarracksMinimalNaval = 2;
 		int AIWarFactoryMinimalNaval = 2;
