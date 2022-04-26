@@ -1956,11 +1956,11 @@ void HouseClass::Harvested(unsigned tiberium)
 	if (!IsHuman) {
 		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
 		if (Rule.AIDynamicBoostIQLevelAllowed && ThisIsNotAnFFA) {
-			tiberium *= (TotalBoost+1);
+			tiberium *= TotalBoost;
 		}
 		else {
 			// Dynamic disabled or a FFA game
-			tiberium *= (Rule.AIBoostIQLevel + 1);
+			tiberium *= Rule.AIBoostIQLevel;
 		}
 
 		//Old boost function:
@@ -5498,19 +5498,21 @@ bool HouseClass::AI_Attack(UrgencyType)
 					CountEnemiesForThisAI++;
 				}
 				else {
-					CountFriendliesForThisAI++;
-					if (hptr->IsHuman) {
-						IsHumanFriend = 1;
+					if (ID != hptr->ID) {
+						CountFriendliesForThisAI++;
+						if (hptr->IsHuman) {
+							IsHumanFriend = 1;
+						}
 					}
 				}
 			}
 		}
 	}
-	if (CountEnemiesForThisAI - CountFriendliesForThisAI < 0) { DynamicBoost = -1; }
-	if (CountEnemiesForThisAI - CountFriendliesForThisAI < -2) { DynamicBoost = -2; }
-	if (CountEnemiesForThisAI - CountFriendliesForThisAI == 0) { DynamicBoost = 0; }
-	if (CountEnemiesForThisAI - CountFriendliesForThisAI > 0) { DynamicBoost = 1; }
-	if (CountEnemiesForThisAI - CountFriendliesForThisAI > 2) { DynamicBoost = 2; }
+	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
+	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
+	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
+	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 0) { DynamicBoost = 1; }
+	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 2) { DynamicBoost = 2; }
 	TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
 	if (TotalBoost > Rule.AIDynamicBoostIQMax) {
 		TotalBoost = Rule.AIDynamicBoostIQMax;
@@ -5587,14 +5589,26 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
 
 			fprintf(fp, "Aircrafts: Total: %d\n", Vessels.Count()); // %d for decimal
+
+			fprintf(fp, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
+			fprintf(fp, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
+			fprintf(fp, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
+			fprintf(fp, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
+			fprintf(fp, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
+			fprintf(fp, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
+			fprintf(fp, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
+			fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+			fprintf(fp, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
+			fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+			fprintf(fp, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
+			fprintf(fp, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
+			fprintf(fp, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
 			fprintf(fp, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
 			fprintf(fp, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
 			fclose(fp);
 		}
 	}
 	// End of debugging stuff.
-
-
 
 
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
