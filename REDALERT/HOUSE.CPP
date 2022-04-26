@@ -1393,8 +1393,12 @@ void HouseClass::AI(void)
 				for (HousesType AllHouses2 = HOUSE_MULTI1; AllHouses2 < HOUSE_COUNT; AllHouses2++) {
 					HouseClass * hptr2 = HouseClass::As_Pointer(AllHouses2);
 					if (hptr2 != NULL && hptr2->IsActive && !hptr2->IsDefeated) {
-						if (hptr->Is_Ally(hptr2)) {
+						//If house is not our own house:
+						if (hptr->ID != hptr2->ID) {
+							//Check if hptr is an ally of hptr2
+							if (hptr->Is_Ally(hptr2)) {
 							ThisIsNotAnFFA = 1;
+							}
 						}
 					}
 				}
@@ -1950,49 +1954,13 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		//Recalculate all Dynamic stuff:
-		IsHumanFriend = 0;
-		DynamicBoost = 0;
-		TotalBoost = 0;
-		CountEnemiesForThisAI = 0;
-		CountFriendliesForThisAI = 0;
-		CountHousesStillAlive = 0;
-		for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-			HouseClass const * hptr = HouseClass::As_Pointer(h);
-			if (hptr != NULL) {
-				if (hptr->CurBuildings > 0) {
-					CountHousesStillAlive++;
-					if (!Is_Ally(h)) {
-						CountEnemiesForThisAI++;
-					}
-					else {
-						CountFriendliesForThisAI++;
-						if (hptr->IsHuman) {
-							IsHumanFriend = 1;
-						}
-					}
-				}
-			}
-		}
 		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
 		if (Rule.AIDynamicBoostIQLevelAllowed && ThisIsNotAnFFA) {
-			if (CountEnemiesForThisAI - CountFriendliesForThisAI < 0) { DynamicBoost = -1; }
-			if (CountEnemiesForThisAI - CountFriendliesForThisAI < -2) { DynamicBoost = -2; }
-			if (CountEnemiesForThisAI - CountFriendliesForThisAI ==0) { DynamicBoost = 0; }
-			if (CountEnemiesForThisAI - CountFriendliesForThisAI > 0) { DynamicBoost = 1; }
-			if (CountEnemiesForThisAI - CountFriendliesForThisAI > 2) { DynamicBoost = 2; }
-			TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
-			if (TotalBoost > Rule.AIDynamicBoostIQMax) {
-				TotalBoost = Rule.AIDynamicBoostIQMax;
-			}
-			if (TotalBoost < Rule.AIDynamicBoostIQMin) {
-				TotalBoost = Rule.AIDynamicBoostIQMin;
-			}
-			tiberium *= (TotalBoost);
+			tiberium *= (TotalBoost+1);
 		}
 		else {
 			// Dynamic disabled or a FFA game
-			tiberium *= Rule.AIBoostIQLevel;
+			tiberium *= (Rule.AIBoostIQLevel + 1);
 		}
 
 		//Old boost function:
@@ -5514,6 +5482,121 @@ bool HouseClass::AI_Attack(UrgencyType)
 	assert(Houses.ID(this) == ID);
 	int index;
 
+	//Recalculate all Dynamic stuff:
+	IsHumanFriend = 0;
+	DynamicBoost = 0;
+	TotalBoost = 0;
+	CountEnemiesForThisAI = 0;
+	CountFriendliesForThisAI = 0;
+	CountHousesStillAlive = 0;
+	for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
+		HouseClass const * hptr = HouseClass::As_Pointer(h);
+		if (hptr != NULL) {
+			if (hptr->CurBuildings > 0) {
+				CountHousesStillAlive++;
+				if (!Is_Ally(h)) {
+					CountEnemiesForThisAI++;
+				}
+				else {
+					CountFriendliesForThisAI++;
+					if (hptr->IsHuman) {
+						IsHumanFriend = 1;
+					}
+				}
+			}
+		}
+	}
+	if (CountEnemiesForThisAI - CountFriendliesForThisAI < 0) { DynamicBoost = -1; }
+	if (CountEnemiesForThisAI - CountFriendliesForThisAI < -2) { DynamicBoost = -2; }
+	if (CountEnemiesForThisAI - CountFriendliesForThisAI == 0) { DynamicBoost = 0; }
+	if (CountEnemiesForThisAI - CountFriendliesForThisAI > 0) { DynamicBoost = 1; }
+	if (CountEnemiesForThisAI - CountFriendliesForThisAI > 2) { DynamicBoost = 2; }
+	TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
+	if (TotalBoost > Rule.AIDynamicBoostIQMax) {
+		TotalBoost = Rule.AIDynamicBoostIQMax;
+	}
+	if (TotalBoost < Rule.AIDynamicBoostIQMin) {
+		TotalBoost = Rule.AIDynamicBoostIQMin;
+	}
+
+	// Some debug stuff by Bast75
+	// Note: Some info is recalculated at harvester unload.
+	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
+		FILE *fp;
+		fp = fopen("aiboost-debug.log", "a+");
+		if (fp) {
+			fprintf(fp, "------------------\n"); // %d for decimal
+			fprintf(fp, "Game: AISpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
+			fprintf(fp, "Game: ThisIsNotAnFFA: %d\n", ThisIsNotAnFFA); // %d for decimal
+			fprintf(fp, "Game: NavalWar: %d\n", AIDetectedNavalWar); // %d for decimal
+			fprintf(fp, "Game: GroundWar: %d\n", AIDetectHumanGroundWar); // %d for decimal
+			fprintf(fp, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
+
+			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
+			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
+			//fprintf(fp, "IniName: %s\n", IniName); // %s for strings
+			//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
+			fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
+			//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
+			fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
+			fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
+			fprintf(fp, "Power produced: %d\n", Power); // %d for decimal
+			fprintf(fp, "Power drain: %d\n", Drain); // %d for decimal
+			fprintf(fp, "Power plus: %d\n", AIPowerPlus); // %d for decimal
+			fprintf(fp, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
+			fprintf(fp, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
+			fprintf(fp, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
+			fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
+
+			fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
+			fprintf(fp, "DynamicBoost: %d\n", DynamicBoost); // %d for decimal
+			fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
+
+			fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
+			fprintf(fp, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
+			fprintf(fp, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
+			fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
+			fprintf(fp, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
+			fprintf(fp, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
+			fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
+			fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
+			fprintf(fp, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
+			fprintf(fp, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
+			fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
+			fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
+			fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
+			fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
+			fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
+			fprintf(fp, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
+			fprintf(fp, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
+			fprintf(fp, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
+			fprintf(fp, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
+			fprintf(fp, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
+			fprintf(fp, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
+			fprintf(fp, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
+			fprintf(fp, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
+			fprintf(fp, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
+			fprintf(fp, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
+			fprintf(fp, "Buildings: Total: %d\n", Buildings.Count()); // %d for decimal
+
+			fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
+			fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
+			fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
+			fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
+			fprintf(fp, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
+			fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
+
+			fprintf(fp, "Aircrafts: Total: %d\n", Vessels.Count()); // %d for decimal
+			fprintf(fp, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
+			fprintf(fp, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
+			fclose(fp);
+		}
+	}
+	// End of debugging stuff.
+
+
+
+
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
 	bool forced = (CurBuildings == 0); // Why only force on no buldings? If we have enough base defence, we can send all units.
 	int CurrentDefenceBuildings = (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX];
@@ -5579,6 +5662,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 				BuildingClass * building = Buildings.Ptr(index);
 				if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
 					if (FarthestEnemyBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(75))) {
+						//Note: We added the 75 change option, otherwise it always takes the furtherest building. Now it's random.
 						FarthestEnemyBuildingDist = index;
 					}
 				}
@@ -5623,6 +5707,30 @@ bool HouseClass::AI_Attack(UrgencyType)
 							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 							CELL TargetCell = Coord_Cell(TargetCoord);
 							CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false );
+							u->Teleport_To(TargetFreeCell);
+							Sound_Effect(VOC_CHRONO, u->Coord);
+						}
+						else {
+							//No grouping, calculate for each chronotank a random location:
+							FarthestEnemyBuildingDist = -1;
+							for (int index = 0; index < Buildings.Count(); index++) {
+								BuildingClass * Ownbuilding = Buildings.Ptr(index);
+								if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+									for (int index = 0; index < Buildings.Count(); index++) {
+										BuildingClass * building = Buildings.Ptr(index);
+										if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+											if (FarthestEnemyBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(75))) {
+												//Note: We added the 75 change option, otherwise it always takes the furtherest building. Now it's random.
+												FarthestEnemyBuildingDist = index;
+											}
+										}
+									}
+									break; // we have a own building, so don't do a new calculation again.
+								}
+							}
+							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
+							CELL TargetCell = Coord_Cell(TargetCoord);
+							CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false);
 							u->Teleport_To(TargetFreeCell);
 							Sound_Effect(VOC_CHRONO, u->Coord);
 						}
@@ -5723,64 +5831,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 	else {
 		Attack = TICKS_PER_MINUTE * Rule.AIAttackInterval;
 	}
-
-
-
-	// Some debug stuff by Bast75
-	// Note: Some info is recalculated at harvester unload.
-	if (Rule.Bast75Debugging) {
-		FILE *fp;
-		fp = fopen("aiboost-debug.log", "a+");
-		if (fp) {
-			fprintf(fp, "------------------\n:"); // %d for decimal
-			fprintf(fp, "Game: AISpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
-			fprintf(fp, "Game: ThisIsNotAnFFA: %d\n", ThisIsNotAnFFA); // %d for decimal
-			fprintf(fp, "Game: NavalWar: %d\n", AIDetectedNavalWar); // %d for decimal
-			fprintf(fp, "Game: GroundWar: %d\n", AIDetectHumanGroundWar); // %d for decimal
-			fprintf(fp, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
-			fprintf(fp, "ID: %d\n", ID); // %d for decimal
-			fprintf(fp, "IniName: %s\n", IniName); // %s for strings
-			//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
-			fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
-			fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
-			fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
-			fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
-			fprintf(fp, "Power: %d\n", Power); // %d for decimal
-			fprintf(fp, "Drain: %d\n", Drain); // %d for decimal
-			fprintf(fp, "AIPowerPlus: %d\n", AIPowerPlus); // %d for decimal
-			fprintf(fp, "AIPowerPlusSellValue: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
-			fprintf(fp, "CountEnemiesForThisAI: %d\n", CountEnemiesForThisAI); // %d for decimal
-			fprintf(fp, "CountFriendliesForThisAI: %d\n", CountFriendliesForThisAI); // %d for decimal
-			fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
-			fprintf(fp, "DynamicBoost: %d\n", DynamicBoost); // %d for decimal
-			fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
-
-			fprintf(fp, "Buildings: %d\n", Buildings.Count()); // %d for decimal
-			fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
-			fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
-			fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
-			fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
-			fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
-			fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
-			fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
-			fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
-			fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
-
-			fprintf(fp, "Units: %d\n", Units.Count()); // %d for decimal
-			fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
-			fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
-			fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
-			fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
-
-			fprintf(fp, "Aircrafts: %d\n", Vessels.Count()); // %d for decimal
-			fprintf(fp, "Infantry: %d\n", Infantry.Count()); // %d for decimal
-			fprintf(fp, "Vessels: %d\n", Vessels.Count()); // %d for decimal
-			fclose(fp);
-		}
-	}
-	// End of debugging stuff.
-
-
 	return(true);
 }
 
@@ -6473,7 +6523,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1;
+					prio = Rule.AIGotoRefsAsFastAsPossible;
 					if (3 < (int)BQuantity[STRUCT_TESLA]
 						+ (int)BQuantity[STRUCT_FLAME_TURRET]
 						+ (int)BQuantity[STRUCT_TURRET]
@@ -6826,7 +6876,7 @@ int HouseClass::AI_Unit(void)
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
 			if ((int)UQuantity[UNIT_HARVESTER] < (int)Rule.AIHarvesterMaxLimit) {
-				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer)) {
+				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer) || (int)UQuantity[UNIT_HARVESTER] < 2) {
 					if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
 						BuildUnit = UNIT_HARVESTER;
 						return(TICKS_PER_SECOND);

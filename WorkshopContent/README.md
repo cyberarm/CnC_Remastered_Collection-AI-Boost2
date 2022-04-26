@@ -11,10 +11,10 @@ Please follow the steps below to update and reactivate the mod:
 
 New:
 -The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
--The AI Chronotank minimal groupsize is now editable by the .ini file.
--AIBoostLevel is dynamic by the number of allies/enemies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
--FFA detection, it automatically disables Dynamic AI in these cases because there are no teams.
--Several tweaks to increase the intelligence for the AI a lot. :-)
+-The AI Chronotanks jump no more in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like.
+-AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
+-FFA detection, it automatically disables Dynamic AI in these cases because there are no teams so noting to rebalance.
+-Several tweaks to increase the intelligence for the AI a lot. (See new options in the .ini file)
 -Because of the better intelligence the AI cash-cheat could be set back to a way lower value. It's almost equeal with human now. :-)
  
 Hotfix:

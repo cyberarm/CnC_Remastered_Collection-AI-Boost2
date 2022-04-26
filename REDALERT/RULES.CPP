@@ -529,7 +529,6 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
-		Bast75Debugging = ini.Get_Bool(MOREQOL, "Bast75Debugging", false);
 		MaxFreeRefineryDistanceBias = ini.Get_Int(MOREQOL, "MaxFreeRefineryDistanceBias", MaxFreeRefineryDistanceBias);
 		MinHarvesterQueueJumpDistance = ini.Get_Int(MOREQOL, "MinHarvesterQueueJumpDistance", MinHarvesterQueueJumpDistance);
 		MaxWallExtensionDistance = ini.Get_Int(MOREQOL, "MaxWallExtensionDistance", MaxWallExtensionDistance);
@@ -542,6 +541,7 @@ bool RulesClass::General(CCINIClass & ini)
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
 		AIHarvesterMultiplyer = ini.Get_Int(MOREQOL, "AIHarvesterMultiplyer", 1.2);
 		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
+		AIGotoRefsAsFastAsPossible = ini.Get_Int(MOREQOL, "AIGotoRefsAsFastAsPossible", 2);
 		AIBuildingsMultiplier = ini.Get_Int(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIBuildingsMinimal = ini.Get_Int(MOREQOL, "AIBuildingsMinimal", 20);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
@@ -560,6 +560,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIDynamicBoostIQMin = ini.Get_Int(MOREQOL, "AIDynamicBoostIQMin", 2);
 		AIMoreStartingCash = ini.Get_Int(MOREQOL, "AIMoreStartingCash", 0);
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
+		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
 		AIAttackMinimalDefenceSendUnitsPrecentageLow = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsPrecentageLow", 80);
