@@ -913,7 +913,7 @@ class HouseClass {
 
 
 		// Used to detect if the game is in FFA mode:
-		int ThisIsNotAnFFA = 1;
+		int FFAgame = 1;
 
 		/*s
 		**	General low-power related damaged is doled out whenever this timer

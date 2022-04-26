@@ -1385,7 +1385,7 @@ void HouseClass::AI(void)
 
 	// Deteft if the game is FFA, by Bast75
 	if (!IsHuman) {
-		ThisIsNotAnFFA = 0; // We assume its an FFA game.
+		FFAgame = 1; // We assume its an FFA game.
 		//Check if there is an Ally, then it's not FFA.
 		for (HousesType AllHouses = HOUSE_MULTI1; AllHouses < HOUSE_COUNT; AllHouses++) {
 			HouseClass * hptr = HouseClass::As_Pointer(AllHouses);
@@ -1397,7 +1397,7 @@ void HouseClass::AI(void)
 						if (hptr->ID != hptr2->ID) {
 							//Check if hptr is an ally of hptr2
 							if (hptr->Is_Ally(hptr2)) {
-							ThisIsNotAnFFA = 1;
+							FFAgame = 0;
 							}
 						}
 					}
@@ -1955,7 +1955,7 @@ void HouseClass::Harvested(unsigned tiberium)
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
 		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
-		if (Rule.AIDynamicBoostIQLevelAllowed && ThisIsNotAnFFA) {
+		if (Rule.AIDynamicBoostIQLevelAllowed && FFAgame==0) {
 			tiberium *= TotalBoost;
 		}
 		else {
@@ -5528,11 +5528,11 @@ bool HouseClass::AI_Attack(UrgencyType)
 		fp = fopen("aiboost-debug.log", "a+");
 		if (fp) {
 			fprintf(fp, "------------------\n"); // %d for decimal
-			fprintf(fp, "Game: AISpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
-			fprintf(fp, "Game: ThisIsNotAnFFA: %d\n", ThisIsNotAnFFA); // %d for decimal
-			fprintf(fp, "Game: NavalWar: %d\n", AIDetectedNavalWar); // %d for decimal
-			fprintf(fp, "Game: GroundWar: %d\n", AIDetectHumanGroundWar); // %d for decimal
+			fprintf(fp, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
 			fprintf(fp, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
+			fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
+			fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
+			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
 
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
@@ -7377,7 +7377,7 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_E2:// grenadier
-						typetrack[count].Value = 2;
+						typetrack[count].Value = 3;
 						break;
 
 					case INFANTRY_E3:// rocket soldier
@@ -7389,37 +7389,53 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_RENOVATOR: //engineer
-						if ((int)CurInfantry > Rule.AIMaxEngineers) {
+						if ((int)IQuantity[INFANTRY_RENOVATOR] < Rule.AIMaxEngineers) {
 							typetrack[count].Value = 1;
 						}
 						break;
 
 					case INFANTRY_TANYA:
-						typetrack[count].Value = 3 - max(IQuantity[index], 0);
+						if ((int)CurInfantry / 100 > (int)IQuantity[INFANTRY_TANYA]) {
+							// for every 100 infantry units, we allow 1 Tanya.
+							typetrack[count].Value = 1;
+						}
 						break;
 
 					case INFANTRY_DOG: // added the Dog by Bast75
-						typetrack[count].Value = 5 - max(IQuantity[index], 0); // make 5 of them?
-						break;
-
-					case INFANTRY_MEDIC: // added the Medic by Bast75.
-						typetrack[count].Value = 5 - max(IQuantity[index], 0); // make 5 of them?
-						break;
-
-					case INFANTRY_MECHANIC: // added the Mechanic by Bast75.
-						typetrack[count].Value = 5 - max(IQuantity[index], 0); // make 5 of them?
+						if ((int)CurInfantry / 100 > (int)IQuantity[INFANTRY_DOG] || (int)IQuantity[INFANTRY_DOG] < 3) {
+							// for every 100 infantry units, we allow 1 dog, but always minimal 3.
+							typetrack[count].Value = 1;
+						}
 						break;
 
 					case INFANTRY_SHOCK: // added the Shocktrooper by Bast75.
-						typetrack[count].Value = 3;
+						if ((int)CurInfantry / 50 > (int)IQuantity[INFANTRY_SHOCK]) {
+							typetrack[count].Value = 1;
+						}
+						break;
+
+					case INFANTRY_MEDIC: // added the Medic by Bast75.
+						if ((int)CurInfantry / 100 > (int)IQuantity[INFANTRY_MEDIC]) {
+							typetrack[count].Value = 1;
+						}
+						break;
+
+					case INFANTRY_MECHANIC: // added the Mechanic by Bast75.
+						if ((int)CurInfantry / 300 > (int)IQuantity[INFANTRY_MECHANIC]) {
+							typetrack[count].Value = 1;
+						}
 						break;
 
 					case INFANTRY_THIEF: // added the Thief by Bast75.
-						typetrack[count].Value = 1 - max(IQuantity[index], 0); // make 1 of them?
+						if ((int)CurInfantry / 300 > (int)IQuantity[INFANTRY_THIEF]) {
+							typetrack[count].Value = 1;
+						}
 						break;
 
 					case INFANTRY_SPY: // added the Spy by Bast75. Disabled again, The AI always sees everything, so no spy needed.
-						typetrack[count].Value = 1 - max(IQuantity[index], 0);
+						if ((int)CurInfantry / 300 > (int)IQuantity[INFANTRY_SPY]) {
+							typetrack[count].Value = 1;
+						}
 						break;
 
 					default:
