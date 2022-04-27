@@ -541,7 +541,7 @@ bool RulesClass::General(CCINIClass & ini)
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
 		AIHarvesterMultiplyer = ini.Get_Int(MOREQOL, "AIHarvesterMultiplyer", 1.2);
 		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
-		AIGotoRefsAsFastAsPossible = ini.Get_Int(MOREQOL, "AIGotoRefsAsFastAsPossible", 2);
+		//AIGotoRefsAsFastAsPossible = ini.Get_Int(MOREQOL, "AIGotoRefsAsFastAsPossible", 2);
 		AIBuildingsMultiplier = ini.Get_Int(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIBuildingsMinimal = ini.Get_Int(MOREQOL, "AIBuildingsMinimal", 20);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
@@ -554,7 +554,8 @@ bool RulesClass::General(CCINIClass & ini)
 		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 10);
 
 		InfantryGroupSize = ini.Get_Int(MOREQOL, "InfantryGroupSize", 5);
-		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 5);
+		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 3);
+		AIBoostIQLevelForAllies = ini.Get_Int(MOREQOL, "AIBoostIQLevelForAllies", 3);
 		AIDynamicBoostIQLevelAllowed = ini.Get_Bool(MOREQOL, "AIDynamicBoostIQLevelAllowed", true);
 		AIDynamicBoostIQMax = ini.Get_Int(MOREQOL, "AIDynamicBoostIQMax", 5);
 		AIDynamicBoostIQMin = ini.Get_Int(MOREQOL, "AIDynamicBoostIQMin", 2);

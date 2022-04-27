@@ -1954,14 +1954,8 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		//If we are allowed for dynamic AI-levels, and there are teams (not FFA):
-		if (Rule.AIDynamicBoostIQLevelAllowed && FFAgame==0) {
-			tiberium *= TotalBoost;
-		}
-		else {
-			// Dynamic disabled or a FFA game
-			tiberium *= Rule.AIBoostIQLevel;
-		}
+		//New dynamic boost method, recalculated every 5 minutes. (During attack loop)
+		tiberium *= TotalBoost;
 
 		//Old boost function:
 		//if (BQuantity[STRUCT_MSLO] > 0) {
@@ -5482,7 +5476,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 	assert(Houses.ID(this) == ID);
 	int index;
 
-	//Recalculate all Dynamic stuff:
+	//Recalculate all enemies and friends stuff: (This loops runs default every 5 minutes. Set by AIAttackInterval in the .ini file)
 	IsHumanFriend = 0;
 	DynamicBoost = 0;
 	TotalBoost = 0;
@@ -5508,6 +5502,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			}
 		}
 	}
+	//Dynamic boost calculations:
 	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
 	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
 	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
@@ -5521,8 +5516,28 @@ bool HouseClass::AI_Attack(UrgencyType)
 		TotalBoost = Rule.AIDynamicBoostIQMin;
 	}
 
+	if (FFAgame) {
+		//Nobody have friends, all AI's are the same and use the .ini settings.
+		TotalBoost = Rule.AIBoostIQLevel;
+	} else {
+		//Playing in teams (Not an FFA)
+
+		if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+			//Dynamic boost, use the above calculated stuff.
+		} else {
+		//No dynamic boost
+
+			if (IsHumanFriend == 1) {
+				//I'me a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
+				TotalBoost = Rule.AIBoostIQLevelForAllies;
+			} else {
+				//I hate the human and his so called friends, default AIBoostIQLevel
+				TotalBoost = Rule.AIBoostIQLevel;
+			}
+		}
+	}
+
 	// Some debug stuff by Bast75
-	// Note: Some info is recalculated at harvester unload.
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
 		FILE *fp;
 		fp = fopen("aiboost-debug.log", "a+");
@@ -5533,10 +5548,10 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
 			fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
 			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
-
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
-			//fprintf(fp, "IniName: %s\n", IniName); // %s for strings
+			// error, doesnt work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
+			// error, doesnt work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
 			//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
 			fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
 			//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
@@ -5551,7 +5566,19 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
 
 			fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
-			fprintf(fp, "DynamicBoost: %d\n", DynamicBoost); // %d for decimal
+			if (FFAgame) {
+				fprintf(fp, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
+			} else {
+				if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+					fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
+				} else {
+					if (IsHumanFriend == 1) {
+						fprintf(fp, "DynamicBoost: %d (Non-dynamic by .ini, teams and human friend)\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
+					} else {
+						fprintf(fp, "DynamicBoost: %d (Non-dynamic by .ini, teams and human enemy)\n", Rule.AIBoostIQLevel); // %d for decimal
+					}
+				}
+			}
 			fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
 
 			fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
@@ -5782,7 +5809,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 				//if (!shuffle && u->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				else if (forced || Percent_Chance(PercentageToSend)) {
-					if (Percent_Chance(70)) {
+					if (Percent_Chance(90)) {
 						u->Assign_Mission(MISSION_HUNT);
 					}
 					else {
@@ -5791,7 +5818,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 				else {
 					// If this unit is guarding the base, then cause it to shuffle location instead.
-					if (Percent_Chance(20) && u->Mission == MISSION_GUARD_AREA && Which_Zone(u) != ZONE_NONE) {
+					if (Percent_Chance(40) && u->Mission == MISSION_GUARD_AREA && Which_Zone(u) != ZONE_NONE) {
 						u->ArchiveTarget = ::As_Target(Where_To_Go(u));
 					}
 					else {
@@ -6489,6 +6516,7 @@ int HouseClass::AI_Building(void)
 			else {
 				b = &BuildingTypeClass::As_Reference(STRUCT_POWER);
 				if (Can_Build(b, ActLike) && b->Cost_Of() < money && (!(BQuantity[STRUCT_POWER] == 1 && Drain == 0))) { //only second allowed if drain not 0
+				//if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
 						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
@@ -6504,7 +6532,6 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_KENNEL] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-
 				}
 			}
 		}
@@ -6537,8 +6564,8 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = Rule.AIGotoRefsAsFastAsPossible;
-					if (3 < (int)BQuantity[STRUCT_TESLA]
+					prio = 1;// Rule.AIGotoRefsAsFastAsPossible;
+					if (2 < (int)BQuantity[STRUCT_TESLA]
 						+ (int)BQuantity[STRUCT_FLAME_TURRET]
 						+ (int)BQuantity[STRUCT_TURRET]
 						+ (int)BQuantity[STRUCT_PILLBOX]
@@ -6550,17 +6577,39 @@ int HouseClass::AI_Building(void)
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
-					}
-					if ((int)BQuantity[STRUCT_MSLO] > 0) {
-						prio = prio + 1;
-					}
-					if (airthreat) {
-						prio = prio + 1;
-					}
-					if (AIDetectedNavalWar) {
-						prio = prio + 1;
+						if ((int)BQuantity[STRUCT_MSLO] > 0) {
+							prio = prio + 1;
+						}
+						if (airthreat) {
+							prio = prio + 1;
+						}
+						if (AIDetectedNavalWar) {
+							prio = prio + 1;
+						}
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//repair bay
+		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//Construction Yard
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CONST] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6626,8 +6675,8 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1;
-					if (BQuantity[STRUCT_REFINERY] > 2) {
+					prio = 1; // Rule.AIGotoRefsAsFastAsPossible;
+					if (BQuantity[STRUCT_REFINERY] > 3) {
 						prio = prio + 1;
 					}
 					if (BQuantity[STRUCT_CONST] > 1) {
@@ -6638,62 +6687,6 @@ int HouseClass::AI_Building(void)
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
-			}
-		}
-
-		//repair bay
-		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//Construction Yard
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CONST] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-	
-		//naval allies
-		if (BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal && (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					prio = 1;
-					if (AIDetectedNavalWar) {
-						prio = prio + 1;
-					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0) {
-						prio = prio + 1;
-					}
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SHIP_YARD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//naval soviet
-		if (BQuantity[STRUCT_SUB_PEN] < AINavalMinimal && (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				prio = 1;
-				if (AIDetectedNavalWar) {
-					prio = prio + 1;
-				}
-				if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
-					prio = prio + 1;
-				}
-				*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 			}
 		}
 
@@ -6708,14 +6701,73 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
+		//airstrip
+		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < (AIAirstripMinimal/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//helipad
+		if (BQuantity[STRUCT_HELIPAD] < AIHelipadMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < (AIAirstripMinimal/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//Only try Naval if human does.
+		if (AIDetectedNavalWar) {
+			//naval allies
+			if (BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal && (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
+				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						prio = 1;
+						if (AIDetectedNavalWar) {
+							prio = prio + 1;
+						}
+						if (BQuantity[STRUCT_ADVANCED_TECH] > 0) {
+							prio = prio + 1;
+						}
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SHIP_YARD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					}
+				}
+			}
+
+			//naval soviet
+			if (BQuantity[STRUCT_SUB_PEN] < AINavalMinimal && (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
+				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+					choiceptr = BuildChoice.Alloc();
+					prio = 1;
+					if (AIDetectedNavalWar) {
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 1;
+					}
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
 		//air defense
-		if (airthreat) {
+		//if (airthreat) {
 			if (BQuantity[STRUCT_SAM] < AIAirDefenceMinimal) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < airthreat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < airthreat_quantity || BQuantity[STRUCT_SAM] < (AIAirDefenceMinimal/3)? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
@@ -6724,11 +6776,11 @@ int HouseClass::AI_Building(void)
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < airthreat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < airthreat_quantity || BQuantity[STRUCT_AAGUN] < (AIAirDefenceMinimal / 3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
-		}
+		//}
 
 		//Allied tech center
 		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
@@ -6752,28 +6804,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//airstrip
-		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//helipad
-		if (BQuantity[STRUCT_HELIPAD] < AIHelipadMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
 		//nuke
 		if (BQuantity[STRUCT_MSLO] < AINukeMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_MSLO);
@@ -6791,18 +6821,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && Power_Fraction() && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//Build Silo if storage above x %
-		if (Tiberium > Capacity * 0.99) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_STORAGE);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < (AIGapMinimal/2) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6827,9 +6846,22 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		if (!IsHuman && (int)HumanBuildingCount > 0 && (int)CurBuildings > Rule.AIBuildingsMinimal) {
+		//Build Silo if storage above x %
+		if (Tiberium > Capacity * 0.99) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_STORAGE);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
+
+		//if (!IsHuman && (int)HumanBuildingCount > 0 && (int)CurBuildings > Rule.AIBuildingsMinimal) {
+		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not to much:
-			if ((int)CurBuildings > AIMaxBuildings || (int)CurBuildings > ((int)HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
+			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
 				return(TICKS_PER_SECOND);
 			}
 		}
@@ -7377,7 +7409,7 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_E2:// grenadier
-						typetrack[count].Value = 3;
+						typetrack[count].Value = 2;
 						break;
 
 					case INFANTRY_E3:// rocket soldier
@@ -7385,7 +7417,11 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_E4:// Flamethrower
-						typetrack[count].Value = 3;
+						typetrack[count].Value = 2;
+						break;
+
+					case INFANTRY_SHOCK: // added the Shocktrooper by Bast75.
+						typetrack[count].Value = 2;
 						break;
 
 					case INFANTRY_RENOVATOR: //engineer
@@ -7395,45 +7431,37 @@ int HouseClass::AI_Infantry(void)
 						break;
 
 					case INFANTRY_TANYA:
-						if ((int)CurInfantry / 100 > (int)IQuantity[INFANTRY_TANYA]) {
-							// for every 100 infantry units, we allow 1 Tanya.
+						if ((int)IQuantity[INFANTRY_TANYA] < 2) {
 							typetrack[count].Value = 1;
 						}
 						break;
 
 					case INFANTRY_DOG: // added the Dog by Bast75
-						if ((int)CurInfantry / 100 > (int)IQuantity[INFANTRY_DOG] || (int)IQuantity[INFANTRY_DOG] < 3) {
-							// for every 100 infantry units, we allow 1 dog, but always minimal 3.
-							typetrack[count].Value = 1;
-						}
-						break;
-
-					case INFANTRY_SHOCK: // added the Shocktrooper by Bast75.
-						if ((int)CurInfantry / 50 > (int)IQuantity[INFANTRY_SHOCK]) {
+						if ((int)IQuantity[INFANTRY_DOG] < 6) {
 							typetrack[count].Value = 1;
 						}
 						break;
 
 					case INFANTRY_MEDIC: // added the Medic by Bast75.
-						if ((int)CurInfantry / 100 > (int)IQuantity[INFANTRY_MEDIC]) {
+						if ((int)IQuantity[INFANTRY_MEDIC] < 6) {
 							typetrack[count].Value = 1;
 						}
 						break;
 
 					case INFANTRY_MECHANIC: // added the Mechanic by Bast75.
-						if ((int)CurInfantry / 300 > (int)IQuantity[INFANTRY_MECHANIC]) {
+						if ((int)IQuantity[INFANTRY_MECHANIC] < 6) {
 							typetrack[count].Value = 1;
 						}
 						break;
 
 					case INFANTRY_THIEF: // added the Thief by Bast75.
-						if ((int)CurInfantry / 300 > (int)IQuantity[INFANTRY_THIEF]) {
+						if ((int)IQuantity[INFANTRY_THIEF] < 1) {
 							typetrack[count].Value = 1;
 						}
 						break;
 
 					case INFANTRY_SPY: // added the Spy by Bast75. Disabled again, The AI always sees everything, so no spy needed.
-						if ((int)CurInfantry / 300 > (int)IQuantity[INFANTRY_SPY]) {
+						if ((int)IQuantity[INFANTRY_SPY] < 1) {
 							typetrack[count].Value = 1;
 						}
 						break;

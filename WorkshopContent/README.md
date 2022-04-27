@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 26 april 2022
+Last update at: 28 april 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
