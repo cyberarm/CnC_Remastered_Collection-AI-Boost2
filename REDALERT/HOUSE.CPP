@@ -5573,9 +5573,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 					fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
 				} else {
 					if (IsHumanFriend == 1) {
-						fprintf(fp, "DynamicBoost: %d (Non-dynamic by .ini, teams and human friend)\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
+						fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
 					} else {
-						fprintf(fp, "DynamicBoost: %d (Non-dynamic by .ini, teams and human enemy)\n", Rule.AIBoostIQLevel); // %d for decimal
+						fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
 					}
 				}
 			}
