@@ -13,15 +13,21 @@ New:
 -The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
 -The AI Chronotanks jump no more in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like.
 -AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
+-You can now set the boost for your allies and your ennemies independently(when dynamic AI boost is disabled)
 -FFA detection, it automatically disables Dynamic AI in these cases because there are no teams so noting to rebalance.
 -Several tweaks to increase the intelligence for the AI a lot. (See new options in the .ini file)
--Because of the better intelligence the AI cash-cheat could be set back to a way lower value. It's almost equeal with human now. :-)
+-Because of the better intelligence the AI cash-cheat could be set back to a way lower value. It's almost equal with human now. :-)
+-Now the AI technology increase more faster
+-AI build more air units/defenses and GAP generators
  
 Hotfix:
 -Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field. This is fixed now (Thanks to Cyberarm)
 -Naval production by AI was unlimited. An AI tried to build more vessels than all other enemies together resulting in unlimited production when multiple AI's.
  Now it counts the human vessels only. In the .ini file you can edit some settings for this.
 -AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file.
+-Fixed AI make too much engineers
+-Fixed the AIAttackFirstTime(.ini), now it work!
+
 --- 
 
 General Mod info:
