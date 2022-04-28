@@ -33,7 +33,7 @@ General Mod info:
 -Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 -Harvester have memory of latest harvest location, this is now editable by .ini file
 -AI knows how to use Thiefs and Spies.
--AI knows how to use a MAD Tank.
+-AI knows how to use a MAD Tank and Demo truck.
 -AI knows how to use chronoshifting with a Chrono Tank.
 -AI knows how to use Naval stuff.
 -AI attacks interval uses different ways. (Hunt, Closest enemy, etc.)
