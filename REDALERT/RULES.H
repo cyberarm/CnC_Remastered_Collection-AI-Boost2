@@ -86,15 +86,16 @@ class RulesClass {
 		int AIDynamicBoostIQMax = 5;
 		int AIDynamicBoostIQMin = 2;
 		//int AIBOostIQLevelMCVFallback = 2;
-		int AIAttackInterval = 4;
+		int AIAttackInterval = 5;
+		int AIAttackFirstTime = 5;
 		int AISpeedRush = 0;
 		bool AIAftermathfastbuild = true;
 		bool AINoShroud = false;
 		bool AIAllowDynamicBaseGrow = true;
-		int AIAttackMinimalDefenceSendUnitsPrecentageLow = 80;
-		int AIAttackMinimalDefenceSendUnitsPrecentageHigh = 95;
-		int AIAttackMinimalDefenceSendUnitsSwitchLow2High = 4;
-		int AIAttackMinimalDefenceSendUnitsSwitchHigh2All = 8;
+		int AIAttackMinimaldefenseSendUnitsPrecentageLow = 80;
+		int AIAttackMinimaldefenseSendUnitsPrecentageHigh = 95;
+		int AIAttackMinimaldefenseSendUnitsSwitchLow2High = 4;
+		int AIAttackMinimaldefenseSendUnitsSwitchHigh2All = 8;
 		bool AIAllowBaseGrowByDeployedMCV = true;
 		double AIHarvesterMultiplyer = 1.3;
 		int AIHarvesterMemoryValue = 10;
@@ -136,7 +137,7 @@ class RulesClass {
 		int AIWarFactoryMinimalBasic = 2;
 		int AINavalMinimalBasic = 2;
 		int AIHelipadMinimalBasic = 2;
-		int AIAirDefenceMinimalBasic = 2;
+		int AIAirdefenseMinimalBasic = 2;
 		int AIFlameTurretMinimalBasic = 2;
 		int AIGunTeslaMinimalBasic = 2;
 		int AIGapMinimalBasic = 2;
@@ -155,7 +156,7 @@ class RulesClass {
 		int AIWarFactoryMinimalMix = 2;
 		int AINavalMinimalMix = 2;
 		int AIHelipadMinimalMix = 2;
-		int AIAirDefenceMinimalMix = 2;
+		int AIAirdefenseMinimalMix = 2;
 		int AIFlameTurretMinimalMix = 2;
 		int AIGunTeslaMinimalMix = 2;
 		int AIGapMinimalMix = 2;
@@ -174,7 +175,7 @@ class RulesClass {
 		int AIWarFactoryMinimalNaval = 2;
 		int AINavalMinimalNaval = 2;
 		int AIHelipadMinimalNaval = 2;
-		int AIAirDefenceMinimalNaval = 2;
+		int AIAirdefenseMinimalNaval = 2;
 		int AIFlameTurretMinimalNaval = 2;
 		int AIGunTeslaMinimalNaval = 2;
 		int AIGapMinimalNaval = 2;
@@ -194,7 +195,7 @@ class RulesClass {
 		int AIWarFactorySpeed = 1;
 		int AINavalSpeed = 1;
 		int AIHelipadSpeed = 4;
-		int AIAirDefenceSpeed = 12;
+		int AIAirdefenseSpeed = 12;
 		int AIFlameTurretSpeed = 16;
 		int AIGunTeslaSpeed = 16;
 		int AIRepairBaySpeed = 0;

@@ -564,10 +564,12 @@ bool RulesClass::General(CCINIClass & ini)
 		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
-		AIAttackMinimalDefenceSendUnitsPrecentageLow = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsPrecentageLow", 80);
-		AIAttackMinimalDefenceSendUnitsPrecentageHigh = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsPrecentageHigh", 95);
-		AIAttackMinimalDefenceSendUnitsSwitchLow2High = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsSwitchLow2High", 4);
-		AIAttackMinimalDefenceSendUnitsSwitchHigh2All = ini.Get_Int(MOREQOL, "AIAttackMinimalDefenceSendUnitsSwitchHigh2All", 8);
+		AIAttackFirstTime = ini.Get_Int(MOREQOL, "AIAttackFirstTime", 8);
+
+		AIAttackMinimaldefenseSendUnitsPrecentageLow = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageLow", 80);
+		AIAttackMinimaldefenseSendUnitsPrecentageHigh = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageHigh", 95);
+		AIAttackMinimaldefenseSendUnitsSwitchLow2High = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsSwitchLow2High", 4);
+		AIAttackMinimaldefenseSendUnitsSwitchHigh2All = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsSwitchHigh2All", 8);
 		AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
 		AIMadTankSaveToDeployDistance = ini.Get_Int(MOREQOL, "AIMadTankSaveToDeployDistance", 22);
 		AIMadTankCloseEnoughToEnemyDistance = ini.Get_Int(MOREQOL, "AIMadTankCloseEnoughToEnemyDistance", 18);
@@ -598,9 +600,9 @@ bool RulesClass::General(CCINIClass & ini)
 		AIHelipadMinimalBasic = ini.Get_Int(MOREQOL, "AIHelipadMinimalBasic", 2);
 		AIHelipadMinimalMix = ini.Get_Int(MOREQOL, "AIHelipadMinimalMix", 2);
 		AIHelipadMinimalNaval = ini.Get_Int(MOREQOL, "AIHelipadMinimalNaval", 2);
-		AIAirDefenceMinimalBasic = ini.Get_Int(MOREQOL, "AIAirDefenceMinimalBasic", 2);
-		AIAirDefenceMinimalMix = ini.Get_Int(MOREQOL, "AIAirDefenceMinimalMix", 2);
-		AIAirDefenceMinimalNaval = ini.Get_Int(MOREQOL, "AIAirDefenceMinimalNaval", 2);
+		AIAirdefenseMinimalBasic = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalBasic", 2);
+		AIAirdefenseMinimalMix = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalMix", 2);
+		AIAirdefenseMinimalNaval = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalNaval", 2);
 		AIFlameTurretMinimalBasic = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalBasic", 2);
 		AIFlameTurretMinimalMix = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalMix", 2);
 		AIFlameTurretMinimalNaval = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalNaval", 2);
@@ -645,7 +647,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIWarFactorySpeed = ini.Get_Int(MOREQOL, "AIWarFactorySpeed", 1);
 		AINavalSpeed = ini.Get_Int(MOREQOL, "AINavalSpeed", 1);
 		AIHelipadSpeed = ini.Get_Int(MOREQOL, "AIHelipadSpeed", 4);
-		AIAirDefenceSpeed = ini.Get_Int(MOREQOL, "AIAirDefenceSpeed", 12);
+		AIAirdefenseSpeed = ini.Get_Int(MOREQOL, "AIAirdefenseSpeed", 12);
 		AIFlameTurretSpeed = ini.Get_Int(MOREQOL, "AIFlameTurretSpeed", 16);
 		AIGunTeslaSpeed =  ini.Get_Int(MOREQOL, "AIGunTeslaSpeed", 16);
 		AIRepairBaySpeed = ini.Get_Int(MOREQOL, "AIRepairBaySpeed", 0);

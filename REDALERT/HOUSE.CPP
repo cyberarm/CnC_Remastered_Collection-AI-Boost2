@@ -686,7 +686,9 @@ HouseClass::HouseClass(HousesType house) :
 	/*
 	**	Set the time of the first AI attack.
 	*/
-	Attack = Rule.AttackDelay * Random_Pick(TICKS_PER_MINUTE/2, TICKS_PER_MINUTE*2);
+	//Attack = Rule.AttackDelay * Random_Pick(TICKS_PER_MINUTE/2, TICKS_PER_MINUTE*2);
+	//Delay First Attack, by Bast75
+	Attack = TICKS_PER_MINUTE * Rule.AIAttackFirstTime;
 
 	Init_Unit_Trackers();
 }
@@ -5548,6 +5550,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
 			fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
 			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
+			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval); // %d for decimal
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
 			// error, doesnt work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
@@ -5573,9 +5576,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 					fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
 				} else {
 					if (IsHumanFriend == 1) {
-						fprintf(fp, "DynamicBoost: %d (Non-dynamic by .ini, teams and human friend)\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
+						fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
 					} else {
-						fprintf(fp, "DynamicBoost: %d (Non-dynamic by .ini, teams and human enemy)\n", Rule.AIBoostIQLevel); // %d for decimal
+						fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
 					}
 				}
 			}
@@ -5639,18 +5642,18 @@ bool HouseClass::AI_Attack(UrgencyType)
 
 
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
-	bool forced = (CurBuildings == 0); // Why only force on no buldings? If we have enough base defence, we can send all units.
-	int CurrentDefenceBuildings = (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX];
+	bool forced = (CurBuildings == 0); // Why only force on no buldings? If we have enough base defense, we can send all units.
+	int CurrentdefenseBuildings = (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX];
 	int PercentageToSend;
-	if (CurrentDefenceBuildings > Rule.AIAttackMinimalDefenceSendUnitsSwitchHigh2All) {
+	if (CurrentdefenseBuildings > Rule.AIAttackMinimaldefenseSendUnitsSwitchHigh2All) {
 		PercentageToSend = 100; 
-		forced = true; // Enough defence, send all units.
+		forced = true; // Enough defense, send all units.
 	}
-	else if (CurrentDefenceBuildings > Rule.AIAttackMinimalDefenceSendUnitsSwitchLow2High) {
-		PercentageToSend = Rule.AIAttackMinimalDefenceSendUnitsPrecentageHigh; // Medium defence, send high percentage of units.
+	else if (CurrentdefenseBuildings > Rule.AIAttackMinimaldefenseSendUnitsSwitchLow2High) {
+		PercentageToSend = Rule.AIAttackMinimaldefenseSendUnitsPrecentageHigh; // Medium defense, send high percentage of units.
 	}
 	else {
-		PercentageToSend = Rule.AIAttackMinimalDefenceSendUnitsPrecentageLow; // Low defence, send lowest percentage of units.
+		PercentageToSend = Rule.AIAttackMinimaldefenseSendUnitsPrecentageLow; // Low defense, send lowest percentage of units.
 	}
 
 	// Air units
@@ -6322,7 +6325,7 @@ int HouseClass::AI_Building(void)
 			AIWarFactoryMinimal = Rule.AIWarFactoryMinimalBasic;
 			AINavalMinimal = Rule.AINavalMinimalBasic;
 			AIHelipadMinimal = Rule.AIHelipadMinimalBasic;
-			AIAirDefenceMinimal = Rule.AIAirDefenceMinimalBasic;
+			AIAirdefenseMinimal = Rule.AIAirdefenseMinimalBasic;
 			AIFlameTurretMinimal = Rule.AIFlameTurretMinimalBasic;
 			AIGunTeslaMinimal = Rule.AIGunTeslaMinimalBasic;
 			AIGapMinimal = Rule.AIGapMinimalBasic;
@@ -6344,7 +6347,7 @@ int HouseClass::AI_Building(void)
 				AIWarFactoryMinimal = Rule.AIWarFactoryMinimalMix;
 				AINavalMinimal = Rule.AINavalMinimalMix;
 				AIHelipadMinimal = Rule.AIHelipadMinimalMix;
-				AIAirDefenceMinimal = Rule.AIAirDefenceMinimalMix;
+				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalMix;
 				AIFlameTurretMinimal = Rule.AIFlameTurretMinimalMix;
 				AIGunTeslaMinimal = Rule.AIGunTeslaMinimalMix;
 				AIGapMinimal = Rule.AIGapMinimalMix;
@@ -6364,7 +6367,7 @@ int HouseClass::AI_Building(void)
 				AIWarFactoryMinimal = Rule.AIWarFactoryMinimalNaval;
 				AINavalMinimal = Rule.AINavalMinimalNaval;
 				AIHelipadMinimal = Rule.AIHelipadMinimalNaval;
-				AIAirDefenceMinimal = Rule.AIAirDefenceMinimalNaval;
+				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalNaval;
 				AIFlameTurretMinimal = Rule.AIFlameTurretMinimalNaval;
 				AIGunTeslaMinimal = Rule.AIGunTeslaMinimalNaval;
 				AIGapMinimal = Rule.AIGapMinimalNaval;
@@ -6392,7 +6395,7 @@ int HouseClass::AI_Building(void)
 					AINavalMinimal = enemy->BQuantity[STRUCT_SHIP_YARD] + enemy->BQuantity[STRUCT_SUB_PEN];
 				}
 				if (airthreat_quantity > AIHelipadMinimal) { AIHelipadMinimal = airthreat_quantity; } //set hpad/airfield limit equal to enemy air units (if higher)
-				if (airthreat_quantity > AIAirDefenceMinimal) { AIAirDefenceMinimal = airthreat_quantity; } //set air defence limit equal to enemy air units (if higher)
+				if (airthreat_quantity > AIAirdefenseMinimal) { AIAirdefenseMinimal = airthreat_quantity; } //set air defense limit equal to enemy air units (if higher)
 
 				if (AIFlameTurretMinimal < enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) {
 					AIFlameTurretMinimal = enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET];
@@ -6413,7 +6416,7 @@ int HouseClass::AI_Building(void)
 				AINavalMinimal += 2;
 			}
 			AIHelipadMinimal += 2;
-			AIAirDefenceMinimal += 4;
+			AIAirdefenseMinimal += 4;
 			AIFlameTurretMinimal += 4;
 			AIGunTeslaMinimal += 4;
 			AIGapMinimal += 2;
@@ -6487,7 +6490,7 @@ int HouseClass::AI_Building(void)
 			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
 			AIVesselCarrierLimit = Rule.AINavalSpeed;
 			AIHelipadMinimal = Rule.AIHelipadSpeed;
-			AIAirDefenceMinimal = Rule.AIAirDefenceSpeed;
+			AIAirdefenseMinimal = Rule.AIAirdefenseSpeed;
 			AIFlameTurretMinimal = Rule.AIFlameTurretSpeed;
 			AIGunTeslaMinimal = Rule.AIGunTeslaSpeed;
 			AIGapMinimal = Rule.AIGapSpeed;
@@ -6515,8 +6518,8 @@ int HouseClass::AI_Building(void)
 			}
 			else {
 				b = &BuildingTypeClass::As_Reference(STRUCT_POWER);
-				if (Can_Build(b, ActLike) && b->Cost_Of() < money && (!(BQuantity[STRUCT_POWER] == 1 && Drain == 0))) { //only second allowed if drain not 0
-				//if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				//if (Can_Build(b, ActLike) && b->Cost_Of() < money && (!(BQuantity[STRUCT_POWER] == 1 && Drain == 0))) { //only second allowed if drain not 0
+				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
 						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
@@ -6564,14 +6567,14 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1;// Rule.AIGotoRefsAsFastAsPossible;
-					if (2 < (int)BQuantity[STRUCT_TESLA]
-						+ (int)BQuantity[STRUCT_FLAME_TURRET]
-						+ (int)BQuantity[STRUCT_TURRET]
-						+ (int)BQuantity[STRUCT_PILLBOX]
-						+ (int)BQuantity[STRUCT_CAMOPILLBOX]) {
-						prio = prio + 1;
-					}
+					prio = 2;// Rule.AIGotoRefsAsFastAsPossible;
+					//if (2 < (int)BQuantity[STRUCT_TESLA]
+					//	+ (int)BQuantity[STRUCT_FLAME_TURRET]
+					//	+ (int)BQuantity[STRUCT_TURRET]
+					//	+ (int)BQuantity[STRUCT_PILLBOX]
+					//	+ (int)BQuantity[STRUCT_CAMOPILLBOX]) {
+					//	prio = prio + 1;
+					//}
 					if ((int)BQuantity[STRUCT_WEAP] > 0) {
 						prio = prio + 1;
 					}
@@ -6580,12 +6583,12 @@ int HouseClass::AI_Building(void)
 						if ((int)BQuantity[STRUCT_MSLO] > 0) {
 							prio = prio + 1;
 						}
-						if (airthreat) {
-							prio = prio + 1;
-						}
-						if (AIDetectedNavalWar) {
-							prio = prio + 1;
-						}
+						//if (airthreat) {
+						//	prio = prio + 1;
+						//}
+						//if (AIDetectedNavalWar) {
+						//	prio = prio + 1;
+						//}
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6620,7 +6623,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6631,7 +6634,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6642,7 +6645,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < 4 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6653,7 +6656,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 6 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6664,27 +6667,27 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < 3 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
-		//warfactory, 1st one high prio, then build 4 defences, then nr 2 and 3 high prio. More is medium
+		//warfactory, 1st one high prio, then build 4 defenses, then nr 2 and 3 high prio. More is medium
 		if (BQuantity[STRUCT_WEAP] < AIWarFactoryMinimal && BQuantity[STRUCT_WEAP] < AIWarFactoryLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					prio = 1; // Rule.AIGotoRefsAsFastAsPossible;
-					if (BQuantity[STRUCT_REFINERY] > 3) {
+					if (BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
 					}
 					if (BQuantity[STRUCT_CONST] > 1) {
 						prio = prio + 1;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 1;
-					}
+					//if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					//	prio = prio + 1;
+					//}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -6707,7 +6710,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < (AIAirstripMinimal/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6718,7 +6721,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < (AIAirstripMinimal/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6735,9 +6738,9 @@ int HouseClass::AI_Building(void)
 						if (AIDetectedNavalWar) {
 							prio = prio + 1;
 						}
-						if (BQuantity[STRUCT_ADVANCED_TECH] > 0) {
-							prio = prio + 1;
-						}
+						//if (BQuantity[STRUCT_ADVANCED_TECH] > 0) {
+						//	prio = prio + 1;
+						//}
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SHIP_YARD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
@@ -6752,35 +6755,35 @@ int HouseClass::AI_Building(void)
 					if (AIDetectedNavalWar) {
 						prio = prio + 1;
 					}
-					if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 1;
-					}
+					//if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					//	prio = prio + 1;
+					//}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
 		//air defense
-		//if (airthreat) {
-			if (BQuantity[STRUCT_SAM] < AIAirDefenceMinimal) {
+		if (airthreat) {
+			if (BQuantity[STRUCT_SAM] < AIAirdefenseMinimal) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < airthreat_quantity || BQuantity[STRUCT_SAM] < (AIAirDefenceMinimal/3)? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < airthreat_quantity || BQuantity[STRUCT_SAM] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
-			if (BQuantity[STRUCT_AAGUN] < AIAirDefenceMinimal) {
+			if (BQuantity[STRUCT_AAGUN] < AIAirdefenseMinimal) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < airthreat_quantity || BQuantity[STRUCT_AAGUN] < (AIAirDefenceMinimal / 3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < airthreat_quantity || BQuantity[STRUCT_AAGUN] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
-		//}
+		}
 
 		//Allied tech center
 		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
@@ -6821,7 +6824,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && Power_Fraction() && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < (AIGapMinimal/2) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}

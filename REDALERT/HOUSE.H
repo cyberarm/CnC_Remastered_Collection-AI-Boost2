@@ -432,7 +432,7 @@ class HouseClass {
 		int AINavalMinimal = 1;
 		int AIHelipadMinimal = 1;
 		int AIAirstripMinimal = 1;
-		int AIAirDefenceMinimal = 1;
+		int AIAirdefenseMinimal = 1;
 		int AIFlameTurretMinimal = 1;
 		int AIGunTeslaMinimal = 1;
 		int AIRefineryMinimal = 1;
@@ -453,7 +453,6 @@ class HouseClass {
 		int AIMaxNavalNr = 50;
 		int AIMaxInfantryNr = 50;
 		int AIMaxAirNr = 20;
-		int AIAttackIntervalLoop = 0;
 		//bool AIAttackMode = true;
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
