@@ -6860,7 +6860,7 @@ int HouseClass::AI_Building(void)
 
 		//if (!IsHuman && (int)HumanBuildingCount > 0 && (int)CurBuildings > Rule.AIBuildingsMinimal) {
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
-			// AI goes over minimal allowed, now check if not to much:
+			// AI goes over minimal allowed, now check if not too much:
 			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
 				return(TICKS_PER_SECOND);
 			}
@@ -6942,7 +6942,7 @@ int HouseClass::AI_Unit(void)
 		}
 	}
 
-	//Naval war and no ground war? Don't make to much of this, focus more on naval.
+	//Naval war and no ground war? Don't make too much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
 		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(23)) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
@@ -7282,7 +7282,7 @@ int HouseClass::AI_Infantry(void)
 		return(TICKS_PER_SECOND);
 	}
 
-	//Naval war and no ground war? Don't make to much of this, focus more on naval.
+	//Naval war and no ground war? Don't make too much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
 		if (Percent_Chance(Rule.AIGroundUnitSlowDown)) {
 			return(TICKS_PER_SECOND);
