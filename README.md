@@ -21,8 +21,7 @@ News:
  
 Hotfix:
 - Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
-- AI ship production was unlimited. An AI try to build more ships than all other enemies combined, resulting in unlimited production.
-Now it counts the human ships only. In the .ini file you can edit some settings for this
+- AI ship production was unlimited. An AI try to build more ships than all other enemies combined, resulting in unlimited production. Now it counts the human ships only. In the .ini file you can edit some settings for this
 - AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file
 - Fixed AI make too much engineers
 - Fixed the AIAttackFirstTime (in the .ini), now it work!
@@ -60,21 +59,15 @@ General Mod info:
 - Now its possible to add more starting cash and units! Editable by the .ini file
 - You can now remove toggle with space between old/new graphic in gameconstant.xml
 - Added the option to remove shroud from the map
-- AI have a limit of contruction yard/war factory/vessel carrier according to fast build on/off. Its more realist against a humain even with a massive base
+- AI have a limit of contruction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a humain even with a massive base
 
-The AI monitors what you are doing and uses this on how to react while upgrading his base.
-More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this
-It's totally dynamic. :-)
+The AI monitors what you are doing and uses this on how to react while upgrading his base. More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this. It's totally dynamic. :-)
 
 ---
 
 Note:
-
-- The more Tiberium is available on the map, the harder it gets to beat this AI.
-You might need a faster pc because of the amount of units etc.  :-)
-
-- AI Boost level and almost all other setttings are editable using the .ini file. It's located in:
-C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
+- The more Tiberium is available on the map, the harder it is to beat the AI. You might need a faster pc because of the amount of units etc.  :-)
+- AI Boost level and almost all other setttings are editable using the .ini file. It's located in: C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
 
 ---
 
@@ -84,10 +77,7 @@ To do / whishes:
 - AI Iron Curton control in Skirmish
 
 Known issues:
-- AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat
-
-- Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
- It also changes the voices for some countries. Currently we don't know how to correct this
+- Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one) It also changes the voices for some countries. Currently, we don't know how to correct this
 
 Source code:
 https://github.com/Bast75/CnC_Remastered_Collection-AI-Boost2
