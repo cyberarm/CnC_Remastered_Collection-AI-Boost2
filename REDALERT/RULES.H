@@ -104,7 +104,7 @@ class RulesClass {
 		int AIBuildingsMultiplier = 2;
 		int AIBuildingsMinimal = 30;
 		//int AIUnitMultiplier = 3;
-		int AIMaxEngineers = 15;
+		int AIMaxEngineers = 20;
 		int InfantryGroupSize = 5;
 		bool AllowTechStealing = true;
 		int AIMinimalChronotanksBeforeShift = 5;
