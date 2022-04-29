@@ -20,7 +20,7 @@ News:
 - AI build more air units/defenses and GAP generators
  
 Hotfix:
-- Sometimes harvesters would go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
+- Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
 - AI ship production was unlimited. An AI try to build more ships than all other enemies combined, resulting in unlimited production.
 Now it counts the human ships only. In the .ini file you can edit some settings for this
 - AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file
