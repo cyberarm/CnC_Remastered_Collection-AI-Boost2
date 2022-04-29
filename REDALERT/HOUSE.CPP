@@ -5553,90 +5553,99 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval); // %d for decimal
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
-			// error, doesnt work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
-			// error, doesnt work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
-			//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
-			fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
-			//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
-			fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
-			fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
-			fprintf(fp, "Power produced: %d\n", Power); // %d for decimal
-			fprintf(fp, "Power drain: %d\n", Drain); // %d for decimal
-			fprintf(fp, "Power plus: %d\n", AIPowerPlus); // %d for decimal
-			fprintf(fp, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
-			fprintf(fp, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
-			fprintf(fp, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
-			fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
+			if (Buildings.Count()==0) {
+				fprintf(fp, "Is defeated: 1\n"); // %s for strings 
+			}
+			else {
+				fprintf(fp, "Is defeated: 0\n"); // %s for strings 
+				// error, doesnt work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
+				// error, doesnt work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
+				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
+				fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
+				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
+				fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
+				fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
+				fprintf(fp, "Power produced: %d\n", Power); // %d for decimal
+				fprintf(fp, "Power drain: %d\n", Drain); // %d for decimal
+				fprintf(fp, "Power plus: %d\n", AIPowerPlus); // %d for decimal
+				fprintf(fp, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
+				fprintf(fp, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
+				fprintf(fp, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
+				fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
 
-			fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
-			fprintf(fp, "AIBoostIQLevelForAllies (.ini file): %d\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
-			if (FFAgame) {
-				fprintf(fp, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
-			} else {
-				if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
-					fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
-				} else {
-					if (IsHumanFriend == 1) {
-						fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
-					} else {
-						fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
+				fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
+				fprintf(fp, "AIBoostIQLevelForAllies (.ini file): %d\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
+				if (FFAgame) {
+					fprintf(fp, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
+				}
+				else {
+					if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+						fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
+					}
+					else {
+						if (IsHumanFriend == 1) {
+							fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
+						}
+						else {
+							fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
+						}
 					}
 				}
+				fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
+
+				fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
+				fprintf(fp, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
+				fprintf(fp, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
+				fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
+				fprintf(fp, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
+				fprintf(fp, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
+				fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
+				fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
+				fprintf(fp, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
+				fprintf(fp, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
+				fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
+				fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
+				fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
+				fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
+				fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
+				fprintf(fp, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
+				fprintf(fp, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
+				fprintf(fp, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
+				fprintf(fp, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
+				fprintf(fp, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
+				fprintf(fp, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
+				fprintf(fp, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
+				fprintf(fp, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
+				fprintf(fp, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
+				fprintf(fp, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
+				fprintf(fp, "Buildings: Total: %d\n", Buildings.Count()); // %d for decimal
+
+				fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
+				fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
+				fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
+				fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
+				fprintf(fp, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
+				fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
+
+				fprintf(fp, "Aircrafts: Total: %d\n", Vessels.Count()); // %d for decimal
+
+				fprintf(fp, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
+				fprintf(fp, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
+				fprintf(fp, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
+				fprintf(fp, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
+				fprintf(fp, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
+				fprintf(fp, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
+				fprintf(fp, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
+				fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+				fprintf(fp, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
+				fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+				fprintf(fp, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
+				fprintf(fp, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
+				fprintf(fp, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
+				fprintf(fp, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
+				fprintf(fp, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
+				fclose(fp);
 			}
-			fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
-
-			fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
-			fprintf(fp, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
-			fprintf(fp, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
-			fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
-			fprintf(fp, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
-			fprintf(fp, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
-			fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
-			fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
-			fprintf(fp, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
-			fprintf(fp, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
-			fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
-			fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
-			fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
-			fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
-			fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
-			fprintf(fp, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
-			fprintf(fp, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
-			fprintf(fp, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
-			fprintf(fp, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
-			fprintf(fp, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
-			fprintf(fp, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
-			fprintf(fp, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
-			fprintf(fp, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
-			fprintf(fp, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
-			fprintf(fp, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
-			fprintf(fp, "Buildings: Total: %d\n", Buildings.Count()); // %d for decimal
-
-			fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
-			fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
-			fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
-			fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
-			fprintf(fp, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
-			fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
-
-			fprintf(fp, "Aircrafts: Total: %d\n", Vessels.Count()); // %d for decimal
-
-			fprintf(fp, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
-			fprintf(fp, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
-			fprintf(fp, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
-			fprintf(fp, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
-			fprintf(fp, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
-			fprintf(fp, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
-			fprintf(fp, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
-			fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
-			fprintf(fp, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
-			fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
-			fprintf(fp, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
-			fprintf(fp, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
-			fprintf(fp, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
-			fprintf(fp, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
-			fprintf(fp, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
-			fclose(fp);
 		}
 	}
 	// End of debugging stuff.
@@ -6568,8 +6577,8 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 2;// Rule.AIGotoRefsAsFastAsPossible;
-					//if (2 < (int)BQuantity[STRUCT_TESLA]
+					prio = 1;// Rule.AIGotoRefsAsFastAsPossible;
+					//if (5 < (int)BQuantity[STRUCT_TESLA]
 					//	+ (int)BQuantity[STRUCT_FLAME_TURRET]
 					//	+ (int)BQuantity[STRUCT_TURRET]
 					//	+ (int)BQuantity[STRUCT_PILLBOX]
@@ -6577,46 +6586,25 @@ int HouseClass::AI_Building(void)
 					//	prio = prio + 1;
 					//}
 					if ((int)BQuantity[STRUCT_WEAP] > 0) {
-						prio = prio + 1;
+						prio = prio + 2;
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
-						if ((int)BQuantity[STRUCT_MSLO] > 0) {
+						//if ((int)BQuantity[STRUCT_MSLO] > 0) {
+						//	prio = prio + 1;
+						//}
+						if (airthreat) {
 							prio = prio + 1;
 						}
-						//if (airthreat) {
-						//	prio = prio + 1;
-						//}
-						//if (AIDetectedNavalWar) {
-						//	prio = prio + 1;
-						//}
+						if (AIDetectedNavalWar) {
+							prio = prio + 1;
+						}
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
-		//repair bay
-		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//Construction Yard
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CONST] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
 
 		//pillbox
 		if (BQuantity[STRUCT_PILLBOX] < AIFlameTurretMinimal) {
@@ -6624,7 +6612,14 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					prio = 2;
+					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 2;
+					}
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6635,7 +6630,14 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					prio = 1;
+					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 2;
+					}
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6646,29 +6648,14 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//gun turret
-		if (BQuantity[STRUCT_TURRET] < AIGunTeslaMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_TURRET);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//tesla
-		if (BQuantity[STRUCT_TESLA] < AIGunTeslaMinimal) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money && Power_Fraction() >= 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					prio = 3;
+					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
+						prio = prio + 2;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 4;
+					}
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6679,17 +6666,53 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1; // Rule.AIGotoRefsAsFastAsPossible;
-					if (BQuantity[STRUCT_RADAR] > 0) {
-						prio = prio + 1;
-					}
-					if (BQuantity[STRUCT_CONST] > 1) {
-						prio = prio + 1;
-					}
-					//if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					prio = 1;
+					//if (BQuantity[STRUCT_RADAR] > 0) {
 					//	prio = prio + 1;
 					//}
+					//if (BQuantity[STRUCT_CONST] > 1) {
+					//	prio = prio + 1;
+					//}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 1;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//gun turret
+		if (BQuantity[STRUCT_TURRET] < AIGunTeslaMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_TURRET);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					prio = 5;
+					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
+						prio = prio + 2;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 2;
+					}
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//tesla
+		if (BQuantity[STRUCT_TESLA] < AIGunTeslaMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					prio = 3;
+					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
+						prio = prio + 2;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 2;
+					}
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6697,6 +6720,28 @@ int HouseClass::AI_Building(void)
 		//radar
 		if (BQuantity[STRUCT_RADAR] < 1) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_RADAR);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
+		//Allied tech center
+		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
+		//Soviet tech center
+		if (BQuantity[STRUCT_SOVIET_TECH] < 1) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
@@ -6723,6 +6768,28 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//repair bay
+		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
+			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REPAIR] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//Construction Yard
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CONST] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6786,28 +6853,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//Allied tech center
-		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-				}
-			}
-		}
-
-		//Soviet tech center
-		if (BQuantity[STRUCT_SOVIET_TECH] < 1) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-				}
-			}
-		}
-
 		//nuke
 		if (BQuantity[STRUCT_MSLO] < AINukeMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_MSLO);
@@ -6825,7 +6870,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && Power_Fraction() && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < (int)(AIGapMinimal/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6926,7 +6971,7 @@ int HouseClass::AI_Unit(void)
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
 			if ((int)UQuantity[UNIT_HARVESTER] < (int)Rule.AIHarvesterMaxLimit) {
-				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer) || (int)UQuantity[UNIT_HARVESTER] < 2) {
+				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer) || (int)UQuantity[UNIT_HARVESTER] < 3) {
 					if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
 						BuildUnit = UNIT_HARVESTER;
 						return(TICKS_PER_SECOND);
