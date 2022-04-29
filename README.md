@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 28 april 2022
+Last update at: 29 april 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -9,62 +9,61 @@ Please follow the steps below to update and reactivate the mod:
 - Activate the mod and restart the game as prompted
 - The updated mod should then work as intended
 
-New:
-- The AI Chronotanks jump no more in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like.
-- AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
-- You can now set the boost for your allies and your ennemies independently(when dynamic AI boost is disabled)
-- FFA detection, it automatically disables Dynamic AI in these cases because there are no teams so noting to rebalance.
-- Several tweaks to increase the intelligence for the AI a lot. (See new options in the .ini file)
-- Because of the better intelligence the AI cash-cheat could be set back to a way lower value. It's almost equal with human now. :-)
+News:
+- Added more infos about how AIBoost work (to avoid confusion)
+- The AI Chronotanks no longer jump in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like
+- AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to rebalance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
+- You can now set the boost for your allies and your ennemies independently (when dynamic AI boost is disabled)
+- FFA detection, it automatically disables Dynamic AI in these cases because there are no teams so noting to rebalance
+- Several tweaks to greatly increase AI intelligence (See new options in the .ini file)
 - Now the AI technology increase more faster
 - AI build more air units/defenses and GAP generators
  
 Hotfix:
-- Sometime Harvesters went to the another side of the map instead of going to closest Tiberium field. This is fixed now (Thanks to Cyberarm)
-- Naval production by AI was unlimited. An AI tried to build more vessels than all other enemies together resulting in unlimited production when multiple AI's.
-  Now it counts the human vessels only. In the .ini file you can edit some settings for this.
-- AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file.
+- Sometimes harvesters would go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
+- AI ship production was unlimited. An AI try to build more ships than all other enemies combined, resulting in unlimited production.
+Now it counts the human ships only. In the .ini file you can edit some settings for this
+- AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file
 - Fixed AI make too much engineers
-- Fixed the AIAttackFirstTime(.ini), now it work!
+- Fixed the AIAttackFirstTime (in the .ini), now it work!
 
 --- 
 
 General Mod info:
 - The Rampastring Quality of Live MOD. (waypoints, etc.)
 - Engineer instant capture
-- Engineers automatically choose new target after capturing.
+- Engineers automatically choose new target after capturing
 - Additional Zoom Levels
 - RA Immersive Helis Mod (And all Air units have a sight) (Use 'L' to land)
 - Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 - Harvester have memory of latest harvest location, this is now editable by .ini file
-- AI knows how to use Thiefs and Spies.
+- AI knows how to use Thiefs and Spies
 - AI knows how to use a MAD Tank and Demo truck.
-- AI knows how to use chronoshifting with a Chrono Tank.
-- AI knows how to use Naval stuff.
-- AI attacks interval uses different ways. (Hunt, Closest enemy, etc.)
-- AI Scatters all units on new attack launch to unlock stuck/blocked units.
-- AI Air units no longer just attack Refineries, it selects random between basedefence, factories, power, buildings, naval units or all threats.
-- AI understands importants of buildings & units a lot better and uses it during attack.
+- AI knows how to use chronoshifting with a Chrono Tank
+- AI knows how to use Naval stuff
+- AI attacks interval uses different ways (Hunt, Closest enemy, etc.)
+- AI Scatters all units on new attack launch to unlock stuck/blocked units
+- AI Air units no longer just attack Refineries, it selects random between basedefence, factories, power, buildings, naval units or all threats
+- AI understands importants of buildings & units a lot better and uses it during attack
 - AI Engineers no longer walk in groups. They choose his own targets
-- AI Customizable limits for nr of AI buildings, tanks, etc.
-- AI handles his cash flow and building priorities/limits a lot smarter.
-- AI doesn't wait for the player to let his base grow and/or tech up to the highest level.
-- AI's MCV goes to tiberium and deploys there for extra base, AI limitations for buildings, etc. will grow on each MCV deployment.
-- AI scans for human Naval objects, if he detects a Naval stuff, it will upscale his Naval and Air stuff.
-- AI lowers tank production if human goes naval and GroundWar is disabled. (Allies still build Chronotanks beacause they can Chronoshift)
-- AI Medics and Mechanics now only repairs friendly units.
-- Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot.
-- ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo.
+- AI Customizable limits for number of AI buildings, tanks, etc.
+- AI handles his cash flow and building priorities/limits a lot smarter
+- AI doesn't wait for the player to let his base grow and/or tech up to the highest level
+- AI's MCV goes to tiberium and deploys there for extra base, AI limitations for buildings, etc. will grow on each MCV deployment
+- AI scans for human Naval objects, if he detects a Naval stuff, it will upscale his Naval and Air stuff
+- AI lowers tank production if human goes naval and GroundWar is disabled (Allies still build Chronotanks beacause they can Chronoshift)
+- AI Medics and Mechanics now only repairs friendly units
+- Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot
+- ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo
 - Aftermath fast build MOD (Use .ini to enable/disable)
 - AttackMove MOD (Use Shift)
 - Now its possible to add more starting cash and units! Editable by the .ini file
-- You can now remove toggle with space between old/new graphic in gameconstant.xml.
+- You can now remove toggle with space between old/new graphic in gameconstant.xml
 - Added the option to remove shroud from the map
-- AI have a limit of yards/wars/vessel carrier according of fast build on/off. Its more realist against a humain even with a massive base
+- AI have a limit of contruction yard/war factory/vessel carrier according to fast build on/off. Its more realist against a humain even with a massive base
 
 The AI monitors what you are doing and uses this on how to react while upgrading his base.
-More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this.
-Etc.
+More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this
 It's totally dynamic. :-)
 
 ---
@@ -83,18 +82,17 @@ To do / whishes:
 - AI Minelayer control
 - AI Chronosphere control in Skirmish
 - AI Iron Curton control in Skirmish
--Change the menu for additional AI levels and game modes. (Source code anyone? Github?)
 
 Known issues:
-- AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat.
+- AI strenght is depending on map layout. Some maps it's still not good. Other maps its almost impossible to beat
 
 - Tech stealing: The human player has to re-deploy the Construction Yard to MCV and back to unlock all stolen tech. Also for the War Factory. (Or you have to build a extra one)
- It also changes the voices for some countries. Currently we don't know how to correct this.
+ It also changes the voices for some countries. Currently we don't know how to correct this
 
 Source code:
 https://github.com/Bast75/CnC_Remastered_Collection-AI-Boost2
 
 
-Greetings, have fun and don't forget to rate this mod.
-Bast75.
+Greetings, have fun and don't forget to rate this mod
+Bast75
 
