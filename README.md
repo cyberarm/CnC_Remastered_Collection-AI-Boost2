@@ -10,7 +10,6 @@ Please follow the steps below to update and reactivate the mod:
 - The updated mod should then work as intended
 
 New:
-- The AI uses Chronotanks in groups to make them more effective. Now this can be enabled or disabled using the .ini file.
 - The AI Chronotanks jump no more in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like.
 - AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, this to rebalance unfair groups a bit. (Can be enabled/disabled/tweaked using the .ini file.)
 - You can now set the boost for your allies and your ennemies independently(when dynamic AI boost is disabled)
