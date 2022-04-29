@@ -5569,6 +5569,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
 
 			fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
+			fprintf(fp, "AIBoostIQLevelForAllies (.ini file): %d\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
 			if (FFAgame) {
 				fprintf(fp, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
 			} else {
