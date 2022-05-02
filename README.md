@@ -14,7 +14,7 @@ News:
 - The AI Chronotanks no longer jump in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like
 - AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to rebalance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
 - You can now set the boost for your allies and your ennemies independently (when dynamic AI boost is disabled)
-- Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so noting to rebalance
+- Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to rebalance
 - Several tweaks to greatly increase AI intelligence (See new options in the .ini file)
 - Now the AI technology increase more faster
 - AI build more air units/defenses and GAP generators
