@@ -1956,7 +1956,70 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		//New dynamic boost method, recalculated every 5 minutes. (During attack loop)
+		//New dynamic boost method
+			//Recalculate all enemies and friends stuff: (This loops runs default every 5 minutes. Set by AIAttackInterval in the .ini file)
+		IsHumanFriend = 0;
+		TotalBoost = 0;
+		CountEnemiesForThisAI = 0;
+		CountFriendliesForThisAI = 0;
+		CountHousesStillAlive = 0;
+		for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
+			HouseClass const * hptr = HouseClass::As_Pointer(h);
+			if (hptr != NULL) {
+				if (hptr->CurBuildings > 0) {
+					CountHousesStillAlive++;
+					if (!Is_Ally(h)) {
+						CountEnemiesForThisAI++;
+					}
+					else {
+						if (ID != hptr->ID) {
+							CountFriendliesForThisAI++;
+							if (hptr->IsHuman) {
+								IsHumanFriend = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+		//Dynamic boost calculations:
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 0) { DynamicBoost = 1; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 2) { DynamicBoost = 2; }
+		TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
+		if (TotalBoost > Rule.AIDynamicBoostIQMax) {
+			TotalBoost = Rule.AIDynamicBoostIQMax;
+		}
+		if (TotalBoost < Rule.AIDynamicBoostIQMin) {
+			TotalBoost = Rule.AIDynamicBoostIQMin;
+		}
+
+		if (FFAgame) {
+			//Nobody have friends, all AI's are the same and use the .ini settings.
+			TotalBoost = Rule.AIBoostIQLevel;
+		}
+		else {
+			//Playing in teams (Not an FFA)
+
+			if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+				//Dynamic boost, use the above calculated stuff.
+			}
+			else {
+				//No dynamic boost
+
+				if (IsHumanFriend == 1) {
+					//I'me a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
+					TotalBoost = Rule.AIBoostIQLevelForAllies;
+				}
+				else {
+					//I hate the human and his so called friends, default AIBoostIQLevel
+					TotalBoost = Rule.AIBoostIQLevel;
+				}
+			}
+		}
+
 		tiberium *= TotalBoost;
 
 		//Old boost function:
@@ -5478,67 +5541,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 	assert(Houses.ID(this) == ID);
 	int index;
 
-	//Recalculate all enemies and friends stuff: (This loops runs default every 5 minutes. Set by AIAttackInterval in the .ini file)
-	IsHumanFriend = 0;
-	TotalBoost = 0;
-	CountEnemiesForThisAI = 0;
-	CountFriendliesForThisAI = 0;
-	CountHousesStillAlive = 0;
-	for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
-		HouseClass const * hptr = HouseClass::As_Pointer(h);
-		if (hptr != NULL) {
-			if (hptr->CurBuildings > 0) {
-				CountHousesStillAlive++;
-				if (!Is_Ally(h)) {
-					CountEnemiesForThisAI++;
-				}
-				else {
-					if (ID != hptr->ID) {
-						CountFriendliesForThisAI++;
-						if (hptr->IsHuman) {
-							IsHumanFriend = 1;
-						}
-					}
-				}
-			}
-		}
-	}
-	//Dynamic boost calculations:
-	DynamicBoost = 0; //This must be zero as short as possible to prevent blocking AI income.
-	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
-	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
-	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
-	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 0) { DynamicBoost = 1; }
-	if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 2) { DynamicBoost = 2; }
-	TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
-	if (TotalBoost > Rule.AIDynamicBoostIQMax) {
-		TotalBoost = Rule.AIDynamicBoostIQMax;
-	}
-	if (TotalBoost < Rule.AIDynamicBoostIQMin) {
-		TotalBoost = Rule.AIDynamicBoostIQMin;
-	}
-
-	if (FFAgame) {
-		//Nobody have friends, all AI's are the same and use the .ini settings.
-		TotalBoost = Rule.AIBoostIQLevel;
-	} else {
-		//Playing in teams (Not an FFA)
-
-		if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
-			//Dynamic boost, use the above calculated stuff.
-		} else {
-		//No dynamic boost
-
-			if (IsHumanFriend == 1) {
-				//I'me a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
-				TotalBoost = Rule.AIBoostIQLevelForAllies;
-			} else {
-				//I hate the human and his so called friends, default AIBoostIQLevel
-				TotalBoost = Rule.AIBoostIQLevel;
-			}
-		}
-	}
-
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
 		FILE *fp;
@@ -5775,13 +5777,16 @@ bool HouseClass::AI_Attack(UrgencyType)
 									for (int index = 0; index < Buildings.Count(); index++) {
 										BuildingClass * building = Buildings.Ptr(index);
 										if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-											if (FarthestEnemyBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(50))) {
-												//Note: We added the 50 change option, otherwise it always takes the furtherest building. Now it's random.
+											if (FarthestEnemyBuildingDist == -1 && (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(25))) {
+												//Note: We added the 25 change option, otherwise it always takes the furtherest building. Now it's more random.
 												FarthestEnemyBuildingDist = index;
+												break; // we have selected a building, so don't do a new calculation again.
 											}
 										}
 									}
-									break; // we have a own building, so don't do a new calculation again.
+								}
+								if (FarthestEnemyBuildingDist > -1) {
+									break; // we have selected a building, so don't do a new calculation again.
 								}
 							}
 							u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
@@ -7497,13 +7502,13 @@ int HouseClass::AI_Infantry(void)
 
 					case INFANTRY_TANYA:
 						if ((int)IQuantity[INFANTRY_TANYA] < 2) {
-							typetrack[count].Value = 1;
+							typetrack[count].Value = 2;
 						}
 						break;
 
 					case INFANTRY_DOG: // added the Dog by Bast75
 						if ((int)IQuantity[INFANTRY_DOG] < 6) {
-							typetrack[count].Value = 1;
+							typetrack[count].Value = 3;
 						}
 						break;
 

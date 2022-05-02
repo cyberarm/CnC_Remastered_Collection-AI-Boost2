@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 29 april 2022
+Last update at: 2 may 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -22,6 +22,7 @@ News:
 Hotfix:
 - Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
 - AI ship production was unlimited. An AI try to build more ships than all other enemies combined, resulting in unlimited production. Now it counts the human ships only. In the .ini file you can edit some settings for this
+- AI building production was unlimited when having multiple enemies. Now it calculates the average buildings of all enemies and use this as baseline
 - AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file
 - Fixed AI make too much engineers
 - Fixed the AIAttackFirstTime (in the .ini), now it work!
