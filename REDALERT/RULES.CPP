@@ -541,7 +541,6 @@ bool RulesClass::General(CCINIClass & ini)
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
 		AIHarvesterMultiplyer = ini.Get_Fixed(MOREQOL, "AIHarvesterMultiplyer", "1,2");
 		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
-		//AIGotoRefsAsFastAsPossible = ini.Get_Int(MOREQOL, "AIGotoRefsAsFastAsPossible", 2);
 		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIBuildingsMinimal = ini.Get_Int(MOREQOL, "AIBuildingsMinimal", 20);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
