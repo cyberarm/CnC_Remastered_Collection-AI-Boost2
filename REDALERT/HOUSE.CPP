@@ -1957,12 +1957,13 @@ void HouseClass::Harvested(unsigned tiberium)
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
 		//New dynamic boost method
-			//Recalculate all enemies and friends stuff: (This loops runs default every 5 minutes. Set by AIAttackInterval in the .ini file)
+		//Recalculate all enemies and friends stuff: (This loops runs default every 5 minutes. Set by AIAttackInterval in the .ini file)
 		IsHumanFriend = 0;
 		TotalBoost = 0;
 		CountEnemiesForThisAI = 0;
 		CountFriendliesForThisAI = 0;
 		CountHousesStillAlive = 0;
+		DynamicBoost = 0;
 		for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
 			HouseClass const * hptr = HouseClass::As_Pointer(h);
 			if (hptr != NULL) {
@@ -6597,7 +6598,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 2;// Rule.AIGotoRefsAsFastAsPossible;
+					prio = 2;
 					//if (5 < (int)BQuantity[STRUCT_TESLA]
 					//	+ (int)BQuantity[STRUCT_FLAME_TURRET]
 					//	+ (int)BQuantity[STRUCT_TURRET]
