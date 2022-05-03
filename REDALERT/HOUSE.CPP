@@ -6439,20 +6439,20 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Allow extra buildings if MCV deployed
-		if (BQuantity[STRUCT_CONST] > 1 && Rule.AIAllowBaseGrowByDeployedMCV) {
-			if (AIDetectHumanGroundWar) {
-				AIBarracksMinimal += 1;
-				AIWarFactoryMinimal += 2;
-			}
-			if (AIDetectedNavalWar) {
-				AINavalMinimal += 2;
-			}
-			AIHelipadMinimal += 2;
-			AIAirdefenseMinimal += 4;
-			AIFlameTurretMinimal += 4;
-			AIGunTeslaMinimal += 4;
-			AIGapMinimal += 2;
-		}
+		//if (BQuantity[STRUCT_CONST] > 1 && Rule.AIAllowBaseGrowByDeployedMCV) {
+		//	if (AIDetectHumanGroundWar) {
+		//		AIBarracksMinimal += 1;
+		//		AIWarFactoryMinimal += 2;
+		//	}
+		//	if (AIDetectedNavalWar) {
+		//		AINavalMinimal += 2;
+		//	}
+		//	AIHelipadMinimal += 2;
+		//	AIAirdefenseMinimal += 4;
+		//	AIFlameTurretMinimal += 4;
+		//	AIGunTeslaMinimal += 4;
+		//	AIGapMinimal += 2;
+		//}
 
 		// flame turrets must be doubled, allies have pillbox and camo pillbox in this amount.
 		if (BQuantity[STRUCT_FLAME_TURRET] > 0) {
@@ -6469,14 +6469,14 @@ int HouseClass::AI_Building(void)
 		if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
 
 		//Update refinery limit depending on number of warfactories, conyard and naval stuff
-		//RefineryLimit = 2 + NrOfWarFactories + NrOfConstructionYards + NrOfNavalYardsAndSubPens
+		AIRefineryMinimal = Rule.AIRefineryLimitOverwrite;
 		//AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
-		AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
-		if (BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH] > 0)
-		{
-			//We have a techcenter, allow 1 more Ref.
-			AIRefineryMinimal++;
-		}
+		//AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
+		//if (BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH] > 0)
+		//{
+		//	//We have a techcenter, allow 1 more Ref.
+		//	AIRefineryMinimal++;
+		//}
 
 		//If humans has more refs, we go more refs too:
 		if (HumanRefs > AIRefineryMinimal)
@@ -6600,13 +6600,6 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					prio = 2;
-					//if (5 < (int)BQuantity[STRUCT_TESLA]
-					//	+ (int)BQuantity[STRUCT_FLAME_TURRET]
-					//	+ (int)BQuantity[STRUCT_TURRET]
-					//	+ (int)BQuantity[STRUCT_PILLBOX]
-					//	+ (int)BQuantity[STRUCT_CAMOPILLBOX]) {
-					//	prio = prio + 1;
-					//}
 					if ((int)BQuantity[STRUCT_WEAP] > 0) {
 						prio = prio + 2;
 					}
