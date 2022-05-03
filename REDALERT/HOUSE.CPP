@@ -6607,7 +6607,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//refinery
-		if (BQuantity[STRUCT_REFINERY] < AIRefineryMinimal && BQuantity[STRUCT_REFINERY] < Rule.AIRefineryLimitOverwrite) {
+		if (BQuantity[STRUCT_REFINERY] < AIRefineryMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
