@@ -100,7 +100,6 @@ class RulesClass {
 		double AIHarvesterMultiplyer = 1.3;
 		int AIHarvesterMemoryValue = 10;
 		int AIHarvesterMaxLimit = 10;
-		//int AIGotoRefsAsFastAsPossible = 2;
 		int AIBuildingsMultiplier = 2;
 		int AIBuildingsMinimal = 30;
 		//int AIUnitMultiplier = 3;
