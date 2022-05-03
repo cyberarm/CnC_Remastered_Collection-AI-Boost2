@@ -4839,6 +4839,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass * building) const
 	**	as because spacing defensive buildings out will yield a better
 	**	defense.
 	*/
+
 	if (antiair || antiarmor || antiinfantry) {
 		adj = false;
 	}
@@ -5552,7 +5553,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
 			fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
 			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
-			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval); // %d for decimal
+			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
 			if (Buildings.Count()==0) {
@@ -6087,7 +6088,6 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		UrgencyType	Urgency;
 	} _types[] = {
 		{STRUCT_STORAGE,URGENCY_LOW},
-		{STRUCT_GAP, URGENCY_LOW},
 		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
 		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
 		{STRUCT_KENNEL, URGENCY_MEDIUM},
@@ -6098,6 +6098,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		{STRUCT_TESLA, URGENCY_MEDIUM},
 		{STRUCT_ADVANCED_TECH, URGENCY_MEDIUM},
 		{STRUCT_SOVIET_TECH, URGENCY_MEDIUM},
+		{STRUCT_GAP, URGENCY_LOW},
 		{STRUCT_RADAR, URGENCY_MEDIUM},
 		{STRUCT_AIRSTRIP, URGENCY_MEDIUM},
 		{STRUCT_HELIPAD, URGENCY_MEDIUM},
@@ -6707,12 +6708,12 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 6;
+					prio = 4;
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 4;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 4;
+						prio = prio + 6;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6730,7 +6731,7 @@ int HouseClass::AI_Building(void)
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 3;
+						prio = prio + 5;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}

@@ -539,10 +539,10 @@ bool RulesClass::General(CCINIClass & ini)
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
-		AIHarvesterMultiplyer = ini.Get_Int(MOREQOL, "AIHarvesterMultiplyer", 1.2);
+		AIHarvesterMultiplyer = ini.Get_Fixed(MOREQOL, "AIHarvesterMultiplyer", "1,2");
 		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
 		//AIGotoRefsAsFastAsPossible = ini.Get_Int(MOREQOL, "AIGotoRefsAsFastAsPossible", 2);
-		AIBuildingsMultiplier = ini.Get_Int(MOREQOL, "AIBuildingsMultiplier", 3);
+		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIBuildingsMinimal = ini.Get_Int(MOREQOL, "AIBuildingsMinimal", 20);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 20);
@@ -563,9 +563,9 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
 		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
-		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 4);
-		AIAttackFirstTime = ini.Get_Int(MOREQOL, "AIAttackFirstTime", 8);
-
+		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 5);
+		AIAttackFirstTime = ini.Get_Int(MOREQOL, "AIAttackFirstTime", 5);
+		AttackDelay = AIAttackFirstTime;
 		AIAttackMinimaldefenseSendUnitsPrecentageLow = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageLow", 80);
 		AIAttackMinimaldefenseSendUnitsPrecentageHigh = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageHigh", 95);
 		AIAttackMinimaldefenseSendUnitsSwitchLow2High = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsSwitchLow2High", 4);

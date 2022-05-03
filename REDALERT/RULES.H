@@ -97,7 +97,7 @@ class RulesClass {
 		int AIAttackMinimaldefenseSendUnitsSwitchLow2High = 4;
 		int AIAttackMinimaldefenseSendUnitsSwitchHigh2All = 8;
 		bool AIAllowBaseGrowByDeployedMCV = true;
-		double AIHarvesterMultiplyer = 1.3;
+		fixed AIHarvesterMultiplyer;
 		int AIHarvesterMemoryValue = 10;
 		int AIHarvesterMaxLimit = 10;
 		//int AIGotoRefsAsFastAsPossible = 2;
