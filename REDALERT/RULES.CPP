@@ -596,18 +596,33 @@ bool RulesClass::General(CCINIClass & ini)
 		AINavalMinimalBasic = ini.Get_Int(MOREQOL, "AINavalMinimalBasic", 2);
 		AINavalMinimalMix = ini.Get_Int(MOREQOL, "AINavalMinimalMix", 2);
 		AINavalMinimalNaval = ini.Get_Int(MOREQOL, "AINavalMinimalNaval", 2);
-		AIHelipadMinimalBasic = ini.Get_Int(MOREQOL, "AIHelipadMinimalBasic", 2);
-		AIHelipadMinimalMix = ini.Get_Int(MOREQOL, "AIHelipadMinimalMix", 2);
-		AIHelipadMinimalNaval = ini.Get_Int(MOREQOL, "AIHelipadMinimalNaval", 2);
+		AIHelipadLimitBasic = ini.Get_Int(MOREQOL, "AIHelipadLimitBasic", 2);
+		AIHelipadLimitMix = ini.Get_Int(MOREQOL, "AIHelipadLimitMix", 2);
+		AIHelipadLimitNaval = ini.Get_Int(MOREQOL, "AIHelipadLimitNaval", 2);
+		AIAirstripLimitBasic = ini.Get_Int(MOREQOL, "AIAirstripLimitBasic", 2);
+		AIAirstripLimitMix = ini.Get_Int(MOREQOL, "AIAirstripLimitMix", 2);
+		AIAirstripLimitNaval = ini.Get_Int(MOREQOL, "AIAirstripLimitNaval", 2);
+
 		AIAirdefenseMinimalBasic = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalBasic", 2);
 		AIAirdefenseMinimalMix = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalMix", 2);
 		AIAirdefenseMinimalNaval = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalNaval", 2);
-		AIFlameTurretMinimalBasic = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalBasic", 2);
-		AIFlameTurretMinimalMix = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalMix", 2);
-		AIFlameTurretMinimalNaval = ini.Get_Int(MOREQOL, "AIFlameTurretMinimalNaval", 2);
-		AIGunTeslaMinimalBasic = ini.Get_Int(MOREQOL, "AIGunTeslaMinimalBasic", 2);
-		AIGunTeslaMinimalMix = ini.Get_Int(MOREQOL, "AIGunTeslaMinimalMix", 2);
-		AIGunTeslaMinimalNaval = ini.Get_Int(MOREQOL, "AIGunTeslaMinimalNaval", 2);
+		AIPillBoxLimitBasic = ini.Get_Int(MOREQOL, "AIPillBoxLimitBasic", 2);
+		AIPillBoxLimitMix = ini.Get_Int(MOREQOL, "AIPillBoxLimitMix", 2);
+		AIPillBoxLimitNaval = ini.Get_Int(MOREQOL, "AIPillBoxLimitNaval", 2);
+		AICamoPillBoxLimitBasic = ini.Get_Int(MOREQOL, "AICamoPillBoxLimitBasic", 2);
+		AICamoPillBoxLimitMix = ini.Get_Int(MOREQOL, "AICamoPillBoxLimitMix", 2);
+		AICamoPillBoxLimitNaval = ini.Get_Int(MOREQOL, "AICamoPillBoxLimitNaval", 2);
+		AITurretGunLimitBasic = ini.Get_Int(MOREQOL, "AITurretGunLimitBasic", 2);
+		AITurretGunLimitMix = ini.Get_Int(MOREQOL, "AITurretGunLimitMix", 2);
+		AITurretGunLimitNaval = ini.Get_Int(MOREQOL, "AITurretGunLimitNaval", 2);
+		AIFlameTurretLimitBasic = ini.Get_Int(MOREQOL, "AITurretGunLimitNaval", 2);
+		AIFlameTurretLimitMix = ini.Get_Int(MOREQOL, "AIFlameTurretLimitMix", 2);
+		AIFlameTurretLimitNaval = ini.Get_Int(MOREQOL, "AIFlameTurretLimitNaval", 2);
+
+		AITeslaLimitBasic = ini.Get_Int(MOREQOL, "AITeslaLimitBasic", 2);
+		AITeslaLimitMix = ini.Get_Int(MOREQOL, "AITeslaLimitMix", 2);
+		AITeslaLimitNaval = ini.Get_Int(MOREQOL, "AITeslaLimitNaval", 2);
+
 		AIGapMinimalBasic = ini.Get_Int(MOREQOL, "AIGapMinimalBasic", 1);
 		AIGapMinimalMix = ini.Get_Int(MOREQOL, "AIGapMinimalMix", 1);
 		AIGapMinimalNaval = ini.Get_Int(MOREQOL, "AIGapMinimalNaval", 1);
@@ -646,6 +661,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIWarFactorySpeed = ini.Get_Int(MOREQOL, "AIWarFactorySpeed", 1);
 		AINavalSpeed = ini.Get_Int(MOREQOL, "AINavalSpeed", 1);
 		AIHelipadSpeed = ini.Get_Int(MOREQOL, "AIHelipadSpeed", 4);
+		AIAirStripSpeed = ini.Get_Int(MOREQOL, "AIAirStripSpeed", 4);
 		AIAirdefenseSpeed = ini.Get_Int(MOREQOL, "AIAirdefenseSpeed", 12);
 		AIFlameTurretSpeed = ini.Get_Int(MOREQOL, "AIFlameTurretSpeed", 16);
 		AIGunTeslaSpeed =  ini.Get_Int(MOREQOL, "AIGunTeslaSpeed", 16);
@@ -681,6 +697,38 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 	IsChronoKill = ChronoKillsCargo; //also overwrite with AIBoost settings.
 
+
+	//By Bast75 for debugging:
+	if (Rule.AIBoostDebug == 1) {
+		FILE *fp;
+		fp = fopen("aiboost-load-settings-debug.log", "a+");
+		if (fp) {
+			fprintf(fp, "********** Settings loaded: **********\n");
+			fprintf(fp, "AIDogHouseMinimalBasic: %d\n", AIDogHouseMinimalBasic); // %d for decimal
+			fprintf(fp, "AIBarracksMinimalBasic: %d\n", AIBarracksMinimalBasic); // %d for decimal
+			fprintf(fp, "AIWarFactoryMinimalBasic: %d\n", AIWarFactoryMinimalBasic); // %d for decimal
+			fprintf(fp, "AINavalMinimalBasic: %d\n", AINavalMinimalBasic); // %d for decimal
+			fprintf(fp, "AIHelipadLimitBasic: %d\n", AIHelipadLimitBasic); // %d for decimal
+			fprintf(fp, "AIAirstripLimitBasic: %d\n", AIAirstripLimitBasic); // %d for decimal
+			fprintf(fp, "AIAirdefenseMinimalBasic: %d\n", AIAirdefenseMinimalBasic); // %d for decimal
+			fprintf(fp, "AIPillBoxLimitBasic: %d\n", AIPillBoxLimitBasic); // %d for decimal
+			fprintf(fp, "AICamoPillBoxLimitBasic: %d\n", AICamoPillBoxLimitBasic); // %d for decimal
+			fprintf(fp, "AITurretGunLimitBasic: %d\n", AITurretGunLimitBasic); // %d for decimal
+			fprintf(fp, "AIFlameTurretLimitBasic: %d\n", AIFlameTurretLimitBasic); // %d for decimal
+			fprintf(fp, "AIFlameTurretLimitBasic: %d\n", AIFlameTurretLimitBasic); // %d for decimal
+			fprintf(fp, "AITeslaLimitBasic: %d\n", AITeslaLimitBasic); // %d for decimal
+			fprintf(fp, "AIRepairBayBasic: %d\n", AIRepairBayBasic); // %d for decimal
+			fprintf(fp, "AIGapMinimalBasic: %d\n", AIGapMinimalBasic); // %d for decimal
+			fprintf(fp, "AINukeMinimalBasic: %d\n", AINukeMinimalBasic); // %d for decimal
+			fprintf(fp, "AIMaxBuildingsBasic: %d\n", AIMaxBuildingsBasic); // %d for decimal
+			fprintf(fp, "AIMaxTanksBasic: %d\n", AIMaxTanksBasic); // %d for decimal
+			fprintf(fp, "AIMaxNavalBasic: %d\n", AIMaxNavalBasic); // %d for decimal
+			fprintf(fp, "AIMaxInfantryBasic: %d\n", AIMaxInfantryBasic); // %d for decimal
+			fprintf(fp, "AIMaxAirBasic: %d\n", AIMaxAirBasic); // %d for decimal
+			//fprintf(fp, "myname: %s\n", myname); // %s for strings
+			fclose(fp);
+		}
+	}
 	return(GeneralDone);
 	//return(false);
 }

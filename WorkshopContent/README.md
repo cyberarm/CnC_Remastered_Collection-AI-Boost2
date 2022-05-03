@@ -27,6 +27,7 @@ Hotfix:
 - AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file
 - Fixed AI make too much engineers
 - Fixed the AIAttackFirstTime (in the .ini), now it works!
+- GAP selling loop is fixed
 
 --- 
 

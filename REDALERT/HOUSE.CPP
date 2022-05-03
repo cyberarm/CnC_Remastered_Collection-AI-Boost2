@@ -6345,10 +6345,14 @@ int HouseClass::AI_Building(void)
 			AIBarracksMinimal = Rule.AIBarracksMinimalBasic;
 			AIWarFactoryMinimal = Rule.AIWarFactoryMinimalBasic;
 			AINavalMinimal = Rule.AINavalMinimalBasic;
-			AIHelipadMinimal = Rule.AIHelipadMinimalBasic;
+			AIHelipadLimit = Rule.AIHelipadLimitBasic;
+			AIAirstripLimit = Rule.AIAirstripLimitBasic;
 			AIAirdefenseMinimal = Rule.AIAirdefenseMinimalBasic;
-			AIFlameTurretMinimal = Rule.AIFlameTurretMinimalBasic;
-			AIGunTeslaMinimal = Rule.AIGunTeslaMinimalBasic;
+			AIPillBoxLimit = Rule.AIPillBoxLimitBasic;
+			AICamoPillBoxLimit = Rule.AICamoPillBoxLimitBasic;
+			AIFlameTurretLimit = Rule.AIFlameTurretLimitBasic;
+			AITurretGunLimit = Rule.AITurretGunLimitBasic;
+			AITeslaGunLimit = Rule.AITeslaLimitBasic;
 			AIGapMinimal = Rule.AIGapMinimalBasic;
 			AINukeMinimal = Rule.AINukeMinimalBasic;
 			AIRepairBayMinimal = Rule.AIRepairBayBasic;
@@ -6367,10 +6371,12 @@ int HouseClass::AI_Building(void)
 				AIBarracksMinimal = Rule.AIBarracksMinimalMix;
 				AIWarFactoryMinimal = Rule.AIWarFactoryMinimalMix;
 				AINavalMinimal = Rule.AINavalMinimalMix;
-				AIHelipadMinimal = Rule.AIHelipadMinimalMix;
+				AIHelipadLimit = Rule.AIHelipadLimitMix;
 				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalMix;
-				AIFlameTurretMinimal = Rule.AIFlameTurretMinimalMix;
-				AIGunTeslaMinimal = Rule.AIGunTeslaMinimalMix;
+				AIPillBoxLimit = Rule.AIPillBoxLimitMix;
+				AITurretGunLimit = Rule.AITurretGunLimitMix;
+				AIFlameTurretLimit = Rule.AIFlameTurretLimitMix;
+				AITeslaGunLimit = Rule.AITeslaLimitMix;
 				AIGapMinimal = Rule.AIGapMinimalMix;
 				AINukeMinimal = Rule.AINukeMinimalMix;
 				AIRepairBayMinimal = Rule.AIRepairBayMix;
@@ -6387,10 +6393,12 @@ int HouseClass::AI_Building(void)
 				AIBarracksMinimal = Rule.AIBarracksMinimalNaval;
 				AIWarFactoryMinimal = Rule.AIWarFactoryMinimalNaval;
 				AINavalMinimal = Rule.AINavalMinimalNaval;
-				AIHelipadMinimal = Rule.AIHelipadMinimalNaval;
+				AIHelipadLimit = Rule.AIHelipadLimitNaval;
 				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalNaval;
-				AIFlameTurretMinimal = Rule.AIFlameTurretMinimalNaval;
-				AIGunTeslaMinimal = Rule.AIGunTeslaMinimalNaval;
+				AIPillBoxLimit = Rule.AIPillBoxLimitNaval;
+				AITurretGunLimit = Rule.AITurretGunLimitNaval;
+				AIFlameTurretLimit = Rule.AIFlameTurretLimitNaval;
+				AITeslaGunLimit = Rule.AITeslaLimitNaval;
 				AIGapMinimal = Rule.AIGapMinimalNaval;
 				AINukeMinimal = Rule.AINukeMinimalNaval;
 				AIRepairBayMinimal = Rule.AIRepairBayNaval;
@@ -6419,8 +6427,9 @@ int HouseClass::AI_Building(void)
 					AINavalMinimal = TempCalculation;
 				}
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
-				if (TempCalculation > AIHelipadMinimal) {
-					AIHelipadMinimal = TempCalculation;
+				if (TempCalculation > AIHelipadLimit) {
+					AIHelipadLimit = TempCalculation;
+					AIAirstripLimit = TempCalculation;
 				}
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIAirdefenseMinimal) {
@@ -6428,12 +6437,15 @@ int HouseClass::AI_Building(void)
 				}
 
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
-				if (AIFlameTurretMinimal < TempCalculation) {
-					AIFlameTurretMinimal = TempCalculation;
+				if (AIPillBoxLimit < TempCalculation) {
+					AIPillBoxLimit = TempCalculation;
+					AICamoPillBoxLimit = TempCalculation;
+					AIFlameTurretLimit = TempCalculation;
 				}
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
-				if (AIGunTeslaMinimal < TempCalculation) {
-					AIGunTeslaMinimal = TempCalculation;
+				if (AITurretGunLimit < TempCalculation) {
+					AITurretGunLimit = TempCalculation;
+					AITeslaGunLimit = TempCalculation;
 				}
 			}
 		}
@@ -6455,18 +6467,18 @@ int HouseClass::AI_Building(void)
 		//}
 
 		// flame turrets must be doubled, allies have pillbox and camo pillbox in this amount.
-		if (BQuantity[STRUCT_FLAME_TURRET] > 0) {
-			AIFlameTurretMinimal *= 2;
-		}
+		//if (BQuantity[STRUCT_FLAME_TURRET] > 0) {
+		//	AIPillBoxLimit *= 2;
+		//}
 
 		// Allied Gun must be doubled, allies have less range as tesla coils.
-		if (BQuantity[STRUCT_TURRET] > 0) {
-			AIGunTeslaMinimal *= 2;
-		}
+		//if (BQuantity[STRUCT_TURRET] > 0) {
+		//	AITurretGunLimit *= 2;
+		//}
 
 		// allied air production must be doubled, soviet have helipad and airfield in this amount.
-		AIAirstripMinimal = AIHelipadMinimal;
-		if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
+		//AIAirstripMinimal = AIHelipadMinimal;
+		//if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
 
 		//Update refinery limit depending on number of warfactories, conyard and naval stuff
 		AIRefineryMinimal = Rule.AIRefineryLimitOverwrite;
@@ -6521,10 +6533,11 @@ int HouseClass::AI_Building(void)
 			AIBarracksMinimal = Rule.AIBarracksSpeed;
 			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
 			AIVesselCarrierLimit = Rule.AINavalSpeed;
-			AIHelipadMinimal = Rule.AIHelipadSpeed;
+			AIHelipadLimit = Rule.AIHelipadSpeed;
+			AIAirstripLimit = Rule.AIAirStripSpeed;
 			AIAirdefenseMinimal = Rule.AIAirdefenseSpeed;
-			AIFlameTurretMinimal = Rule.AIFlameTurretSpeed;
-			AIGunTeslaMinimal = Rule.AIGunTeslaSpeed;
+			AIPillBoxLimit = Rule.AIFlameTurretSpeed;
+			AITurretGunLimit = Rule.AIGunTeslaSpeed;
 			AIGapMinimal = Rule.AIGapSpeed;
 			AINukeMinimal = Rule.AINukeSpeed;
 			AIRepairBayMinimal = Rule.AIRepairBaySpeed;
@@ -6622,7 +6635,7 @@ int HouseClass::AI_Building(void)
 
 
 		//pillbox
-		if (BQuantity[STRUCT_PILLBOX] < AIFlameTurretMinimal) {
+		if (BQuantity[STRUCT_PILLBOX] < AIPillBoxLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_PILLBOX);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6640,7 +6653,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//camo pillbox
-		if (BQuantity[STRUCT_CAMOPILLBOX] < AIFlameTurretMinimal) {
+		if (BQuantity[STRUCT_CAMOPILLBOX] < AICamoPillBoxLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_CAMOPILLBOX);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6658,7 +6671,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//flame turret
-		if (BQuantity[STRUCT_FLAME_TURRET] < AIFlameTurretMinimal) {
+		if (BQuantity[STRUCT_FLAME_TURRET] < AIFlameTurretLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6697,7 +6710,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//gun turret
-		if (BQuantity[STRUCT_TURRET] < AIGunTeslaMinimal) {
+		if (BQuantity[STRUCT_TURRET] < AITurretGunLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_TURRET);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6715,7 +6728,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//tesla
-		if (BQuantity[STRUCT_TESLA] < AIGunTeslaMinimal) {
+		if (BQuantity[STRUCT_TESLA] < AITeslaGunLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
@@ -6788,7 +6801,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//airstrip
-		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripMinimal) {
+		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -6799,7 +6812,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//helipad
-		if (BQuantity[STRUCT_HELIPAD] < AIHelipadMinimal) {
+		if (BQuantity[STRUCT_HELIPAD] < AIHelipadLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
