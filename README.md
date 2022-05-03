@@ -28,6 +28,7 @@ Hotfix:
 - Fixed AI make too much engineers
 - Fixed the AIAttackFirstTime (in the .ini), now it works!
 - GAP selling loop is fixed
+- Fixed the calculation of certain building limits when AI steal technology
 
 --- 
 
