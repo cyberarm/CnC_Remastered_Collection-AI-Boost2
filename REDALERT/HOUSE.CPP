@@ -6481,7 +6481,6 @@ int HouseClass::AI_Building(void)
 		//if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
 
 		//Update refinery limit depending on number of warfactories, conyard and naval stuff
-		AIRefineryMinimal = Rule.AIRefineryLimitOverwrite;
 		//AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
 		//AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
 		//if (BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH] > 0)
@@ -6490,11 +6489,6 @@ int HouseClass::AI_Building(void)
 		//	AIRefineryMinimal++;
 		//}
 
-		//If humans has more refs, we go more refs too:
-		if (HumanRefs > AIRefineryMinimal)
-		{
-			AIRefineryMinimal = HumanRefs;
-		}
 		//Switch from infantry rush to tank/air/naval rush?
 		if (AIDetectedNavalWar) {
 			//naval & air
@@ -6607,6 +6601,14 @@ int HouseClass::AI_Building(void)
 		}
 
 		//refinery
+		AIRefineryMinimal = Rule.AIRefineryLimitOverwrite;
+		
+		//If humans has more refs, we go more refs too:
+		if (HumanRefs > AIRefineryMinimal)
+		{
+			AIRefineryMinimal = HumanRefs;
+		}
+		
 		if (BQuantity[STRUCT_REFINERY] < AIRefineryMinimal) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
@@ -6618,9 +6620,6 @@ int HouseClass::AI_Building(void)
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
-						//if ((int)BQuantity[STRUCT_MSLO] > 0) {
-						//	prio = prio + 1;
-						//}
 						if (airthreat) {
 							prio = prio + 1;
 						}
@@ -6695,12 +6694,6 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					prio = 1;
-					//if (BQuantity[STRUCT_RADAR] > 0) {
-					//	prio = prio + 1;
-					//}
-					//if (BQuantity[STRUCT_CONST] > 1) {
-					//	prio = prio + 1;
-					//}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
 						prio = prio + 1;
 					}
@@ -6812,6 +6805,9 @@ int HouseClass::AI_Building(void)
 		}
 
 		//helipad
+		//Allied don't have Aistrip, this is compensated by allowing him to build double the Helipad
+		if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadLimit *= 2; }
+		
 		if (BQuantity[STRUCT_HELIPAD] < AIHelipadLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
