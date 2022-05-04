@@ -6322,7 +6322,7 @@ int HouseClass::AI_Building(void)
 					HumanRefs = hptr->BQuantity[STRUCT_REFINERY];
 				}
 				else {
-					if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalMinimalBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalMinimalBasic) {
+					if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalLimitBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalLimitBasic) {
 						//A AI house has switched to Navalwar=true, so we are allowed to switch too.
 						AIDetectedNavalWar = true;
 					}
@@ -6341,21 +6341,22 @@ int HouseClass::AI_Building(void)
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
-			AIDogKennelMinimal = Rule.AIDogHouseMinimalBasic;
-			AIBarracksMinimal = Rule.AIBarracksMinimalBasic;
-			AIWarFactoryMinimal = Rule.AIWarFactoryMinimalBasic;
-			AINavalMinimal = Rule.AINavalMinimalBasic;
-			AIHelipadLimit = Rule.AIHelipadLimitBasic;
+			AIDogKennelMinimal = Rule.AIDogHouseLimitBasic;
+			AIBarracksMinimal = Rule.AIBarracksLimitBasic;
+			AIWarFactoryMinimal = Rule.AIWarFactoryLimitBasic;
+			AINavalMinimal = Rule.AINavalLimitBasic;
+			AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitBasic;
+			AIHelipadSovietLimit = Rule.AIHelipadSovietLimitBasic;
 			AIAirstripLimit = Rule.AIAirstripLimitBasic;
-			AIAirdefenseMinimal = Rule.AIAirdefenseMinimalBasic;
+			AIAirdefenseMinimal = Rule.AIAirdefenseLimitBasic;
 			AIPillBoxLimit = Rule.AIPillBoxLimitBasic;
 			AICamoPillBoxLimit = Rule.AICamoPillBoxLimitBasic;
 			AIFlameTurretLimit = Rule.AIFlameTurretLimitBasic;
 			AITurretGunLimit = Rule.AITurretGunLimitBasic;
 			AITeslaGunLimit = Rule.AITeslaLimitBasic;
-			AIGapMinimal = Rule.AIGapMinimalBasic;
-			AINukeMinimal = Rule.AINukeMinimalBasic;
-			AIRepairBayMinimal = Rule.AIRepairBayBasic;
+			AIGapMinimal = Rule.AIGapLimitBasic;
+			AINukeMinimal = Rule.AINukeLimitBasic;
+			AIRepairBayMinimal = Rule.AIRepairBayLimitBasic;
 			//AIMaxMCVs = Rule.AIMaxMCVsBasic; // Doesn't work. If limit=2 but AI has multiple WarFactories it build 2 for each warfactory.
 			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
 			AIMaxTanksNr = Rule.AIMaxTanksBasic;
@@ -6367,19 +6368,20 @@ int HouseClass::AI_Building(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
-				AIDogKennelMinimal = Rule.AIDogHouseMinimalMix;
-				AIBarracksMinimal = Rule.AIBarracksMinimalMix;
-				AIWarFactoryMinimal = Rule.AIWarFactoryMinimalMix;
-				AINavalMinimal = Rule.AINavalMinimalMix;
-				AIHelipadLimit = Rule.AIHelipadLimitMix;
+				AIDogKennelMinimal = Rule.AIDogHouseLimitMix;
+				AIBarracksMinimal = Rule.AIBarracksLimitMix;
+				AIWarFactoryMinimal = Rule.AIWarFactoryLimitMix;
+				AINavalMinimal = Rule.AINavalLimitMix;
+				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitMix;
+				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitMix;
 				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalMix;
 				AIPillBoxLimit = Rule.AIPillBoxLimitMix;
 				AITurretGunLimit = Rule.AITurretGunLimitMix;
 				AIFlameTurretLimit = Rule.AIFlameTurretLimitMix;
 				AITeslaGunLimit = Rule.AITeslaLimitMix;
-				AIGapMinimal = Rule.AIGapMinimalMix;
-				AINukeMinimal = Rule.AINukeMinimalMix;
-				AIRepairBayMinimal = Rule.AIRepairBayMix;
+				AIGapMinimal = Rule.AIGapLimitMix;
+				AINukeMinimal = Rule.AINukeLimitMix;
+				AIRepairBayMinimal = Rule.AIRepairBayLimitMix;
 				AIMaxBuildings = Rule.AIMaxBuildingsMix;
 				//AIMaxMCVs = Rule.AIMaxMCVsMix;
 				AIMaxTanksNr = Rule.AIMaxTanksMix;
@@ -6389,19 +6391,20 @@ int HouseClass::AI_Building(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
-				AIDogKennelMinimal = Rule.AIDogHouseMinimalNaval;
-				AIBarracksMinimal = Rule.AIBarracksMinimalNaval;
-				AIWarFactoryMinimal = Rule.AIWarFactoryMinimalNaval;
-				AINavalMinimal = Rule.AINavalMinimalNaval;
-				AIHelipadLimit = Rule.AIHelipadLimitNaval;
-				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalNaval;
+				AIDogKennelMinimal = Rule.AIDogHouseLimitNaval;
+				AIBarracksMinimal = Rule.AIBarracksLimitNaval;
+				AIWarFactoryMinimal = Rule.AIWarFactoryLimitNaval;
+				AINavalMinimal = Rule.AINavalLimitNaval;
+				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitNaval;
+				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitNaval;
+				AIAirdefenseMinimal = Rule.AIAirdefenseLimitNaval;
 				AIPillBoxLimit = Rule.AIPillBoxLimitNaval;
 				AITurretGunLimit = Rule.AITurretGunLimitNaval;
 				AIFlameTurretLimit = Rule.AIFlameTurretLimitNaval;
 				AITeslaGunLimit = Rule.AITeslaLimitNaval;
-				AIGapMinimal = Rule.AIGapMinimalNaval;
-				AINukeMinimal = Rule.AINukeMinimalNaval;
-				AIRepairBayMinimal = Rule.AIRepairBayNaval;
+				AIGapMinimal = Rule.AIGapLimitNaval;
+				AINukeMinimal = Rule.AINukeLimitNaval;
+				AIRepairBayMinimal = Rule.AIRepairBayLimitNaval;
 				AIMaxBuildings = Rule.AIMaxBuildingsNaval;
 				//AIMaxMCVs = Rule.AIMaxMCVsNaval;
 				AIMaxTanksNr = Rule.AIMaxTanksNaval;
@@ -6426,22 +6429,33 @@ int HouseClass::AI_Building(void)
 				if (TempCalculation > AINavalMinimal) {
 					AINavalMinimal = TempCalculation;
 				}
+				//Allied
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
-				if (TempCalculation > AIHelipadLimit) {
-					AIHelipadLimit = TempCalculation;
-					AIAirstripLimit = TempCalculation;
+				if (TempCalculation > AIHelipadAlliedLimit) {
+					AIHelipadAlliedLimit = TempCalculation;
+				}
+				//Soviet
+				if (TempCalculation > AIHelipadSovietLimit + AIAirstripLimit) {
+					AIHelipadSovietLimit = (int)(TempCalculation/2);
+					AIAirstripLimit = (int)(TempCalculation/2);
 				}
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIAirdefenseMinimal) {
 					AIAirdefenseMinimal = TempCalculation;
 				}
-
+				//allied
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
-				if (AIPillBoxLimit < TempCalculation) {
-					AIPillBoxLimit = TempCalculation;
-					AICamoPillBoxLimit = TempCalculation;
+				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
+					AIPillBoxLimit = (int)(TempCalculation / 2);
+					AICamoPillBoxLimit = (int)(TempCalculation / 2);
+				}
+				//soviet
+				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
+				if (AIFlameTurretLimit < TempCalculation) {
 					AIFlameTurretLimit = TempCalculation;
 				}
+
+
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
 				if (AITurretGunLimit < TempCalculation) {
 					AITurretGunLimit = TempCalculation;
@@ -6527,7 +6541,8 @@ int HouseClass::AI_Building(void)
 			AIBarracksMinimal = Rule.AIBarracksSpeed;
 			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
 			AIVesselCarrierLimit = Rule.AINavalSpeed;
-			AIHelipadLimit = Rule.AIHelipadSpeed;
+			AIHelipadAlliedLimit = Rule.AIHelipadSpeed;
+			AIHelipadSovietLimit = Rule.AIHelipadSpeed;
 			AIAirstripLimit = Rule.AIAirStripSpeed;
 			AIAirdefenseMinimal = Rule.AIAirdefenseSpeed;
 			AIPillBoxLimit = Rule.AIFlameTurretSpeed;
@@ -6813,11 +6828,19 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//helipad
-		//Allied don't have Aistrip, this is compensated by allowing him to build double the Helipad
-		if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadLimit *= 2; }
-		
-		if (BQuantity[STRUCT_HELIPAD] < AIHelipadLimit) {
+		//helipad allied
+		if (BQuantity[STRUCT_HELIPAD] < AIHelipadAlliedLimit && BQuantity[STRUCT_TENT] > 0) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//helipad soviet
+		if (BQuantity[STRUCT_HELIPAD] < AIHelipadSovietLimit && BQuantity[STRUCT_BARRACKS] > 0) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();

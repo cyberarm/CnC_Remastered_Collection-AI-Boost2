@@ -430,7 +430,8 @@ class HouseClass {
 		int AIBarracksMinimal = 1;
 		int AIWarFactoryMinimal = 1;
 		int AINavalMinimal = 1;
-		int AIHelipadLimit = 1;
+		int AIHelipadAlliedLimit = 1;
+		int AIHelipadSovietLimit = 1;
 		int AIAirstripLimit = 1;
 		int AIAirdefenseMinimal = 1;
 		int AIPillBoxLimit = 1;

@@ -131,21 +131,22 @@ class RulesClass {
 		int AIVesselCarrierLimitON = 4;
 		int AIVesselCarrierLimitOFF = 2;
 		//Basic (Ground war)
-		int AIDogHouseMinimalBasic = 2;
-		int AIBarracksMinimalBasic = 2;
-		int AIWarFactoryMinimalBasic = 2;
-		int AINavalMinimalBasic = 2;
-		int AIHelipadLimitBasic = 2;
+		int AIDogHouseLimitBasic = 2;
+		int AIBarracksLimitBasic = 2;
+		int AIWarFactoryLimitBasic = 2;
+		int AINavalLimitBasic = 2;
+		int AIHelipadAlliedLimitBasic = 2;
+		int AIHelipadSovietLimitBasic = 2;
 		int AIAirstripLimitBasic = 2;
-		int AIAirdefenseMinimalBasic = 2;
+		int AIAirdefenseLimitBasic = 2;
 		int AIPillBoxLimitBasic = 2;
 		int AICamoPillBoxLimitBasic = 2;
 		int AITurretGunLimitBasic = 2;
 		int AIFlameTurretLimitBasic = 2;
 		int AITeslaLimitBasic = 2;
-		int AIGapMinimalBasic = 2;
-		int AINukeMinimalBasic = 2;
-		int AIRepairBayBasic = 2;
+		int AIGapLimitBasic = 2;
+		int AINukeLimitBasic = 2;
+		int AIRepairBayLimitBasic = 2;
 		//int AIMaxMCVsBasic = 2;
 		int AIMaxBuildingsBasic = 2;
 		int AIMaxTanksBasic = 2;
@@ -154,11 +155,12 @@ class RulesClass {
 		int AIMaxAirBasic = 2;
 
 		//Mix (Mix of Ground war and Naval war)
-		int AIDogHouseMinimalMix = 2;
-		int AIBarracksMinimalMix = 2;
-		int AIWarFactoryMinimalMix = 2;
-		int AINavalMinimalMix = 2;
-		int AIHelipadLimitMix = 2;
+		int AIDogHouseLimitMix = 2;
+		int AIBarracksLimitMix = 2;
+		int AIWarFactoryLimitMix = 2;
+		int AINavalLimitMix = 2;
+		int AIHelipadAlliedLimitMix = 2;
+		int AIHelipadSovietLimitMix = 2;
 		int AIAirstripLimitMix = 2;
 		int AIAirdefenseMinimalMix = 2;
 		int AIPillBoxLimitMix = 2;
@@ -166,9 +168,9 @@ class RulesClass {
 		int AITurretGunLimitMix = 2;
 		int AIFlameTurretLimitMix = 2;
 		int AITeslaLimitMix = 2;
-		int AIGapMinimalMix = 2;
-		int AINukeMinimalMix = 2;
-		int AIRepairBayMix = 2;
+		int AIGapLimitMix = 2;
+		int AINukeLimitMix = 2;
+		int AIRepairBayLimitMix = 2;
 		//int AIMaxMCVsMix = 2;
 		int AIMaxBuildingsMix = 2;
 		int AIMaxTanksMix = 2;
@@ -177,21 +179,22 @@ class RulesClass {
 		int AIMaxAirMix = 2;
 
 		//Naval (No Ground war, Naval war -> more focused on Naval and Air)
-		int AIDogHouseMinimalNaval = 2;
-		int AIBarracksMinimalNaval = 2;
-		int AIWarFactoryMinimalNaval = 2;
-		int AINavalMinimalNaval = 2;
-		int AIHelipadLimitNaval = 2;
+		int AIDogHouseLimitNaval = 2;
+		int AIBarracksLimitNaval = 2;
+		int AIWarFactoryLimitNaval = 2;
+		int AINavalLimitNaval = 2;
+		int AIHelipadAlliedLimitNaval = 2;
+		int AIHelipadSovietLimitNaval = 2;
 		int AIAirstripLimitNaval = 2;
-		int AIAirdefenseMinimalNaval = 2;
+		int AIAirdefenseLimitNaval = 2;
 		int AIPillBoxLimitNaval = 2;
 		int AICamoPillBoxLimitNaval = 2;
 		int AITurretGunLimitNaval = 2;
 		int AIFlameTurretLimitNaval = 2;
 		int AITeslaLimitNaval = 2;
-		int AIGapMinimalNaval = 2;
-		int AINukeMinimalNaval = 2;
-		int AIRepairBayNaval = 2;
+		int AIGapLimitNaval = 2;
+		int AINukeLimitNaval = 2;
+		int AIRepairBayLimitNaval = 2;
 		//int AIMaxMCVsNaval = 2;
 		int AIMaxBuildingsNaval = 2;
 		int AIMaxTanksNaval = 2;
