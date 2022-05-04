@@ -417,7 +417,7 @@ bool RulesClass::General(CCINIClass & ini)
 
 #endif
 
-	bool GeneralDone = false; //By Bast75, it is set when general.ini is loaded succesfull.
+	bool GeneralDone = false; //By Bast75, it is set when general.ini is loaded successful.
 
 	if (ini.Is_Present(GENERAL)) {
 		TurboBoost = ini.Get_Fixed(GENERAL, "TurboBoost", TurboBoost);

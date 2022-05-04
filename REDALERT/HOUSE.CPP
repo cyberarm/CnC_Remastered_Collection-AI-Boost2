@@ -2011,7 +2011,7 @@ void HouseClass::Harvested(unsigned tiberium)
 				//No dynamic boost
 
 				if (IsHumanFriend == 1) {
-					//I'me a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
+					//I'm a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
 					TotalBoost = Rule.AIBoostIQLevelForAllies;
 				}
 				else {
@@ -5556,14 +5556,14 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
 			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
-			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multiplayer starts at ID=12 -> human. First AI is 13, 14, etc.
+			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
 			if (Buildings.Count()==0) {
 				fprintf(fp, "Is defeated: 1\n"); // %s for strings 
 			}
 			else {
 				fprintf(fp, "Is defeated: 0\n"); // %s for strings 
-				// error, doesnt work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
-				// error, doesnt work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
+				// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
+				// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
 				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
 				fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
 				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
@@ -5656,7 +5656,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 
 
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
-	bool forced = (CurBuildings == 0); // Why only force on no buldings? If we have enough base defense, we can send all units.
+	bool forced = (CurBuildings == 0); // Why only force on no buildings? If we have enough base defense, we can send all units.
 	int CurrentdefenseBuildings = (int)BQuantity[STRUCT_TESLA] + (int)BQuantity[STRUCT_FLAME_TURRET] + (int)BQuantity[STRUCT_TURRET] + (int)BQuantity[STRUCT_PILLBOX] + (int)BQuantity[STRUCT_CAMOPILLBOX];
 	int PercentageToSend;
 	if (CurrentdefenseBuildings > Rule.AIAttackMinimaldefenseSendUnitsSwitchHigh2All) {
@@ -6284,7 +6284,7 @@ int HouseClass::AI_Building(void)
 		int TempCalculation = 0;
 		//int PlayerCount = 0; // How many players do we have on this map?
 
-		//check airthreat
+		//check air-threat
 		bool airthreat = false;
 		int airthreat_quantity = 0;
 		if (enemy != NULL && enemy->AScan != 0) {
@@ -6312,10 +6312,10 @@ int HouseClass::AI_Building(void)
 				if (hptr->IsHuman) {
 					HumanBuildingCount = hptr->CurBuildings;
 					if (hptr->BQuantity[STRUCT_WEAP] > 2 || hptr->BQuantity[STRUCT_TENT] > 2 || hptr->BQuantity[STRUCT_BARRACKS] > 2 || (int)hptr->ActiveUScan > Rule.AIHumanGroundWarTankTrigger) {
-						//human house has multiple warfactories and/or multiple barracks/tents, or more as x tanks -> groundwar enabled
+						//human house has multiple war-factories and/or multiple barracks/tents, or more as x tanks -> ground-war enabled
 						AIDetectHumanGroundWar = true;
 					}
-					if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0 || hptr->VScan != 0) {
+					if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0 || hptr->VScan > 0) {
 						//human house has naval factories and/or naval units, so we are allowed to upgrade our naval to extreme.
 						AIDetectedNavalWar = true;
 					}
@@ -6480,7 +6480,7 @@ int HouseClass::AI_Building(void)
 		//AIAirstripMinimal = AIHelipadMinimal;
 		//if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
 
-		//Update refinery limit depending on number of warfactories, conyard and naval stuff
+		//Update refinery limit depending on number of war-factories, conyard and naval stuff
 		//AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
 		//AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
 		//if (BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH] > 0)
@@ -6697,15 +6697,15 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					prio = 1;
-					//if (BQuantity[STRUCT_RADAR] > 0) {
-					//	prio = prio + 1;
-					//}
+					if (BQuantity[STRUCT_RADAR] > 0) {
+						prio = prio + 1;
+					}
 					//if (BQuantity[STRUCT_CONST] > 1) {
 					//	prio = prio + 1;
 					//}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 1;
-					}
+					//if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					//	prio = prio + 1;
+					//}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -6835,10 +6835,10 @@ int HouseClass::AI_Building(void)
 				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						prio = 1;
-						if (AIDetectedNavalWar) {
-							prio = prio + 1;
-						}
+						prio = 2;
+						//if (AIDetectedNavalWar) {
+						//	prio = prio + 1;
+						//}
 						//if (BQuantity[STRUCT_ADVANCED_TECH] > 0) {
 						//	prio = prio + 1;
 						//}
@@ -6852,10 +6852,10 @@ int HouseClass::AI_Building(void)
 				b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
 				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 					choiceptr = BuildChoice.Alloc();
-					prio = 1;
-					if (AIDetectedNavalWar) {
-						prio = prio + 1;
-					}
+					prio = 2;
+					//if (AIDetectedNavalWar) {
+					//	prio = prio + 1;
+					//}
 					//if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
 					//	prio = prio + 1;
 					//}
@@ -7005,7 +7005,7 @@ int HouseClass::AI_Unit(void)
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
 			if ((int)UQuantity[UNIT_HARVESTER] < (int)Rule.AIHarvesterMaxLimit) {
-				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer) || (int)UQuantity[UNIT_HARVESTER] < 4) {
+				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer) || (int)UQuantity[UNIT_HARVESTER] < 2) {
 					if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
 						BuildUnit = UNIT_HARVESTER;
 						return(TICKS_PER_SECOND);
@@ -7319,7 +7319,7 @@ int HouseClass::AI_Vessel(void)
 			return(TICKS_PER_SECOND);
 		}
 
-		//sovied, x change of first unit, otherwise make the other one.
+		//soviet, x change of first unit, otherwise make the other one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_SS), ActLike) && Percent_Chance(Rule.AISovietVesselSubPercentage))
 		{
 			BuildVessel = VESSEL_SS;

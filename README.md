@@ -12,15 +12,15 @@ Please follow the steps below to update and reactivate the mod:
 News:
 - Added more infos about how AIBoost work (to avoid confusion)
 - The AI Chronotanks no longer jump in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like
-- AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to rebalance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
-- You can now set the boost for your allies and your ennemies independently (when dynamic AI boost is disabled)
-- Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to rebalance
+- AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
+- You can now set the boost for your allies and your enemies independently (when dynamic AI boost is disabled)
+- Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to re-balance
 - A lot of tweaks which greatly increases the AI intelligence (See new options in the .ini file also)
 - Now the AI technology levels-up more faster
 - AI build more air units/defenses and GAP generators
 - Selling buildings to restore power or cash is smarter now
  
-Hotfix:
+Hot-fix:
 - Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
 - AI ship production was unlimited. An AI try to build more ships than all other enemies combined, resulting in unlimited production. Now it counts the human ships only. In the .ini file you can edit some settings for this
 - AI building production was unlimited when having multiple enemies. Now it calculates the average buildings of all enemies and use this as baseline
@@ -33,20 +33,20 @@ Hotfix:
 --- 
 
 General Mod info:
-- The Rampastring Quality of Live MOD. (waypoints, etc.)
+- The Rampastring Quality of Live MOD. (way-points, etc.)
 - Engineer instant capture
 - Engineers automatically choose new target after capturing
 - Additional Zoom Levels
 - RA Immersive Helis Mod (And all Air units have a sight) (Use 'L' to land)
 - Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 - Harvester have memory of latest harvest location, this is now editable by .ini file
-- AI knows how to use Thiefs and Spies
+- AI knows how to use Thief's and Spies
 - AI knows how to use a MAD Tank and Demo truck.
 - AI knows how to use chronoshifting with a Chrono Tank
 - AI knows how to use Naval stuff
 - AI attacks interval uses different ways (Hunt, Closest enemy, etc.)
 - AI Scatters all units on new attack launch to unlock stuck/blocked units
-- AI Air units no longer just attack Refineries, it selects random between basedefence, factories, power, buildings, naval units or all threats
+- AI Air units no longer just attack Refineries, it selects random between base-defense, factories, power, buildings, naval units or all threats
 - AI understands importants of buildings & units a lot better and uses it during attack
 - AI Engineers no longer walk in groups. They choose his own targets
 - AI Customizable limits for number of AI buildings, tanks, etc.
@@ -54,7 +54,7 @@ General Mod info:
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level
 - AI's MCV goes to tiberium and deploys there for extra base, AI limitations for buildings, etc. will grow on each MCV deployment
 - AI scans for human Naval objects, if he detects a Naval stuff, it will upscale his Naval and Air stuff
-- AI lowers tank production if human goes naval and GroundWar is disabled (Allies still build Chronotanks beacause they can Chronoshift)
+- AI lowers tank production if human goes naval and GroundWar is disabled (Allies still build Chronotanks because they can Chronoshift)
 - AI Medics and Mechanics now only repairs friendly units
 - Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot
 - ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo
@@ -63,19 +63,19 @@ General Mod info:
 - Now its possible to add more starting cash and units! Editable by the .ini file
 - You can now remove toggle with space between old/new graphic in gameconstant.xml
 - Added the option to remove shroud from the map
-- AI have a limit of contruction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a humain even with a massive base
+- AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a humain even with a massive base
 
-The AI monitors what you are doing and uses this on how to react while upgrading his base. More Factories, Air stuff, Air defence, Naval stuff or Refineries if you have created more of this. It's totally dynamic. :-)
+The AI monitors what you are doing and uses this on how to react while upgrading his base. More Factories, Air stuff, Air defense, Naval stuff or Refineries if you have created more of this. It's totally dynamic. :-)
 
 ---
 
 Note:
-- The more Tiberium is available on the map, the harder it is to beat the AI. You might need a faster pc because of the amount of units etc.  :-)
-- AI Boost level and almost all other setttings are editable using the .ini file. It's located in: C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
+- The more Tiberium is available on the map, the harder it is to beat the AI. You might need a faster PC because of the amount of units etc.  :-)
+- AI Boost level and almost all other settings are editable using the .ini file. It's located in: C:\Program Files (x86)\Steam\steamapps\workshop\content\1213210\2221741447\AIBoost\CCDATA\AIBOOST.INI
 
 ---
 
-To do / whishes:
+To do / wishes:
 - AI Minelayer control
 - AI Chronosphere control in Skirmish
 - AI Iron Curton control in Skirmish
