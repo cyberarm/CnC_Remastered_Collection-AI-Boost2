@@ -1750,6 +1750,22 @@ ResultType AircraftClass::Take_Damage(int & damage, int distance, WarheadType wa
  *=============================================================================================*/
 int AircraftClass::Mission_Move(void)
 {
+	// Kerekupai: if there are more than one human player in the session, then transport
+	// helis always land
+	int j = 0;
+	bool gaming_with_friends = false;
+	HouseClass * house;
+
+	if (Session.Type != GAME_NORMAL)
+	{
+		for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
+			house = HouseClass::As_Pointer(index);
+			if (house && house->IsHuman) { j++; }
+		}
+	}
+	if (j > 1) { gaming_with_friends = true; }
+	// Kerekupai: check if there is more than one human player
+
 	assert(Aircraft.ID(this) == ID);
 	assert(IsActive);
 
@@ -1953,7 +1969,8 @@ int AircraftClass::Mission_Move(void)
 						if ((IsALoaner && Is_LZ_Clear(NavCom)) ||  // is reinforcement
 							(Session.Type == GAME_NORMAL &&
 								*this == AIRCRAFT_TRANSPORT &&
-								Is_LZ_Clear(NavCom))  // landing zone clear for landing 
+								Is_LZ_Clear(NavCom)) || // landing zone clear for landing 
+								(gaming_with_friends && Is_LZ_Clear(NavCom) == true && * this == AIRCRAFT_TRANSPORT)
 							)
 						{
 							Status = LAND;
@@ -1988,6 +2005,8 @@ int AircraftClass::Mission_Move(void)
 								Assign_Destination(New_LZ(NavCom));
 
 							}
+							// Kerekupai: AI always land transport helis
+							if (*this == AIRCRAFT_TRANSPORT && !House->IsHuman) { Status = LAND; }
 						}
 
 					}
