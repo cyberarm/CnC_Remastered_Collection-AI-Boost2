@@ -607,7 +607,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIAirstripLimitNaval = ini.Get_Int(MOREQOL, "AIAirstripLimitNaval", 2);
 
 		AIAirdefenseLimitBasic = ini.Get_Int(MOREQOL, "AIAirdefenseLimitBasic", 2);
-		AIAirdefenseMinimalMix = ini.Get_Int(MOREQOL, "AIAirdefenseMinimalMix", 2);
+		AIAirdefenseLimitMix = ini.Get_Int(MOREQOL, "AIAirdefenseLimitMix", 2);
 		AIAirdefenseLimitNaval = ini.Get_Int(MOREQOL, "AIAirdefenseLimitNaval", 2);
 		AIPillBoxLimitBasic = ini.Get_Int(MOREQOL, "AIPillBoxLimitBasic", 2);
 		AIPillBoxLimitMix = ini.Get_Int(MOREQOL, "AIPillBoxLimitMix", 2);
@@ -708,9 +708,9 @@ bool RulesClass::General(CCINIClass & ini)
 		if (fp) {
 			fprintf(fp, "********** Settings loaded: **********\n");
 			fprintf(fp, "AIDogHouseMinimalBasic: %d\n", AIDogHouseLimitBasic); // %d for decimal
-			fprintf(fp, "AIBarracksMinimalBasic: %d\n", AIBarracksLimitBasic); // %d for decimal
-			fprintf(fp, "AIWarFactoryMinimalBasic: %d\n", AIWarFactoryLimitBasic); // %d for decimal
-			fprintf(fp, "AINavalMinimalBasic: %d\n", AINavalLimitBasic); // %d for decimal
+			fprintf(fp, "AIBarracksLimitBasic: %d\n", AIBarracksLimitBasic); // %d for decimal
+			fprintf(fp, "AIWarFactoryLimitBasic: %d\n", AIWarFactoryLimitBasic); // %d for decimal
+			fprintf(fp, "AINavalLimitBasic: %d\n", AINavalLimitBasic); // %d for decimal
 			fprintf(fp, "AIHelipadAlliedLimitBasic: %d\n", AIHelipadAlliedLimitBasic); // %d for decimal
 			fprintf(fp, "AIAirstripLimitBasic: %d\n", AIAirstripLimitBasic); // %d for decimal
 			fprintf(fp, "AIAirdefenseLimitBasic: %d\n", AIAirdefenseLimitBasic); // %d for decimal
