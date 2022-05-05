@@ -19,6 +19,7 @@ News:
 - AI build more air defenses and GAP generators
 - Selling buildings to restore power or cash is smarter now
 - Tweaked a bit the buildings order and bases defenses
+- We bring back the way MCV is deployed. AI don't like to be too much near the tiberium(bases are more compacted, more stuck units, less effective bases defenses, etc)
  
 Hot-fix:
 - Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
@@ -29,6 +30,7 @@ Hot-fix:
 - Fixed the AIAttackFirstTime (in the .ini), now it works!
 - GAP selling loop is fixed
 - Fixed the calculation of certain building limits when AI steal technology
+- Added the fix from RA Immersive Helis mod
 
 --- 
 
@@ -89,4 +91,4 @@ https://github.com/Bast75/CnC_Remastered_Collection-AI-Boost2
 
 Greetings, have fun and don't forget to rate this mod
 Bast75
-
+xXMini FrankiXx
