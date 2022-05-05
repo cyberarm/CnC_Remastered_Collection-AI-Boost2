@@ -6303,7 +6303,7 @@ int HouseClass::AI_Building(void)
 		//}
 
 		//By Bast75 : Added ground war & naval war detection
-		// Rescan to make sure we still have the correct game mode, but after having a MSLO, we asume it doen't change anymore.
+		// Rescan to make sure we still have the correct game mode.
 		AIDetectHumanGroundWar = false; // Rescan to make sure we still have the correct game mode
 		//AIDetectedNavalWar = false; // Rescan to make sure we still have the correct game mode
 		for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
@@ -6312,7 +6312,8 @@ int HouseClass::AI_Building(void)
 				//PlayerCount++;
 				if (hptr->IsHuman) {
 					HumanBuildingCount = hptr->CurBuildings;
-					if (hptr->BQuantity[STRUCT_WEAP] > 2 || hptr->BQuantity[STRUCT_TENT] > 2 || hptr->BQuantity[STRUCT_BARRACKS] > 2 || (int)hptr->ActiveUScan > Rule.AIHumanGroundWarTankTrigger) {
+					int NrOfEnemyTanks = (int)hptr->ActiveUScan - (int)hptr->UQuantity[UNIT_HARVESTER]; // count all units except the harvesters
+					if (hptr->BQuantity[STRUCT_WEAP] > 2 || hptr->BQuantity[STRUCT_TENT] > 2 || hptr->BQuantity[STRUCT_BARRACKS] > 2 || NrOfEnemyTanks > Rule.AIHumanGroundWarTankTrigger) {
 						//human house has multiple war-factories and/or multiple barracks/tents, or more as x tanks -> ground-war enabled
 						AIDetectHumanGroundWar = true;
 					}
