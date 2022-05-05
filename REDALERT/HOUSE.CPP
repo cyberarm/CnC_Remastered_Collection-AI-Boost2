@@ -1957,7 +1957,7 @@ void HouseClass::Harvested(unsigned tiberium)
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
 		//New dynamic boost method
-		//Recalculate all enemies and friends stuff: (This loops runs default every 5 minutes. Set by AIAttackInterval in the .ini file)
+		//Recalculate all enemies and friends stuff:
 		IsHumanFriend = 0;
 		TotalBoost = 0;
 		CountEnemiesForThisAI = 0;
@@ -5554,6 +5554,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
 			fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
 			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
+			fprintf(fp, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
 			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
