@@ -564,7 +564,6 @@ bool RulesClass::General(CCINIClass & ini)
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 5);
 		AIAttackFirstTime = ini.Get_Int(MOREQOL, "AIAttackFirstTime", 5);
-		AttackDelay = AIAttackFirstTime;
 		AIAttackMinimaldefenseSendUnitsPrecentageLow = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageLow", 80);
 		AIAttackMinimaldefenseSendUnitsPrecentageHigh = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageHigh", 95);
 		AIAttackMinimaldefenseSendUnitsSwitchLow2High = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsSwitchLow2High", 4);
