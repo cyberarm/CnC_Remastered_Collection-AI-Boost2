@@ -162,7 +162,7 @@ class RulesClass {
 		int AIHelipadAlliedLimitMix = 2;
 		int AIHelipadSovietLimitMix = 2;
 		int AIAirstripLimitMix = 2;
-		int AIAirdefenseMinimalMix = 2;
+		int AIAirdefenseLimitMix = 2;
 		int AIPillBoxLimitMix = 2;
 		int AICamoPillBoxLimitMix = 2;
 		int AITurretGunLimitMix = 2;
