@@ -6418,49 +6418,53 @@ int HouseClass::AI_Building(void)
 		//Dynamic stuff
 		if (Rule.AIAllowDynamicBaseGrow) {
 			if (enemy != NULL) {
+				//Barracks & Tent
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
 				if (TempCalculation > AIBarracksLimit) {
 					AIBarracksLimit = TempCalculation;
 				}
+				//War Factories
 				TempCalculation = (int)(enemy->BQuantity[STRUCT_WEAP] / CountEnemiesForThisAI);
 				if (TempCalculation > AIWarFactoryLimit) {
 					AIWarFactoryLimit = TempCalculation;
 				}
+				//Navals
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_SHIP_YARD] + enemy->BQuantity[STRUCT_SUB_PEN]) / CountEnemiesForThisAI);
 				if (TempCalculation > AINavalLimit) {
 					AINavalLimit = TempCalculation;
 				}
-				//Allied
+				//Allied air units
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIHelipadAlliedLimit) {
 					AIHelipadAlliedLimit = TempCalculation;
 				}
-				//Soviet
+				//Soviet air units
+				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIHelipadSovietLimit + AIAirstripLimit) {
-					AIHelipadSovietLimit = (int)(TempCalculation/2);
-					AIAirstripLimit = (int)(TempCalculation/2);
+					AIHelipadSovietLimit = (int)(TempCalculation / 2);
+					AIAirstripLimit = (int)(TempCalculation / 2);
 				}
+				//Air defenses
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIAirdefenseLimit) {
 					AIAirdefenseLimit = TempCalculation;
 				}
-				//allied
+				//Pillbox & Camo Pillbox
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
 				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
 					AIPillBoxLimit = (int)(TempCalculation / 2);
 					AICamoPillBoxLimit = (int)(TempCalculation / 2);
 				}
-				//soviet
+				//Flame turret
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
 				if (AIFlameTurretLimit < TempCalculation) {
 					AIFlameTurretLimit = TempCalculation;
 				}
-
-
+				//Tesla & Turretgun
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
-				if (AITurretGunLimit < TempCalculation) {
-					AITurretGunLimit = TempCalculation;
-					AITeslaGunLimit = TempCalculation;
+				if (AITurretGunLimit + (AITeslaGunLimit * 2) < TempCalculation) {
+					AITurretGunLimit = (int)(TempCalculation / 2);
+					AITeslaGunLimit = (int)(TempCalculation / 4);
 				}
 			}
 		}
