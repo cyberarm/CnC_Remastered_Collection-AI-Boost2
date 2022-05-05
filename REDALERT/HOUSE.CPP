@@ -6463,45 +6463,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//Allow extra buildings if MCV deployed
-		//if (BQuantity[STRUCT_CONST] > 1 && Rule.AIAllowBaseGrowByDeployedMCV) {
-		//	if (AIDetectHumanGroundWar) {
-		//		AIBarracksLimit += 1;
-		//		AIWarFactoryLimit += 2;
-		//	}
-		//	if (AIDetectedNavalWar) {
-		//		AINavalLimit += 2;
-		//	}
-		//	AIHelipadMinimal += 2;
-		//	AIAirdefenseLimit += 4;
-		//	AIFlameTurretMinimal += 4;
-		//	AIGunTeslaMinimal += 4;
-		//	AIGapLimit += 2;
-		//}
-
-		// flame turrets must be doubled, allies have pillbox and camo pillbox in this amount.
-		//if (BQuantity[STRUCT_FLAME_TURRET] > 0) {
-		//	AIPillBoxLimit *= 2;
-		//}
-
-		// Allied Gun must be doubled, allies have less range as tesla coils.
-		//if (BQuantity[STRUCT_TURRET] > 0) {
-		//	AITurretGunLimit *= 2;
-		//}
-
-		// allied air production must be doubled, soviet have helipad and airfield in this amount.
-		//AIAirstripMinimal = AIHelipadMinimal;
-		//if (BQuantity[STRUCT_AIRSTRIP] == 0) { AIHelipadMinimal *= 2; }
-
-		//Update refinery limit depending on number of war-factories, conyard and naval stuff
-		//AIRefineryMinimal = 3 + (int)BQuantity[STRUCT_WEAP] + (int)BQuantity[STRUCT_CONST] + (int)BQuantity[STRUCT_SUB_PEN] + (int)BQuantity[STRUCT_SHIP_YARD];
-		//AIRefineryMinimal = 3 + (int)(BQuantity[STRUCT_WEAP] * 1.5) + (int)(BQuantity[STRUCT_CONST] * 1.5) + BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD];
-		//if (BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH] > 0)
-		//{
-		//	//We have a techcenter, allow 1 more Ref.
-		//	AIRefineryMinimal++;
-		//}
-
 		//Switch from infantry rush to tank/air/naval rush?
 		if (AIDetectedNavalWar) {
 			//naval & air
@@ -6628,7 +6589,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 2;
+					prio = 1;
 					if ((int)BQuantity[STRUCT_WEAP] > 0) {
 						prio = prio + 2;
 					}
@@ -6640,6 +6601,12 @@ int HouseClass::AI_Building(void)
 						if (AIDetectedNavalWar) {
 							prio = prio + 1;
 						}
+					}
+					if (BQuantity[STRUCT_CONST] > 1) {
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6655,9 +6622,15 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = 2;
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 1;
+						prio = prio + 2;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 2;
+					}
+					if (airthreat) {
+						prio = prio + 2;
+					}
+					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 2;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
@@ -6676,7 +6649,13 @@ int HouseClass::AI_Building(void)
 						prio = prio + 1;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 2;
+						prio = prio + 1;
+					}
+					if (airthreat) {
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_MSLO] > 0) {
+						prio = prio + 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6691,10 +6670,16 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = 3;
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 2;
+						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 4;
+						prio = prio + 3;
+					}
+					if (airthreat) {
+						prio = prio + 3;
+					}
+					if (BQuantity[STRUCT_MSLO] > 0) {
+						prio = prio + 3;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6711,12 +6696,12 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
 					}
-					//if (BQuantity[STRUCT_CONST] > 1) {
-					//	prio = prio + 1;
-					//}
-					//if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-					//	prio = prio + 1;
-					//}
+					if (BQuantity[STRUCT_CONST] > 1) {
+						prio = prio + 1;
+					}
+					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						prio = prio + 1;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -6733,7 +6718,13 @@ int HouseClass::AI_Building(void)
 						prio = prio + 4;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 6;
+						prio = prio + 4;
+					}
+					if (airthreat) {
+						prio = prio + 4;
+					}
+					if (BQuantity[STRUCT_MSLO] > 0) {
+						prio = prio + 4;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6751,7 +6742,13 @@ int HouseClass::AI_Building(void)
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 5;
+						prio = prio + 3;
+					}
+					if (airthreat) {
+						prio = prio + 3;
+					}
+					if (BQuantity[STRUCT_MSLO] > 0) {
+						prio = prio + 3;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6892,7 +6889,7 @@ int HouseClass::AI_Building(void)
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < (int)(airthreat_quantity / CountEnemiesForThisAI) || BQuantity[STRUCT_SAM] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_SAM] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
@@ -6901,7 +6898,7 @@ int HouseClass::AI_Building(void)
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < (int)(airthreat_quantity / CountEnemiesForThisAI) || BQuantity[STRUCT_AAGUN] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_AAGUN] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
@@ -6930,25 +6927,27 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		if (1==0) { //disabled, AI doesn't know how to use it in skirmish games...
-			//iron curtain
-			b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_IRON_CURTAIN] < 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-				}
-			}
+		//iron curtain
+		//if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
+		//	b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
+		//	if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_IRON_CURTAIN] < 1) {
+		//		choiceptr = BuildChoice.Alloc();
+		//		if (choiceptr != NULL) {
+		//			*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+		//		}
+		//	}
+		//}
 
-			//chronosphere
-			b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
-			if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_CHRONOSPHERE] < 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-				}
-			}
-		}
+		//chronosphere
+		//if (BQuantity[STRUCT_CHRONOSPHERE] < 1) {
+		//	b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
+		//	if (Can_Build(b, ActLike) && b->Cost_Of() < money && BQuantity[STRUCT_CHRONOSPHERE] < 1) {
+		//		choiceptr = BuildChoice.Alloc();
+		//		if (choiceptr != NULL) {
+		//			*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+		//		}
+		//	}
+		//}
 
 		//Build Silo if storage above x %
 		if (Tiberium > Capacity * 0.99) {
