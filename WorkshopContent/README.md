@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 4 may 2022
+Last update at: 5 may 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -10,15 +10,15 @@ Please follow the steps below to update and reactivate the mod:
 - The updated mod should then work as intended
 
 News:
-- Added more infos about how AIBoost work (to avoid confusion)
+- Added a lot more infos in the INI about how AIBoost work (to avoid confusion)
 - The AI Chronotanks no longer jump in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like
 - AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
 - You can now set the boost for your allies and your enemies independently (when dynamic AI boost is disabled)
 - Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to re-balance
 - A lot of tweaks which greatly increases the AI intelligence (See new options in the .ini file also)
-- Now the AI technology levels-up more faster
-- AI build more air units/defenses and GAP generators
+- AI build more air defenses and GAP generators
 - Selling buildings to restore power or cash is smarter now
+- Tweaked a bit the buildings order and bases defenses
  
 Hot-fix:
 - Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
