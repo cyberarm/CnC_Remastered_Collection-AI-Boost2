@@ -6245,12 +6245,12 @@ int HouseClass::AI_Building(void)
 
 	// Set maximum of War Factory/Yard/Vessel Carrier according to fast build On/Off - Mini Franki
 	if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
-		AIWarFactoryLimit = Rule.AIWarFactoryLimitON;
+		AIWarFactoryFBOnOffLimit = Rule.AIWarFactoryLimitON;
 		AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsON;
 		AIVesselCarrierLimit = Rule.AIVesselCarrierLimitON;
 	}
 	if (NewUnitsEnabled && (Rule.AIAftermathfastbuild == 0)) {
-		AIWarFactoryLimit = Rule.AIWarFactoryLimitOFF;
+		AIWarFactoryFBOnOffLimit = Rule.AIWarFactoryLimitOFF;
 		AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsOFF;
 		AIVesselCarrierLimit = Rule.AIVesselCarrierLimitOFF;
 	}
@@ -6341,22 +6341,22 @@ int HouseClass::AI_Building(void)
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
-			AIDogKennelMinimal = Rule.AIDogHouseLimitBasic;
-			AIBarracksMinimal = Rule.AIBarracksLimitBasic;
-			AIWarFactoryMinimal = Rule.AIWarFactoryLimitBasic;
-			AINavalMinimal = Rule.AINavalLimitBasic;
+			AIDogKennelLimit = Rule.AIDogHouseLimitBasic;
+			AIBarracksLimit = Rule.AIBarracksLimitBasic;
+			AIWarFactoryLimit = Rule.AIWarFactoryLimitBasic;
+			AINavalLimit = Rule.AINavalLimitBasic;
 			AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitBasic;
 			AIHelipadSovietLimit = Rule.AIHelipadSovietLimitBasic;
 			AIAirstripLimit = Rule.AIAirstripLimitBasic;
-			AIAirdefenseMinimal = Rule.AIAirdefenseLimitBasic;
+			AIAirdefenseLimit = Rule.AIAirdefenseLimitBasic;
 			AIPillBoxLimit = Rule.AIPillBoxLimitBasic;
 			AICamoPillBoxLimit = Rule.AICamoPillBoxLimitBasic;
 			AIFlameTurretLimit = Rule.AIFlameTurretLimitBasic;
 			AITurretGunLimit = Rule.AITurretGunLimitBasic;
 			AITeslaGunLimit = Rule.AITeslaLimitBasic;
-			AIGapMinimal = Rule.AIGapLimitBasic;
-			AINukeMinimal = Rule.AINukeLimitBasic;
-			AIRepairBayMinimal = Rule.AIRepairBayLimitBasic;
+			AIGapLimit = Rule.AIGapLimitBasic;
+			AINukeLimit = Rule.AINukeLimitBasic;
+			AIRepairBayLimit = Rule.AIRepairBayLimitBasic;
 			//AIMaxMCVs = Rule.AIMaxMCVsBasic; // Doesn't work. If limit=2 but AI has multiple WarFactories it build 2 for each warfactory.
 			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
 			AIMaxTanksNr = Rule.AIMaxTanksBasic;
@@ -6368,20 +6368,20 @@ int HouseClass::AI_Building(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
-				AIDogKennelMinimal = Rule.AIDogHouseLimitMix;
-				AIBarracksMinimal = Rule.AIBarracksLimitMix;
-				AIWarFactoryMinimal = Rule.AIWarFactoryLimitMix;
-				AINavalMinimal = Rule.AINavalLimitMix;
+				AIDogKennelLimit = Rule.AIDogHouseLimitMix;
+				AIBarracksLimit = Rule.AIBarracksLimitMix;
+				AIWarFactoryLimit = Rule.AIWarFactoryLimitMix;
+				AINavalLimit = Rule.AINavalLimitMix;
 				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitMix;
 				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitMix;
-				AIAirdefenseMinimal = Rule.AIAirdefenseMinimalMix;
+				AIAirdefenseLimit = Rule.AIAirdefenseLimitMix;
 				AIPillBoxLimit = Rule.AIPillBoxLimitMix;
 				AITurretGunLimit = Rule.AITurretGunLimitMix;
 				AIFlameTurretLimit = Rule.AIFlameTurretLimitMix;
 				AITeslaGunLimit = Rule.AITeslaLimitMix;
-				AIGapMinimal = Rule.AIGapLimitMix;
-				AINukeMinimal = Rule.AINukeLimitMix;
-				AIRepairBayMinimal = Rule.AIRepairBayLimitMix;
+				AIGapLimit = Rule.AIGapLimitMix;
+				AINukeLimit = Rule.AINukeLimitMix;
+				AIRepairBayLimit = Rule.AIRepairBayLimitMix;
 				AIMaxBuildings = Rule.AIMaxBuildingsMix;
 				//AIMaxMCVs = Rule.AIMaxMCVsMix;
 				AIMaxTanksNr = Rule.AIMaxTanksMix;
@@ -6391,20 +6391,20 @@ int HouseClass::AI_Building(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
-				AIDogKennelMinimal = Rule.AIDogHouseLimitNaval;
-				AIBarracksMinimal = Rule.AIBarracksLimitNaval;
-				AIWarFactoryMinimal = Rule.AIWarFactoryLimitNaval;
-				AINavalMinimal = Rule.AINavalLimitNaval;
+				AIDogKennelLimit = Rule.AIDogHouseLimitNaval;
+				AIBarracksLimit = Rule.AIBarracksLimitNaval;
+				AIWarFactoryLimit = Rule.AIWarFactoryLimitNaval;
+				AINavalLimit = Rule.AINavalLimitNaval;
 				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitNaval;
 				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitNaval;
-				AIAirdefenseMinimal = Rule.AIAirdefenseLimitNaval;
+				AIAirdefenseLimit = Rule.AIAirdefenseLimitNaval;
 				AIPillBoxLimit = Rule.AIPillBoxLimitNaval;
 				AITurretGunLimit = Rule.AITurretGunLimitNaval;
 				AIFlameTurretLimit = Rule.AIFlameTurretLimitNaval;
 				AITeslaGunLimit = Rule.AITeslaLimitNaval;
-				AIGapMinimal = Rule.AIGapLimitNaval;
-				AINukeMinimal = Rule.AINukeLimitNaval;
-				AIRepairBayMinimal = Rule.AIRepairBayLimitNaval;
+				AIGapLimit = Rule.AIGapLimitNaval;
+				AINukeLimit = Rule.AINukeLimitNaval;
+				AIRepairBayLimit = Rule.AIRepairBayLimitNaval;
 				AIMaxBuildings = Rule.AIMaxBuildingsNaval;
 				//AIMaxMCVs = Rule.AIMaxMCVsNaval;
 				AIMaxTanksNr = Rule.AIMaxTanksNaval;
@@ -6418,16 +6418,16 @@ int HouseClass::AI_Building(void)
 		if (Rule.AIAllowDynamicBaseGrow) {
 			if (enemy != NULL) {
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
-				if (TempCalculation > AIBarracksMinimal) {
-					AIBarracksMinimal = TempCalculation;
+				if (TempCalculation > AIBarracksLimit) {
+					AIBarracksLimit = TempCalculation;
 				}
 				TempCalculation = (int)(enemy->BQuantity[STRUCT_WEAP] / CountEnemiesForThisAI);
-				if (TempCalculation > AIWarFactoryMinimal) {
-					AIWarFactoryMinimal = TempCalculation;
+				if (TempCalculation > AIWarFactoryLimit) {
+					AIWarFactoryLimit = TempCalculation;
 				}
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_SHIP_YARD] + enemy->BQuantity[STRUCT_SUB_PEN]) / CountEnemiesForThisAI);
-				if (TempCalculation > AINavalMinimal) {
-					AINavalMinimal = TempCalculation;
+				if (TempCalculation > AINavalLimit) {
+					AINavalLimit = TempCalculation;
 				}
 				//Allied
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
@@ -6440,8 +6440,8 @@ int HouseClass::AI_Building(void)
 					AIAirstripLimit = (int)(TempCalculation/2);
 				}
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
-				if (TempCalculation > AIAirdefenseMinimal) {
-					AIAirdefenseMinimal = TempCalculation;
+				if (TempCalculation > AIAirdefenseLimit) {
+					AIAirdefenseLimit = TempCalculation;
 				}
 				//allied
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
@@ -6467,17 +6467,17 @@ int HouseClass::AI_Building(void)
 		//Allow extra buildings if MCV deployed
 		//if (BQuantity[STRUCT_CONST] > 1 && Rule.AIAllowBaseGrowByDeployedMCV) {
 		//	if (AIDetectHumanGroundWar) {
-		//		AIBarracksMinimal += 1;
-		//		AIWarFactoryMinimal += 2;
+		//		AIBarracksLimit += 1;
+		//		AIWarFactoryLimit += 2;
 		//	}
 		//	if (AIDetectedNavalWar) {
-		//		AINavalMinimal += 2;
+		//		AINavalLimit += 2;
 		//	}
 		//	AIHelipadMinimal += 2;
-		//	AIAirdefenseMinimal += 4;
+		//	AIAirdefenseLimit += 4;
 		//	AIFlameTurretMinimal += 4;
 		//	AIGunTeslaMinimal += 4;
-		//	AIGapMinimal += 2;
+		//	AIGapLimit += 2;
 		//}
 
 		// flame turrets must be doubled, allies have pillbox and camo pillbox in this amount.
@@ -6537,19 +6537,19 @@ int HouseClass::AI_Building(void)
 		}
 
 		if (Rule.AISpeedRush == 1) {
-			AIDogKennelMinimal = Rule.AIDogHouseSpeed;
-			AIBarracksMinimal = Rule.AIBarracksSpeed;
+			AIDogKennelLimit = Rule.AIDogHouseSpeed;
+			AIBarracksLimit = Rule.AIBarracksSpeed;
 			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
-			AIVesselCarrierLimit = Rule.AINavalSpeed;
+			AINavalLimit = Rule.AINavalSpeed;
 			AIHelipadAlliedLimit = Rule.AIHelipadSpeed;
 			AIHelipadSovietLimit = Rule.AIHelipadSpeed;
 			AIAirstripLimit = Rule.AIAirStripSpeed;
-			AIAirdefenseMinimal = Rule.AIAirdefenseSpeed;
+			AIAirdefenseLimit = Rule.AIAirdefenseSpeed;
 			AIPillBoxLimit = Rule.AIFlameTurretSpeed;
 			AITurretGunLimit = Rule.AIGunTeslaSpeed;
-			AIGapMinimal = Rule.AIGapSpeed;
-			AINukeMinimal = Rule.AINukeSpeed;
-			AIRepairBayMinimal = Rule.AIRepairBaySpeed;
+			AIGapLimit = Rule.AIGapSpeed;
+			AINukeLimit = Rule.AINukeSpeed;
+			AIRepairBayLimit = Rule.AIRepairBaySpeed;
 			AIMaxBuildings = Rule.AIMaxBuildingsSpeed;
 			AIMaxConYardsAndMCVs = 1;
 			AIMaxTanksNr = Rule.AIMaxTanksSpeed;
@@ -6583,7 +6583,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//dog house
-		if (BQuantity[STRUCT_KENNEL] < AIDogKennelMinimal) {
+		if (BQuantity[STRUCT_KENNEL] < AIDogKennelLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_KENNEL);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -6594,7 +6594,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Soviet barracks
-		if (BQuantity[STRUCT_BARRACKS] < AIBarracksMinimal) {
+		if (BQuantity[STRUCT_BARRACKS] < AIBarracksLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -6605,7 +6605,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Allied tent
-		if (BQuantity[STRUCT_TENT] < AIBarracksMinimal) {
+		if (BQuantity[STRUCT_TENT] < AIBarracksLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_TENT);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -6635,9 +6635,6 @@ int HouseClass::AI_Building(void)
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
-						//if ((int)BQuantity[STRUCT_MSLO] > 0) {
-						//	prio = prio + 1;
-						//}
 						if (airthreat) {
 							prio = prio + 1;
 						}
@@ -6706,7 +6703,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//warfactory, 1st one high prio, then build 4 defenses, then nr 2 and 3 high prio. More is medium
-		if (BQuantity[STRUCT_WEAP] < AIWarFactoryMinimal && BQuantity[STRUCT_WEAP] < AIWarFactoryLimit) {
+		if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit && BQuantity[STRUCT_WEAP] < AIWarFactoryFBOnOffLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -6763,7 +6760,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//repair bay
-		if (BQuantity[STRUCT_REPAIR] < AIRepairBayMinimal) {
+		if (BQuantity[STRUCT_REPAIR] < AIRepairBayLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6853,7 +6850,7 @@ int HouseClass::AI_Building(void)
 		//Only try Naval if human does.
 		if (AIDetectedNavalWar) {
 			//naval allies
-			if (BQuantity[STRUCT_SHIP_YARD] < AINavalMinimal && (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
+			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit && (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
 				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 					choiceptr = BuildChoice.Alloc();
@@ -6871,25 +6868,27 @@ int HouseClass::AI_Building(void)
 			}
 
 			//naval soviet
-			if (BQuantity[STRUCT_SUB_PEN] < AINavalMinimal && (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
+			if (BQuantity[STRUCT_SUB_PEN] < AINavalLimit && (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
 				if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 					choiceptr = BuildChoice.Alloc();
-					prio = 2;
-					//if (AIDetectedNavalWar) {
-					//	prio = prio + 1;
-					//}
-					//if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
-					//	prio = prio + 1;
-					//}
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					if (choiceptr != NULL) {
+						prio = 2;
+						//if (AIDetectedNavalWar) {
+						//	prio = prio + 1;
+						//}
+						//if (BQuantity[STRUCT_SOVIET_TECH] > 0) {
+						//	prio = prio + 1;
+						//}
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					}
 				}
 			}
 		}
 
 		//air defense
 		if (airthreat) {
-			if (BQuantity[STRUCT_SAM] < AIAirdefenseMinimal) {
+			if (BQuantity[STRUCT_SAM] < AIAirdefenseLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
@@ -6898,7 +6897,7 @@ int HouseClass::AI_Building(void)
 					}
 				}
 			}
-			if (BQuantity[STRUCT_AAGUN] < AIAirdefenseMinimal) {
+			if (BQuantity[STRUCT_AAGUN] < AIAirdefenseLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
@@ -6910,7 +6909,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//nuke
-		if (BQuantity[STRUCT_MSLO] < AINukeMinimal) {
+		if (BQuantity[STRUCT_MSLO] < AINukeLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_MSLO);
 			if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
 				choiceptr = BuildChoice.Alloc();
@@ -6921,13 +6920,13 @@ int HouseClass::AI_Building(void)
 		}
 
 		//gap
-		if (BQuantity[STRUCT_GAP] < AIGapMinimal) {
+		if (BQuantity[STRUCT_GAP] < AIGapLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
 			if (Can_Build(b, ActLike) && Power_Fraction() && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-					//*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < (int)(AIGapMinimal/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					//*choiceptr = BuildChoiceClass(BQuantity[STRUCT_GAP] < (int)(AIGapLimit/3) ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
