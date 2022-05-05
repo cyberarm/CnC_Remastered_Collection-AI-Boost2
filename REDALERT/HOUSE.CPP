@@ -5752,14 +5752,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			}
 			else {
 				u->Scatter(false, true, true);
-				if (*u == UNIT_MCV) {
-					if (!(IsTiberiumShort)) {
-						u->Goto_Tiberium(999999); // Find some tiberium
-						u->Assign_Mission(MISSION_MOVE); // go to it
-					}
-					u->Assign_Mission(MISSION_HUNT); // and deploy
-				}
-				else if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
+				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					if (*u == UNIT_CHRONOTANK) {
 						// Weird enough this must been set before the jump, otherways they run home after jumping.
 						if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMinimalChronotanksBeforeShift) {
