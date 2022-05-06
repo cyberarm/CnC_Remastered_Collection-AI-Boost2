@@ -60,19 +60,19 @@ AI changes:
 - AI attacks interval uses different ways (Hunt, Closest enemy, etc.)
 - AI Air units no longer just attack Refineries, it selects random between base-defense, factories, power, buildings, naval units or all threats
 - AI knows how to use Thief's and Spies
-- AI knows how to use a MAD Tanks
-- AI knows how to use a Demo truck.
+- AI knows how to use MAD Tanks
+- AI knows how to use Demo truck.
 - AI knows how to use chrono shifting with a Chrono Tank
 - AI knows how to use Naval stuff
 - AI Naval war detection. The AI scans for human Naval objects, if he detects Naval stuff, it will upscale his Naval and Air limits
-- AI lowers tank production if human goes naval and doesn't produce a lot of tanks (Allies still build Chronotanks because they can Chronoshift)
+- AI lowers tank production if human goes naval and doesn't produce a lot of tanks (Still builds Chronotanks because they can Chronoshift)
 - AI Engineers automatically choose new target after capturing or loosing focus on previous selected target
 - AI Engineers no longer walk in groups. They choose their own targets
 - AI Medics and Mechanics now only repair friendly units
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level (Radar, Air units, etc.)
 - AI build MCV's and deploys them, AI limitations for buildings, etc. will grow on each MCV deployment
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
-- AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more too. It's totally dynamic. :-)
+- AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 
 ---
 
