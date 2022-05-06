@@ -6918,7 +6918,7 @@ int HouseClass::AI_Building(void)
 		//iron curtain
 		//if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
 		//	b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
-		//	if (Can_Build(b, ActLike) && b->Cost_Of() < money || hasincome) {
+		//	if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 		//		choiceptr = BuildChoice.Alloc();
 		//		if (choiceptr != NULL) {
 		//			*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
@@ -6929,7 +6929,7 @@ int HouseClass::AI_Building(void)
 		//chronosphere
 		//if (BQuantity[STRUCT_CHRONOSPHERE] < 1) {
 		//	b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
-		//	if (Can_Build(b, ActLike) && b->Cost_Of() < money || hasincome) {
+		//	if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 		//		choiceptr = BuildChoice.Alloc();
 		//		if (choiceptr != NULL) {
 		//			*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
