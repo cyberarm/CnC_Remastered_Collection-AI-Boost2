@@ -5751,26 +5751,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 			}
 			else if (*u == UNIT_MCV) {
-				// MCV's, find furthest own building to drive too. //BarryTEST
-				int FarthestOwnBuildingDist = -1;
-				for (int index = 0; index < Buildings.Count(); index++) {
-					BuildingClass * Ownbuilding = Buildings.Ptr(index);
-					if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
-						for (int index = 0; index < Buildings.Count(); index++) {
-							BuildingClass * building = Buildings.Ptr(index);
-							if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
-								if (FarthestOwnBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestOwnBuildingDist)) {
-									FarthestOwnBuildingDist = index;
-								}
-							}
-						}
-					}
-				}
-				COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
-				CELL TargetCell = Coord_Cell(TargetCoord);
-				CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false);
-				u->Assign_Destination(TargetFreeCell);
-				u->Assign_Mission(MISSION_MOVE);
 				u->Assign_Mission(MISSION_HUNT);
 			}
 			else {
@@ -7029,12 +7009,6 @@ int HouseClass::AI_Unit(void)
 
 	//AI Max units
 	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
-		return(TICKS_PER_SECOND);
-	}
-
-	//BarryTEST
-	if (!IsHuman) {
-		BuildUnit = UNIT_MCV;
 		return(TICKS_PER_SECOND);
 	}
 
