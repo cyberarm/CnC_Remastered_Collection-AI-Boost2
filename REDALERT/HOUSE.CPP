@@ -1385,7 +1385,7 @@ void HouseClass::AI(void)
 		Map.All_To_Look(PlayerPtr);
 	}
 
-	// Deteft if the game is FFA, by Bast75
+	// Detect if the game is FFA, by Bast75
 	if (!IsHuman) {
 		FFAgame = 1; // We assume its an FFA game.
 		//Check if there is an Ally, then it's not FFA.
@@ -5750,6 +5750,29 @@ bool HouseClass::AI_Attack(UrgencyType)
 					u->Scatter(false, true, true);
 				}
 			}
+			else if (*u == UNIT_MCV) {
+				// MCV's, find furthest own building to drive too. //BarryTEST
+				int FarthestOwnBuildingDist = -1;
+				for (int index = 0; index < Buildings.Count(); index++) {
+					BuildingClass * Ownbuilding = Buildings.Ptr(index);
+					if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+						for (int index = 0; index < Buildings.Count(); index++) {
+							BuildingClass * building = Buildings.Ptr(index);
+							if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
+								if (FarthestOwnBuildingDist == -1 || (Ownbuilding->Distance(building) > FarthestOwnBuildingDist)) {
+									FarthestOwnBuildingDist = index;
+								}
+							}
+						}
+					}
+				}
+				COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
+				CELL TargetCell = Coord_Cell(TargetCoord);
+				CELL TargetFreeCell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false);
+				u->Assign_Destination(TargetFreeCell);
+				u->Assign_Mission(MISSION_MOVE);
+				u->Assign_Mission(MISSION_HUNT);
+			}
 			else {
 				u->Scatter(false, true, true);
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
@@ -6532,8 +6555,8 @@ int HouseClass::AI_Building(void)
 			}
 			else {
 				b = &BuildingTypeClass::As_Reference(STRUCT_POWER);
-				//if (Can_Build(b, ActLike) && b->Cost_Of() < money && (!(BQuantity[STRUCT_POWER] == 1 && Drain == 0))) { //only second allowed if drain not 0
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money)) {
+				if (Can_Build(b, ActLike) && b->Cost_Of() < money && (!(BQuantity[STRUCT_POWER] == 1 && Drain == 0))) { //only second allowed if drain not 0
+				//if (Can_Build(b, ActLike) && (b->Cost_Of() < money)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
 						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
@@ -7006,6 +7029,12 @@ int HouseClass::AI_Unit(void)
 
 	//AI Max units
 	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
+		return(TICKS_PER_SECOND);
+	}
+
+	//BarryTEST
+	if (!IsHuman) {
+		BuildUnit = UNIT_MCV;
 		return(TICKS_PER_SECOND);
 	}
 

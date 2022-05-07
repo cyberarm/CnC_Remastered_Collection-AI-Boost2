@@ -70,7 +70,7 @@ AI changes:
 - AI Engineers no longer walk in groups. They choose their own targets
 - AI Medics and Mechanics now only repair friendly units
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level (Radar, Air units, etc.)
-- AI build MCV's and deploys them, AI limitations for buildings, etc. will grow on each MCV deployment
+- AI build MCV's and deploys them, AI limitations for buildings, etc.
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 
