@@ -5751,6 +5751,8 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 			}
 			else if (*u == UNIT_MCV) {
+				// By Bast75, AI MCV didn't deploy after building, lets try again.
+				u->Scatter(false, true, true);
 				u->Assign_Mission(MISSION_HUNT);
 			}
 			else {
@@ -7009,6 +7011,13 @@ int HouseClass::AI_Unit(void)
 
 	//AI Max units
 	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
+		return(TICKS_PER_SECOND);
+	}
+
+
+	//Test by Bast75:
+	if (!IsHuman && 1==0) {
+		BuildUnit = UNIT_MCV;
 		return(TICKS_PER_SECOND);
 	}
 

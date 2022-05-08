@@ -2680,6 +2680,7 @@ int UnitClass::Mission_Unload(void)
 					}
 					else {
 						if (!House->IsHuman && Session.Type != GAME_NORMAL) {
+							// By Bast75, AI MCV must deploy as fast as possible
 							Assign_Mission(MISSION_HUNT);
 						}
 						else {
