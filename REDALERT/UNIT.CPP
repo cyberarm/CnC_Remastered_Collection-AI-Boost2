@@ -1510,43 +1510,41 @@ bool UnitClass::Goto_Clear_Spot(void)
 		**	This scan table is skewed to north scanning only. This should
 		**	probably be converted to a more flexible method.
 		*/
-		static int _offsets[] = {
-			-MAP_CELL_W * 1,
-			-MAP_CELL_W * 2,
-			-(MAP_CELL_W * 2) + 1,
-			-(MAP_CELL_W * 2) - 1,
-			-MAP_CELL_W * 3,
-			-(MAP_CELL_W * 3) + 1,
-			-(MAP_CELL_W * 3) - 1,
-			-(MAP_CELL_W * 3) + 2,
-			-(MAP_CELL_W * 3) - 2,
-			-MAP_CELL_W * 4,
-			-(MAP_CELL_W * 4) + 1,
-			-(MAP_CELL_W * 4) - 1,
-			-(MAP_CELL_W * 4) + 2,
-			-(MAP_CELL_W * 4) - 2,
-			//BG: Added south scanning
-						MAP_CELL_W * 1,
-						MAP_CELL_W * 2,
-						(MAP_CELL_W * 2) + 1,
-						(MAP_CELL_W * 2) - 1,
-						MAP_CELL_W * 3,
-						(MAP_CELL_W * 3) + 1,
-						(MAP_CELL_W * 3) - 1,
-						(MAP_CELL_W * 3) + 2,
-						(MAP_CELL_W * 3) - 2,
-						MAP_CELL_W * 4,
-						(MAP_CELL_W * 4) + 1,
-						(MAP_CELL_W * 4) - 1,
-						(MAP_CELL_W * 4) + 2,
-						(MAP_CELL_W * 4) - 2,
+		//By Bast75, increased the scanning area so AI has less problems to find a deploy spot in a big crowded base.
+		//If value=10 -> it scans -10 left, 10 right, 10 up and 10 down
+		int k = 0;
+		int Loopy = 0;
+		int MCVScanRange = 50;
+		static int _offsets[] = { 0 };
+		while (Loopy < MCVScanRange) {
+			if (Loopy == 0) {
+				_offsets[k] = -(MAP_CELL_W);
+				k++;
+				_offsets[k] = -(MAP_CELL_W);
+				k++;
+			}
+			else {
+				_offsets[k] = (MAP_CELL_W)+Loopy;
+				k++;
+				_offsets[k] = (MAP_CELL_W)-Loopy;
+				k++;
+				_offsets[k] = -(MAP_CELL_W)+Loopy;
+				k++;
+				_offsets[k] = -(MAP_CELL_W)-Loopy;
+				k++;
+				_offsets[k] = (MAP_CELL_W * Loopy) + Loopy;
+				k++;
+				_offsets[k] = (MAP_CELL_W * Loopy) - Loopy;
+				k++;
+				_offsets[k] = -(MAP_CELL_W * Loopy) + Loopy;
+				k++;
+				_offsets[k] = -(MAP_CELL_W * Loopy) - Loopy;
+				k++;
+			}
+			Loopy++;
+		}
 
-						//BG: Added some token east/west scanning
-									-1,-2,-3,-4,
 
-									 1, 2, 3, 4,
-									0
-		};
 		int * ptr;
 
 		ptr = &_offsets[0];

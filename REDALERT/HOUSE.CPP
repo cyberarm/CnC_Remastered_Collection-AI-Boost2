@@ -7015,7 +7015,7 @@ int HouseClass::AI_Unit(void)
 	}
 
 
-	//Test by Bast75:
+	//MCV deploy test by Bast75: (Let the AI make Extreme MCV's)
 	if (!IsHuman && 1==0) {
 		BuildUnit = UNIT_MCV;
 		return(TICKS_PER_SECOND);

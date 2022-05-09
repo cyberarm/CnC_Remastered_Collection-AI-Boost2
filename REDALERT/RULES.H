@@ -130,6 +130,7 @@ class RulesClass {
 		int AIWarFactoryLimitOFF = 2;
 		int AIVesselCarrierLimitON = 4;
 		int AIVesselCarrierLimitOFF = 2;
+
 		//Basic (Ground war)
 		int AIDogHouseLimitBasic = 2;
 		int AIBarracksLimitBasic = 2;
