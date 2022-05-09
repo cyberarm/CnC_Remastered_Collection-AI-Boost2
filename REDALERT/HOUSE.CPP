@@ -6704,7 +6704,19 @@ int HouseClass::AI_Building(void)
 		}
 
 		//warfactory, 1st one high prio, then build 4 defenses, then nr 2 and 3 high prio. More is medium
-		if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit && BQuantity[STRUCT_WEAP] < AIWarFactoryFBOnOffLimit) {
+		int MyMax;
+		if (!AIDetectHumanGroundWar) {
+			MyMax = AIWarFactoryLimit;
+		}
+		else {
+			if (AIWarFactoryLimit > AIWarFactoryFBOnOffLimit) {
+				MyMax = AIWarFactoryLimit;
+			}
+			else {
+				MyMax = AIWarFactoryFBOnOffLimit;
+			}
+		}
+		if (BQuantity[STRUCT_WEAP] < MyMax) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -6863,7 +6875,7 @@ int HouseClass::AI_Building(void)
 		//Only try Naval if human does.
 		if (AIDetectedNavalWar) {
 			//naval allies
-			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit && (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
+			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit || (BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AIVesselCarrierLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
@@ -6875,7 +6887,7 @@ int HouseClass::AI_Building(void)
 			}
 
 			//naval soviet
-			if (BQuantity[STRUCT_SUB_PEN] < AINavalLimit && (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
+			if (BQuantity[STRUCT_SUB_PEN] < AINavalLimit || (BQuantity[STRUCT_SUB_PEN] + BQuantity[STRUCT_SHIP_YARD]) < AIVesselCarrierLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
