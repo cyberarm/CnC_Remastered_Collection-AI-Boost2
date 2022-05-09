@@ -1,5 +1,5 @@
 # AI-Boost for Red Alert
-Last update at: 8 may 2022
+Last update at: 9 may 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -27,6 +27,7 @@ Fixed:
 - AI building production was unlimited when having multiple enemies. Now it calculates the average buildings of all enemies and use this as baseline
 - AI made too many engineers. Now there is a limit in the .ini file
 - AIAttackFirstTime (in the .ini), now it works!
+- MCV find-good-deploy-spot search area is increased so AI's MCV's don't get stuck
 - GAP selling loop for the AI is fixed
 - Fixed the recalculation of certain building limits when AI steals technology
 - We bring back the way MCV was deployed. AI don't like it to be too close near the tiberium (Bases are more compacted, more stuck units, less effective bases defenses, etc)
@@ -70,7 +71,7 @@ AI changes:
 - AI Engineers no longer walk in groups. They choose their own targets
 - AI Medics and Mechanics now only repair friendly units
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level (Radar, Air units, etc.)
-- AI build MCV's and deploys them, AI limitations for buildings, etc.
+- AI build MCV's and deploys them, AI limitations for buildings, etc. will increase on each deploy
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 

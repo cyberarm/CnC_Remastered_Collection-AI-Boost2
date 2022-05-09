@@ -1518,7 +1518,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 		static int _offsets[] = { 0 };
 		while (Loopy < MCVScanRange) {
 			if (Loopy == 0) {
-				_offsets[k] = -(MAP_CELL_W);
+				_offsets[k] = (MAP_CELL_W);
 				k++;
 				_offsets[k] = -(MAP_CELL_W);
 				k++;
