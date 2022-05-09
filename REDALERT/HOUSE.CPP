@@ -7050,16 +7050,14 @@ int HouseClass::AI_Unit(void)
 	//Make MCV by Bast75
 	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 		if (UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) {
-			if (Percent_Chance(75)) {
-				BuildUnit = UNIT_MCV;
-				return(TICKS_PER_SECOND);
-			}
+			BuildUnit = UNIT_MCV;
+			return(TICKS_PER_SECOND);
 		}
 	}
 
 	//Naval war and no ground war? Don't make too much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
-		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(23)) {
+		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(33)) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
 			return(TICKS_PER_SECOND);
 		}
