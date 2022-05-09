@@ -1953,6 +1953,18 @@ void HouseClass::Harvested(unsigned tiberium)
 
 	long oldtib = Tiberium;
 
+	//Added MCVs deploy loop to speed up his MCVs:
+	for (int index = 0; index < Units.Count(); index++) {
+		UnitClass * u = Units.Ptr(index);
+		if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+			if (*u == UNIT_MCV) {
+				// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
+				u->Scatter(false, true, true);
+				u->Assign_Mission(MISSION_HUNT);
+			}
+		}
+	}
+
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
@@ -5751,7 +5763,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 			}
 			else if (*u == UNIT_MCV) {
-				// By Bast75, AI MCV didn't deploy after building, lets try again.
+				// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
 				u->Scatter(false, true, true);
 				u->Assign_Mission(MISSION_HUNT);
 			}
