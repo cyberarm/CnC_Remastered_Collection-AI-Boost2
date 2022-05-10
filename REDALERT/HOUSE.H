@@ -450,8 +450,6 @@ class HouseClass {
 		//int AINrOfMCVsProduced = 0;
 		int AIMaxBuildings = 75;
 		int AIMaxConYardsAndMCVs = 1;
-		int AIWarFactoryFBOnOffLimit = 1;
-		int AIVesselCarrierLimit = 1;
 		int MCVsProduced = 0;
 		int AIMaxTanksNr = 50;
 		int AIMaxNavalNr = 50;
