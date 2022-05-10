@@ -148,7 +148,7 @@ class RulesClass {
 		int AIGapLimitBasic = 2;
 		int AINukeLimitBasic = 2;
 		int AIRepairBayLimitBasic = 2;
-		//int AIMaxMCVsBasic = 2;
+		int AIMaxMCVsBasic = 2;
 		int AIMaxBuildingsBasic = 2;
 		int AIMaxTanksBasic = 2;
 		int AIMaxNavalBasic = 2;
@@ -172,7 +172,7 @@ class RulesClass {
 		int AIGapLimitMix = 2;
 		int AINukeLimitMix = 2;
 		int AIRepairBayLimitMix = 2;
-		//int AIMaxMCVsMix = 2;
+		int AIMaxMCVsMix = 2;
 		int AIMaxBuildingsMix = 2;
 		int AIMaxTanksMix = 2;
 		int AIMaxNavalMix = 2;
@@ -196,7 +196,7 @@ class RulesClass {
 		int AIGapLimitNaval = 2;
 		int AINukeLimitNaval = 2;
 		int AIRepairBayLimitNaval = 2;
-		//int AIMaxMCVsNaval = 2;
+		int AIMaxMCVsNaval = 2;
 		int AIMaxBuildingsNaval = 2;
 		int AIMaxTanksNaval = 2;
 		int AIMaxNavalNaval = 2;

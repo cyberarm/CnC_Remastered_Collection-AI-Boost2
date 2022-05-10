@@ -6340,6 +6340,7 @@ int HouseClass::AI_Building(void)
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
+			AIMaxConYardsAndMCVs = Rule.AIMaxMCVsBasic;
 			AIDogKennelLimit = Rule.AIDogHouseLimitBasic;
 			AIBarracksLimit = Rule.AIBarracksLimitBasic;
 			AIWarFactoryLimit = Rule.AIWarFactoryLimitBasic;
@@ -6356,7 +6357,6 @@ int HouseClass::AI_Building(void)
 			AIGapLimit = Rule.AIGapLimitBasic;
 			AINukeLimit = Rule.AINukeLimitBasic;
 			AIRepairBayLimit = Rule.AIRepairBayLimitBasic;
-			//AIMaxMCVs = Rule.AIMaxMCVsBasic; // Doesn't work. If limit=2 but AI has multiple WarFactories it build 2 for each warfactory.
 			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
 			AIMaxTanksNr = Rule.AIMaxTanksBasic;
 			AIMaxNavalNr = Rule.AIMaxNavalBasic;
@@ -6367,6 +6367,7 @@ int HouseClass::AI_Building(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
+				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsMix;
 				AIDogKennelLimit = Rule.AIDogHouseLimitMix;
 				AIBarracksLimit = Rule.AIBarracksLimitMix;
 				AIWarFactoryLimit = Rule.AIWarFactoryLimitMix;
@@ -6390,6 +6391,7 @@ int HouseClass::AI_Building(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
+				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsNaval;
 				AIDogKennelLimit = Rule.AIDogHouseLimitNaval;
 				AIBarracksLimit = Rule.AIBarracksLimitNaval;
 				AIWarFactoryLimit = Rule.AIWarFactoryLimitNaval;
@@ -6790,7 +6792,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Construction Yard
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs && 1==0) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
