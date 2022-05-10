@@ -7034,7 +7034,7 @@ int HouseClass::AI_Unit(void)
 
 
 	//Test by Bast75: (Let the AI make Extreme of this to test if this unit is using his new options the way it should be)
-	if (!IsHuman && 1==1) {
+	if (!IsHuman && 1==0) {
 		BuildUnit = UNIT_CHRONOTANK; // UNIT_MCV;
 		return(TICKS_PER_SECOND);
 	}
