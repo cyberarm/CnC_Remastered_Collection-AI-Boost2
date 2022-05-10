@@ -6508,7 +6508,9 @@ int HouseClass::AI_Building(void)
 		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
 			AIWarFactoryFBOnOffLimit += 2;
 			AIMaxConYardsAndMCVs += 2;
-			AIVesselCarrierLimit += 2;
+			if (AIDetectedNavalWar) {
+				AIVesselCarrierLimit += 2;
+			}
 		}
 
 		if (Rule.AISpeedRush == 1) {
