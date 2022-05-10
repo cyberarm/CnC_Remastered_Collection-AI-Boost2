@@ -6425,16 +6425,6 @@ int HouseClass::AI_Building(void)
 				if (TempCalculation > AIBarracksLimit) {
 					AIBarracksLimit = TempCalculation;
 				}
-				////War Factories
-				//TempCalculation = (int)(enemy->BQuantity[STRUCT_WEAP] / CountEnemiesForThisAI);
-				//if (TempCalculation > AIWarFactoryLimit) {
-				//	AIWarFactoryLimit = TempCalculation;
-				//}
-				////Navals
-				//TempCalculation = (int)((enemy->BQuantity[STRUCT_SHIP_YARD] + enemy->BQuantity[STRUCT_SUB_PEN]) / CountEnemiesForThisAI);
-				//if (TempCalculation > AINavalLimit) {
-				//	AINavalLimit = TempCalculation;
-				//}
 				//Allied air units
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIHelipadAlliedLimit) {
