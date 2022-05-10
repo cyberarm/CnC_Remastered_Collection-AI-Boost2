@@ -1959,7 +1959,6 @@ void HouseClass::Harvested(unsigned tiberium)
 		if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
 			if (*u == UNIT_MCV) {
 				// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
-				u->Scatter(false, true, true);
 				u->Assign_Mission(MISSION_HUNT);
 			}
 		}
