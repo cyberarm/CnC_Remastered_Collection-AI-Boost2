@@ -27,10 +27,10 @@ Fixed:
 - AI building production was unlimited when having multiple enemies. Now it calculates the average buildings of all enemies and use this as baseline
 - AI made too many engineers. Now there is a limit in the .ini file
 - AIAttackFirstTime (in the .ini), now it works!
-- MCV find-good-deploy-spot search area is increased so AI's MCV's don't get stuck
+- MCV are a lot smarter now. Find-good-deploy-spot search area is greatly increased so when they leave the war factory, they go straight to the point. They dont get stuck anymore
 - GAP selling loop for the AI is fixed
 - Fixed the recalculation of certain building limits when AI steals technology
-- We bring back the way MCV was deployed. AI don't like it to be too close near the tiberium (Bases are more compacted, more stuck units, less effective bases defenses, etc)
+- We bring back the way MCV is deployed. AI don't like it to be too close near the tiberium (Bases are more compacted, more stuck units, less effective bases defenses, etc)
 - Added a fix on RA Immersive Heli's mod
 
 --- 
@@ -60,10 +60,7 @@ AI changes:
 - AI understands importance of buildings & units a lot better and uses it during attack
 - AI attacks interval uses different ways (Hunt, Closest enemy, etc.)
 - AI Air units no longer just attack Refineries, it selects random between base-defense, factories, power, buildings, naval units or all threats
-- AI knows how to use Thief's and Spies
-- AI knows how to use MAD Tanks
-- AI knows how to use Demo truck.
-- AI knows how to use chrono shifting with a Chrono Tank
+- AI knows how to use Thief's, Spies, MAD Tanks, Demo truck and chrono shifting with a Chrono Tank
 - AI knows how to use Naval stuff
 - AI Naval war detection. The AI scans for human Naval objects, if he detects Naval stuff, it will upscale his Naval and Air limits
 - AI lowers tank production if human goes naval and doesn't produce a lot of tanks (Still builds Chronotanks because they can Chronoshift)
@@ -71,7 +68,7 @@ AI changes:
 - AI Engineers no longer walk in groups. They choose their own targets
 - AI Medics and Mechanics now only repair friendly units
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level (Radar, Air units, etc.)
-- AI build MCV's and deploys them, AI limitations for buildings, etc. will increase on each deploy
+- AI build MCV's and deploys them, AI limitations for buildings, etc.
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 

@@ -650,12 +650,12 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxAirNaval = ini.Get_Int(MOREQOL, "AIMaxAirNaval", 75);
 		AIGroundUnitSlowDown = ini.Get_Int(MOREQOL, "AIGroundUnitSlowDown", 98);
 		AIRefineryLimitOverwrite = ini.Get_Int(MOREQOL, "AIRefineryLimitOverwrite", 10);
-		AIWarFactoryLimitON = ini.Get_Int(MOREQOL, "AIWarFactoryLimitON", 4);
-		AIWarFactoryLimitOFF = ini.Get_Int(MOREQOL, "AIWarFactoryLimitOFF", 2);
-		AIMaxConYardsAndMCVsON = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsON", 4);
-		AIMaxConYardsAndMCVsOFF = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsOFF", 2);
-		AIVesselCarrierLimitON = ini.Get_Int(MOREQOL, "AIVesselCarrierLimitON", 4);
-		AIVesselCarrierLimitOFF = ini.Get_Int(MOREQOL, "AIVesselCarrierLimitOFF", 2);
+		//AIWarFactoryLimitON = ini.Get_Int(MOREQOL, "AIWarFactoryLimitON", 4);
+		//AIWarFactoryLimitOFF = ini.Get_Int(MOREQOL, "AIWarFactoryLimitOFF", 2);
+		//AIMaxConYardsAndMCVsON = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsON", 4);
+		//AIMaxConYardsAndMCVsOFF = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsOFF", 2);
+		//AIVesselCarrierLimitON = ini.Get_Int(MOREQOL, "AIVesselCarrierLimitON", 4);
+		//AIVesselCarrierLimitOFF = ini.Get_Int(MOREQOL, "AIVesselCarrierLimitOFF", 2);
 
 		AISpeedRush = ini.Get_Int(MOREQOL, "AISpeedRush", 0);
 		AIDogHouseSpeed = ini.Get_Int(MOREQOL, "AIDogHouseSpeed", 1);

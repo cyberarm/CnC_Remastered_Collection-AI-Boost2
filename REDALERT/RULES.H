@@ -124,12 +124,12 @@ class RulesClass {
 		int AIPowerPlusExtra = 500;
 		int AIPowerPlusSellValue = 1000;
 		int AIRefineryLimitOverwrite = 10; // Never build more Refs as this
-		int AIMaxConYardsAndMCVsON = 4;
-		int AIMaxConYardsAndMCVsOFF = 2;
-		int AIWarFactoryLimitON = 4;
-		int AIWarFactoryLimitOFF = 2;
-		int AIVesselCarrierLimitON = 4;
-		int AIVesselCarrierLimitOFF = 2;
+		//int AIMaxConYardsAndMCVsON = 4;
+		//int AIMaxConYardsAndMCVsOFF = 2;
+		//int AIWarFactoryLimitON = 4;
+		//int AIWarFactoryLimitOFF = 2;
+		//int AIVesselCarrierLimitON = 4;
+		//int AIVesselCarrierLimitOFF = 2;
 
 		//Basic (Ground war)
 		int AIDogHouseLimitBasic = 2;

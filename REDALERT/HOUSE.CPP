@@ -6253,18 +6253,6 @@ int HouseClass::AI_Building(void)
 
 	if (BuildStructure != STRUCT_NONE) return(TICKS_PER_SECOND);
 
-	// Set maximum of War Factory/Yard/Vessel Carrier according to fast build On/Off - Mini Franki
-	if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
-		AIWarFactoryFBOnOffLimit = Rule.AIWarFactoryLimitON;
-		AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsON;
-		AIVesselCarrierLimit = Rule.AIVesselCarrierLimitON;
-	}
-	if (NewUnitsEnabled && (Rule.AIAftermathfastbuild == 0)) {
-		AIWarFactoryFBOnOffLimit = Rule.AIWarFactoryLimitOFF;
-		AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsOFF;
-		AIVesselCarrierLimit = Rule.AIVesselCarrierLimitOFF;
-	}
-
 	if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
 		BaseNodeClass * node = Base.Next_Buildable();
 		if (node) {
@@ -6510,6 +6498,13 @@ int HouseClass::AI_Building(void)
 		}
 		if (BQuantity[STRUCT_REFINERY] < 2) {
 			AIPowerPlus = 5;
+		}
+
+		// Set maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
+		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
+			AIWarFactoryFBOnOffLimit += 2;
+			AIMaxConYardsAndMCVs += 2;
+			AIVesselCarrierLimit += 2;
 		}
 
 		if (Rule.AISpeedRush == 1) {
@@ -7038,9 +7033,9 @@ int HouseClass::AI_Unit(void)
 	}
 
 
-	//MCV deploy test by Bast75: (Let the AI make Extreme MCV's)
-	if (!IsHuman && 1==0) {
-		BuildUnit = UNIT_MCV;
+	//Test by Bast75: (Let the AI make Extreme of this to test if this unit is using his new options the way it should be)
+	if (!IsHuman && 1==1) {
+		BuildUnit = UNIT_CHRONOTANK; // UNIT_MCV;
 		return(TICKS_PER_SECOND);
 	}
 
