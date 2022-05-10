@@ -1953,13 +1953,15 @@ void HouseClass::Harvested(unsigned tiberium)
 
 	long oldtib = Tiberium;
 
-	//Added MCVs deploy loop to speed up his MCVs:
-	for (int index = 0; index < Units.Count(); index++) {
-		UnitClass * u = Units.Ptr(index);
-		if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-			if (*u == UNIT_MCV) {
-				// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
-				u->Assign_Mission(MISSION_HUNT);
+	if (!IsHuman) {
+		//Added MCVs deploy loop to speed up his MCVs:
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+				if (*u == UNIT_MCV) {
+					// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
+					u->Assign_Mission(MISSION_HUNT);
+				}
 			}
 		}
 	}
