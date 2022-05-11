@@ -6494,7 +6494,7 @@ int HouseClass::AI_Building(void)
 			AIPowerPlus = 5;
 		}
 
-		// Set maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
+		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
 		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
 			AIWarFactoryLimit += 2;
 			AIMaxConYardsAndMCVs += 2;
