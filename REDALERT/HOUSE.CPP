@@ -6960,7 +6960,6 @@ int HouseClass::AI_Building(void)
 		}
 
 
-		//if (!IsHuman && (int)HumanBuildingCount > 0 && (int)CurBuildings > Rule.AIBuildingsMinimal) {
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not too much:
 			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
