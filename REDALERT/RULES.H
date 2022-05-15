@@ -101,7 +101,6 @@ class RulesClass {
 		int AIHarvesterMemoryValue = 10;
 		int AIHarvesterMaxLimit = 10;
 		int AIBuildingsMultiplier = 2;
-		int AIBuildingsMinimal = 30;
 		//int AIUnitMultiplier = 3;
 		int AIMaxEngineers = 20;
 		int InfantryGroupSize = 5;
