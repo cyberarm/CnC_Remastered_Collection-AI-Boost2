@@ -18,6 +18,7 @@ New:
 - AI build more air defenses and GAP generators
 - AI selling buildings to restore power or cash is smarter now
 - Tweaked the building/defense order/priority resulting in better cash flow/cost for the AI
+- Added a limit for the number of Chronotanks the AI is allowed to build.
  
 Fixed:
 - Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)

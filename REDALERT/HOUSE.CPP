@@ -5773,8 +5773,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					if (*u == UNIT_CHRONOTANK) {
 						// Weird enough this must been set before the jump, otherways they run home after jumping.
-						if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMinimalChronotanksBeforeShift) {
-							//We are allowed to jump, so do it. :-)
+						//if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMaxChronotanks) {
+					    if (Rule.AIAllowChronotanksGroupShifting) {
+								//We are allowed to jump, so do it. :-)
 							u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
 							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 							CELL TargetCell = Coord_Cell(TargetCoord);
@@ -7050,7 +7051,7 @@ int HouseClass::AI_Unit(void)
 
 	//Naval war and no ground war? Don't make too much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
-		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(33)) {
+		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(33) && (int)UQuantity[UNIT_CHRONOTANK] < Rule.AIMaxChronotanks) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
 			return(TICKS_PER_SECOND);
 		}
@@ -7147,7 +7148,7 @@ int HouseClass::AI_Unit(void)
 		UnitType index;
 		for (index = UNIT_FIRST; index < UNIT_COUNT; index++) {
 			UnitTypeClass const * utype = &UnitTypeClass::As_Reference(index);
-			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER && utype->Type != UNIT_MCV) { // && utype->Type != UNIT_MAD
+			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER && utype->Type != UNIT_MCV && utype->Type != UNIT_CHRONOTANK) { // && utype->Type != UNIT_MAD
 				if (utype->PrimaryWeapon != NULL) {
 					counter[index] = 20; // default prio level for a unit with a PrimaryWeapon
 				}
