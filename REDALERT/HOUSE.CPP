@@ -6588,15 +6588,14 @@ int HouseClass::AI_Building(void)
 		}
 
 		//refinery
-		AIRefineryMinimal = Rule.AIRefineryLimitOverwrite;
-		
+		AIRefineryLimit = Rule.AIRefineryLimitOverwrite;
 		//If humans has more refs, we go more refs too:
-		if (HumanRefs > AIRefineryMinimal)
+		if (HumanRefs > AIRefineryLimit && Rule.AIAllowDynamicBaseGrow)
 		{
-			AIRefineryMinimal = HumanRefs;
+			AIRefineryLimit = HumanRefs;
 		}
 		
-		if (BQuantity[STRUCT_REFINERY] < AIRefineryMinimal) {
+		if (BQuantity[STRUCT_REFINERY] < AIRefineryLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();

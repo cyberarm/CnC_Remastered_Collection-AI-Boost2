@@ -439,7 +439,7 @@ class HouseClass {
 		int AITurretGunLimit = 1;
 		int AIFlameTurretLimit = 1;
 		int AITeslaGunLimit = 1;
-		int AIRefineryMinimal = 1;
+		int AIRefineryLimit = 1;
 		int AINukeLimit = 1;
 		int AIRepairBayLimit = 1;
 		bool AIDetectedNavalWar = false;
