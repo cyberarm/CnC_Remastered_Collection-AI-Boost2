@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/RULES.CPP 1     3/03/97 10:25a Joe_bostic $ */
@@ -116,8 +116,8 @@ RulesClass::RulesClass(void) :
 	RefineryRatio(".16"),
 	BaseSizeAdd(3),
 	PowerSurplus(50),
-	InfantryReserve(2000), //Bast75, was 2000, less means more tanks
-	InfantryBaseMult(2), //Bast75, was 2
+	InfantryReserve(2000),
+	InfantryBaseMult(2),
 	ChronoDuration(3),
 	WaterCrateChance(".2"),
 	SoloCrateMoney(2000),
@@ -269,13 +269,7 @@ RulesClass::RulesClass(void) :
 	TiberiumShortScan(0x0600),
 	TiberiumLongScan(0x2000),
 	HealthBarDisplayMode(HB_SELECTED),
-	ResourceBarDisplayMode(RB_SELECTED),
-	MaxFreeRefineryDistanceBias(10),
-	MinHarvesterQueueJumpDistance(7),
-	MaxWallExtensionDistance(4),
-	WallSellPriceDivisor(3),
-	AutoRepairFacilityKickOut(true),
-	AISurrenderObjectCountThreshold(8)
+	ResourceBarDisplayMode(RB_SELECTED)
 {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	NewUnitsEnabled = SecretUnitsEnabled = 0;
@@ -390,7 +384,6 @@ bool RulesClass::General(CCINIClass & ini)
 	static char const * const GENERAL = "General";
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	static char const * const AFTERMATH = "Aftermath";
-	//static char const * const MOREQOL = "MoreQoL";
 	static char const * const MOREQOL = "AIBoost";
 
 	if(ini.Is_Present(AFTERMATH)) {
@@ -529,13 +522,6 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
-		MaxFreeRefineryDistanceBias = ini.Get_Int(MOREQOL, "MaxFreeRefineryDistanceBias", MaxFreeRefineryDistanceBias);
-		MinHarvesterQueueJumpDistance = ini.Get_Int(MOREQOL, "MinHarvesterQueueJumpDistance", MinHarvesterQueueJumpDistance);
-		MaxWallExtensionDistance = ini.Get_Int(MOREQOL, "MaxWallExtensionDistance", MaxWallExtensionDistance);
-		WallSellPriceDivisor = ini.Get_Int(MOREQOL, "WallSellPriceDivisor", WallSellPriceDivisor);
-		AutoRepairFacilityKickOut = ini.Get_Bool(MOREQOL, "AutoRepairFacilityKickOut", AutoRepairFacilityKickOut);
-		AISurrenderObjectCountThreshold = ini.Get_Int(MOREQOL, "AISurrenderObjectCountThreshold", AISurrenderObjectCountThreshold);
-
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);

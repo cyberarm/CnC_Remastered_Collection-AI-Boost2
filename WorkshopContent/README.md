@@ -1,4 +1,4 @@
-# AI-Boost 2.0 for Red Alert
+# AI-Boost 2.5 for Red Alert
 Last update at: 19 may 2022
 
 Please follow the steps below to update and reactivate the mod:
@@ -9,36 +9,11 @@ Please follow the steps below to update and reactivate the mod:
 - Activate the mod and restart the game as prompted
 - The updated mod should then work as intended
 
-New:
-- Added a lot more info in the INI about how AIBoost work (to avoid confusion)
-- AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
-- You can now set the boost for your allies and your enemies independently (when dynamic AI boost is disabled)
-- Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to re-balance
-- A lot of tweaks which greatly increases the AI intelligence (See new options in the .ini file also)
-- AI build more air defenses and GAP generators
-- AI selling buildings to restore power or cash is smarter now
-- Tweaked the building/defense order/priority resulting in better cash flow/cost for the AI
-- Added a limit for the number of Chronotanks the AI is allowed to build.
- 
-Fixed:
-- Sometimes harvesters could go to the other side of the map instead of going to the nearest Tiberium field. It's fixed now (Thanks to Cyberarm)
-- AI keeps building harvesters in some situations. Now you can set a max limit in the .ini file
-- The AI Chronotanks no longer jumps in groups. Human is unable to do this, so it was unfair. You can re-enable group-jumps by the .ini file if you like
-- AI naval production was unlimited. An AI tried to build more ships than all other enemies combined, resulting in unlimited production. Now it counts the human ships only
-- AI building production was unlimited when having multiple enemies. Now it calculates the average buildings of all enemies and use this as baseline
-- AI made too many engineers. Now there is a limit in the .ini file
-- AIAttackFirstTime (in the .ini), now it works!
-- MCV are a lot smarter now. Find-good-deploy-spot search area is greatly increased so when they leave the war factory, they go straight to the point. They dont get stuck anymore
-- GAP selling loop for the AI is fixed
-- Fixed the recalculation of certain building limits when AI steals technology
-- We bring back the way MCV is deployed. AI don't like it to be too close near the tiberium (Bases are more compacted, more stuck units, less effective bases defenses, etc)
-- Added a fix on RA Immersive Heli's mod
-- Added a fix on AI-Refinery-limit-overwrite when dynamic is disabled
-
 --- 
 
 Included Mod's:
-- The Rampastring Quality of Live MOD. (way-points, etc.)
+- CFE Patch Redux for RA v1.8 (way-points, A* pathfinding, etc.)
+- The Rampastring Quality of Live MOD
 - Engineer instant capture
 - Additional Zoom Levels
 - RA Immersive Heli's Mod (And all Air units have a sight) (Use 'L' to land)

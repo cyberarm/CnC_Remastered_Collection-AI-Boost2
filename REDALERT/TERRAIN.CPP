@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/TERRAIN.CPP 1     3/03/97 10:25a Joe_bostic $ */
@@ -57,6 +57,7 @@
 #include	"function.h"
 #include	"terrain.h"
 
+//#include "CFEDEBUG.H"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.                *
@@ -102,7 +103,7 @@ TerrainClass::~TerrainClass(void)
  *   11/22/1994 JLB : Shares base damage handler for techno objects.                           *
  *   12/11/1994 JLB : Shortens attached burning animations.                                    *
  *=============================================================================================*/
-ResultType TerrainClass::Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source, bool forced)
+ResultType TerrainClass::Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source, bool forced, TARGET indirectsource, ArmorPenType specialarmorpen)
 {
 	assert(Terrains.ID(this) == ID);
 	assert(IsActive);
@@ -114,7 +115,7 @@ ResultType TerrainClass::Take_Damage(int & damage, int distance, WarheadType war
 	*/
 	if ((!IsOnFire || warhead == WARHEAD_FIRE) && warhead != WARHEAD_SA && !Class->IsImmune) {
 
-		res = ObjectClass::Take_Damage(damage, distance, warhead, source, forced);
+		res = ObjectClass::Take_Damage(damage, distance, warhead, source, forced, indirectsource, specialarmorpen);
 
 		if (damage && warhead == WARHEAD_FIRE) {
 			Catch_Fire();
@@ -491,10 +492,36 @@ void TerrainClass::AI(void)
 	assert(IsActive);
 
 	ObjectClass::AI();
-
-	if ((*this == TERRAIN_MINE) && (Frame % (Rule.GrowthRate * TICKS_PER_MINUTE)) == 0) {
-		Map[::As_Cell(As_Target())].Spread_Tiberium(true);
-	}
+    
+    if (*this == TERRAIN_MINE){
+        if (ActiveCFEPatchConfig.BetterOreGrowth){
+            int threshhold = 1;
+            if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
+                if (Session.Options.Tiberium > 1) {
+                    threshhold = Session.Options.Tiberium;
+                }
+            }
+            if (ActiveCFEPatchConfig.OreGrowthScale > threshhold){
+                threshhold = ActiveCFEPatchConfig.OreGrowthScale;
+            }
+            int maxroll = (Rule.GrowthRate * TICKS_PER_MINUTE) - 1;
+            if (CFE_Patch_FullRange_Random_Pick(0, maxroll) < threshhold){
+                // This is correct. It centers the growth around the mine itself, not the cell below, which is what Map[::As_Cell(As_Target())] does
+                Map[Coord_Cell(Coord)].CFEOreMineSpread_Tiberium();
+            }
+        }
+        // vanilla code
+        else {
+            //if ((*this == TERRAIN_MINE) && (Frame % (Rule.GrowthRate * TICKS_PER_MINUTE)) == 0) {
+            if (Frame % (Rule.GrowthRate * TICKS_PER_MINUTE) == 0) {
+                // Chthon CFE Note: aha! This is a bug. It ends up centering the growth around the cell BELOW the ore mine. That's why we sometimes get ore trying to grow on top of a mine.
+                // We'll fix it for the "better ore growth" mod feature and leave it alone otherwise
+                Map[::As_Cell(As_Target())].Spread_Tiberium(true);
+            }
+        }
+    }
+        
+        
 	if (StageClass::Graphic_Logic()) {
 		Mark();
 

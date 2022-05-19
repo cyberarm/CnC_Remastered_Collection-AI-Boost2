@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/TRACKER.CPP 1     3/03/97 10:26a Joe_bostic $ */
@@ -126,6 +126,36 @@ void Detach_This_From_All(TARGET target, bool all)
 }
 
 
+// Chthon CFE Note: minimal version for use with chronoshift
+// only reflects the fact that the unit is no longer where it was,
+// so anyone targetting it should lose their target
+// and any bullets flying at it should miss
+void Minimal_Detach_This_From_All(TARGET target, bool all)
+{
+	int index;
+	if (Target_Legal(target)) {
 
+		for (index = 0; index < Units.Count(); index++) {
+			Units.Ptr(index)->Detach(target, all);
+		}
+		for (index = 0; index < Vessels.Count(); index++) {
+			Vessels.Ptr(index)->Detach(target, all);
+		}
+		for (index = 0; index < Aircraft.Count(); index++) {
+			Aircraft.Ptr(index)->Detach(target, all);
+		}
+		for (index = 0; index < Buildings.Count(); index++) {
+			Buildings.Ptr(index)->Detach(target, all);
+		}
+		for (index = 0; index < Bullets.Count(); index++) {
+			Bullets.Ptr(index)->MinimalDetach(target);
+		}
+		for (index = 0; index < Infantry.Count(); index++) {
+			Infantry.Ptr(index)->Detach(target, all);
+		}
+
+		ChronalVortex.Detach(target);
+	}
+}
 
 

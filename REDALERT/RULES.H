@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/RULES.H 1     3/03/97 10:25a Joe_bostic $ */
@@ -1032,52 +1032,6 @@ class RulesClass {
 			RB_SELECTED = 0,
 			RB_ALWAYS,
 		} ResourceBarDisplayMode;
-
-		// More QoL Improvements - mod by Rampastring
-
-		/*
-		**	When looking for refineries, the harvester will prefer
-		**	a distant free refinery over a closer occupied refinery only
-		**	if their distance difference in cells is smaller than this.
-		*/
-		int MaxFreeRefineryDistanceBias;
-
-		/*
-		**	If a refinery is already occupied by a returning harvester and
-		**	another harvester is also looking to dock, allow the new harvester
-		**	to take over the refinery if the difference in distance to the refinery
-		**	between the existing harvester and the new harvester is at least
-		**	this many tiles.
-		*/
-		int MinHarvesterQueueJumpDistance;
-
-		/*
-		**	The maximum distance that walls will extend to when produced.
-		*/
-		int MaxWallExtensionDistance;
-
-		/*
-		**	Wall extension does not automatically increase the cost of walls.
-		**	As such, you can actually get multiple wall pieces for the price of one.
-		**	To offset it, a wall's sell price is divided by this.
-		*/
-		int WallSellPriceDivisor;
-
-		/*
-		**	Should repair facilities automatically kick
-		**	out units once fully repaired?
-		*/
-		bool AutoRepairFacilityKickOut;
-
-		/*
-		**	The AI completely surrenders if it has already entered fire-sale
-		**	mode and has fewer objects left than this.
-		*/
-		int AISurrenderObjectCountThreshold;
-
-
-		// Some additional space for save game compatibility.
-		unsigned char SaveLoadPadding[43];
 };
 
 

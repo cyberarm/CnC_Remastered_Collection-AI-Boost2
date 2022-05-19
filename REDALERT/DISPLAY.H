@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/DISPLAY.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -122,6 +122,9 @@ class DisplayClass: public MapClass
 		DisplayClass(void);
 		DisplayClass(NoInitClass const & x) : MapClass(x) {};
 
+        // Chthon CFE Note: needs destructor and it should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
+        virtual ~DisplayClass(){}
+        
 		virtual void Read_INI(CCINIClass & ini);
 		void Write_INI(CCINIClass & ini);
 
@@ -201,14 +204,6 @@ class DisplayClass: public MapClass
 		*/
 		virtual void Code_Pointers(void);
 		virtual void Decode_Pointers(void);
-
-		/*
-		** pchote - "Modern Wall Building" mod.
-		*/
-		CELL LineBuildZoneCell;
-		bool LineBuildSuppressed;
-
-		bool Extend_Wall_Cursor_Shape(short* placementList, int& placementListLength, OverlayTypeClass const& wall, CELL cell, DirType dir, int step);
 
 	protected:
 		virtual void Mouse_Right_Press(void);
@@ -318,6 +313,8 @@ public:		//ST - 1/21/2019 11:59AM
 		void Redraw_Icons(void);
 		void Redraw_OIcons(void);
 		void Redraw_Shadow(void);
+
+		void Update_Placement_Cursor(void);
 
 		/*
 		**	This bit array is used to flag cells to be redrawn. If the icon needs to

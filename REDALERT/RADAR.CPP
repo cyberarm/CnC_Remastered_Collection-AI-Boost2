@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/RADAR.CPP 3     3/12/97 2:35p Joe_bostic $ */
@@ -665,7 +665,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size)
 	*/
 	for (lp = 0; lp < ARRAY_SIZE(Map[cell].Overlapper); lp ++) {
 		obj = Map[cell].Overlapper[lp];
-		if (obj && obj->What_Am_I() == RTTI_TERRAIN)
+        // add active check as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/6b3f0492747bd91409f9db8bf39b79fecef9b9ac
+		if (obj && obj->IsActive && obj->What_Am_I() == RTTI_TERRAIN)
 			list[listidx++] = (TerrainClass *)obj;
 	}
 
@@ -1194,7 +1195,9 @@ int RadarClass::Click_In_Radar(int &ptr_x, int &ptr_y, bool change) const
 
 	x -= (RadX + RadOffX);
 	y -= (RadY + RadOffY);
-	if (x < RadIWidth && y < RadIHeight) {
+    // Chthon CFE Note: bugfix signed/unsigned confusion
+	//if (x < RadIWidth && y < RadIHeight) {
+    if ((unsigned)x < (unsigned)RadIWidth && (unsigned)y < (unsigned)RadIHeight) {
 		x -= BaseX;
 		y -= BaseY;
 
@@ -1837,6 +1840,8 @@ int RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType & key)
 					case ACTION_ENTER:
 					case ACTION_CAPTURE:
 					case ACTION_SABOTAGE:
+                    case ACTION_ATTACKMOVE: // Attack Move rework by ChthonVII 
+                    case ACTION_HARVEST: // Chthon CFE Note: bugfix, allow harvest via radar map, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/fe8b6cb0b3c25a0bb422ab0f5fbfdca517812415
 						break;
 
 					default:

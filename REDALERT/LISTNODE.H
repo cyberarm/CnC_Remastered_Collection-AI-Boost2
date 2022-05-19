@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/LISTNODE.H 1     3/03/97 10:25a Joe_bostic $ */
@@ -38,6 +38,7 @@
 
 #include	<stddef.h>
 #include	<assert.h>
+#include	<iterator>
 
 /*
 **	The "bool" integral type was defined by the C++ comittee in
@@ -64,7 +65,8 @@ class GenericList;
 class GenericNode {
 	public:
 		GenericNode(void) : NextNode(0), PrevNode(0) {}
-		~GenericNode(void) {Unlink();}
+		// Chthon CFE Note: destructor should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
+		virtual ~GenericNode(void) {Unlink();}
 		GenericNode(GenericNode & node) {node.Link(this);}
 		GenericNode & operator = (GenericNode & node) {
 			if (&node != this) {
@@ -117,6 +119,8 @@ class GenericList {
 		GenericList(void) {
 			FirstNode.Link(&LastNode);
 		}
+		// Chthon CFE Note: needs destructor and it should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
+		virtual ~GenericList(){}
 
 		GenericNode * First(void) const {return(FirstNode.Next());}
 		GenericNode * Last(void) const {return(LastNode.Prev());}
@@ -154,6 +158,50 @@ class Node : public GenericNode {
 		bool Is_Valid(void) const {return(GenericNode::Is_Valid());}
 };
 
+/* 14/06/2020 cfehunter
+** Adding iterators for lists. They're annoying to work with without them
+*/
+template <typename T>
+struct NodeIterator
+{
+	using iterator_category = std::bidirectional_iterator_tag;
+
+	NodeIterator()
+		: CurrentNode(nullptr)
+	{}
+
+	NodeIterator(T* node)
+		: CurrentNode(node)
+	{}
+
+	T* operator->() { return CurrentNode; }
+
+	T* operator*() { return CurrentNode; }
+
+	NodeIterator& operator++()
+	{
+		CurrentNode = static_cast<T*>(CurrentNode->Next());
+		return *this;
+	}
+
+	NodeIterator& operator--()
+	{
+		CurrentNode = static_cast<T*>(CurrentNode->Prev());
+		return *this;
+	}
+
+	bool operator==(const NodeIterator<T>& rhs)
+	{
+		return CurrentNode == rhs.CurrentNode;
+	}
+
+	bool operator!=(const NodeIterator<T>& rhs)
+	{
+		return CurrentNode != rhs.CurrentNode;
+	}
+
+	T* CurrentNode;
+};
 
 /*
 **	This is an "interface class" for a list of nodes. The rules for the class T object
@@ -162,9 +210,18 @@ class Node : public GenericNode {
 template<class T>
 class List : public GenericList {
 	public:
+		using Iterator = NodeIterator<T>;
+		using ConstIterator = NodeIterator<const T>;
+
 		T * First(void) const {return((T*)GenericList::First());}
 		T * Last(void) const {return((T*)GenericList::Last());}
-};
 
+		Iterator      begin() { return Iterator(First()); }
+		Iterator      end() { return Iterator(reinterpret_cast<T*>(&LastNode)); }
+		ConstIterator cbegin() const { return ConstIterator(First()); }
+		ConstIterator cend() const { return ConstIterator(reinterpret_cast<const T*>(&LastNode)); }
+		ConstIterator begin() const { return cbegin(); }
+		ConstIterator end() const { return cend(); }
+};
 
 #endif

@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/REINF.CPP 1     3/03/97 10:25a Joe_bostic $ */
@@ -521,8 +521,13 @@ bool Do_Reinforcements(TeamTypeClass const * teamtype)
 	/*
 	**	Announce when the reinforcements have arrived.
 	*/
-	if (okvoice && teamtype->House == PlayerPtr->Class->House) {
-		Speak(VOX_REINFORCEMENTS, NULL, newcell ? Cell_Coord(newcell) : 0);
+    // Chthon CFE Note: Fix for MP
+	//if (okvoice && teamtype->House == PlayerPtr->Class->House) {
+	//	Speak(VOX_REINFORCEMENTS, NULL, newcell ? Cell_Coord(newcell) : 0);
+	//}
+	HouseClass* thishouse = HouseClass::As_Pointer(teamtype->House);
+	if (okvoice && thishouse->IsHuman) {
+		Speak(VOX_REINFORCEMENTS, thishouse, cell ? Cell_Coord(cell) : 0);
 	}
 
 	return(true);

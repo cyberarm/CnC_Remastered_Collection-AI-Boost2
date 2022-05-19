@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/AIRCRAFT.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -108,12 +108,6 @@ class AircraftClass : public FootClass, public FlyClass
 		TARGET New_LZ(TARGET oldlz) const;
 
 		/*
-		**  Check whether helicopter units overlap at given cell
-		**  Kerekupai - RA immersive helis MOD
-		*/
-		TARGET check_Overlap(TARGET oldlz) const;
-
-		/*
 		**	Coordinate inquiry functions. These are used for both display and
 		**	combat purposes.
 		*/
@@ -148,7 +142,7 @@ class AircraftClass : public FootClass, public FlyClass
 		/*
 		**	Combat related.
 		*/
-		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source, bool forced=false);
+		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source, bool forced=false, TARGET indirectsource = TARGET_NONE, ArmorPenType specialarmorpen = ARMORPEN_NONE); // Chthon CFE Note: Added indirectsource so minelayers can get XP
 		virtual BulletClass * Fire_At(TARGET target, int which);
 
 		/*
@@ -180,6 +174,10 @@ class AircraftClass : public FootClass, public FlyClass
 		bool Save(Pipe & file) const;
 
 		virtual unsigned Spied_By() const;
+        
+        // Chthon CFE Note: logic for exiting repair bay
+        bool DoSmarterRunAway();
+
 
 	public:
 
@@ -249,9 +247,21 @@ class AircraftClass : public FootClass, public FlyClass
 		*/
 		char AttacksRemaining;
 
+        // Chthon CFE Note: Cannot initialize variables here! RA's savegame loading copies the data then calls new. WTF?!
+        // Do it in the constructor instead.
+        
+         // Chthon CFE Note: Counter for helicopters to recheck target's location
+public:
+        unsigned short int TargetRecheckCounter;
+                
+private:
+    
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
+        //  Chthon CFE Note: original padding was 32 bytes
+        // TargetRecheckCounter eats 2 bytes
+        // RESET PADDING in v1.8 b/c we're breaking save compatibility anyway
 		unsigned char SaveLoadPadding[32];
 };
 

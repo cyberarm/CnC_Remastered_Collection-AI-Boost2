@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /***********************************************************************************************
@@ -96,6 +96,10 @@ class ChronalVortexClass {
 		*/
 		bool Is_Active(void) {return (Active);};
 
+        // Chthon CFE Note: extra functions regarding hidden vortex
+        bool Is_Hidden(void) {return (Hidden);};
+        bool Is_Active_And_Not_Hidden(void) {return (Active & !Hidden);};
+        
 		/*
 		** Makes the vortex attack the specified target. Target must be in range of the vortex.
 		*/
@@ -145,8 +149,10 @@ class ChronalVortexClass {
 		void Zap_Target(void);
 		void Movement(void);
 		void Hide(void);
-		void Show(void);
-
+    public:
+		void Show(void); //Chthon CFE Note: Made public
+    private:
+        
 		/*
 		** Position of the top left of the vortex
 		*/

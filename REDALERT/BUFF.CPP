@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/BUFF.CPP 1     3/03/97 10:24a Joe_bostic $ */
@@ -63,7 +63,9 @@
  *   07/29/1996 JLB : Created.                                                                 *
  *=============================================================================================*/
 Buffer::Buffer(void * buffer, long size) :
-	BufferPtr(buffer),
+    // Chthon CFE Note: use char* because void* leads to undefined behavior, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/pull/606
+	//BufferPtr(buffer),
+	BufferPtr((char*)buffer),
 	Size(size),
 	IsAllocated(false)
 {
@@ -81,7 +83,9 @@ Buffer::Buffer(char * buffer, long size) :
 
 // Alternate constructor for void const * pointer.
 Buffer::Buffer(void const * buffer, long size) :
-	BufferPtr((void*)buffer),
+    // Chthon CFE Note: use char* because void* leads to undefined behavior, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/pull/606
+	//BufferPtr((void*)buffer),
+	BufferPtr((char*)buffer),
 	Size(size),
 	IsAllocated(false)
 {
@@ -159,7 +163,8 @@ Buffer & Buffer::operator = (Buffer const & buffer)
 {
 	if (buffer != this) {
 		if (IsAllocated) {
-			delete [] BufferPtr;
+			//delete [] BufferPtr;
+            delete[] static_cast<char*>(BufferPtr);
 		}
 		IsAllocated = false;
 		BufferPtr = buffer.BufferPtr;
@@ -209,7 +214,8 @@ Buffer::~Buffer(void)
 void Buffer::Reset(void)
 {
 	if (IsAllocated) {
-		delete [] BufferPtr;
+		//delete [] BufferPtr;
+        delete[] static_cast<char*>(BufferPtr);
 	}
 	BufferPtr = NULL;
 	Size = 0;

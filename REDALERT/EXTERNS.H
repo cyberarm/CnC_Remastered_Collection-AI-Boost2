@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted additional restrictions 
+// in the hope that it will be useful, but with permitted supplemental terms 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted additional restrictions 
+// GNU General Public License along with permitted supplemental terms 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /counterstrike/EXTERNS.H 2     3/10/97 6:23p Steve_tall $ */
@@ -91,6 +91,61 @@ extern void const *LightningShapes;
 
 extern int NewINIFormat;
 
+struct CFEPatchConfig
+{
+	bool EnableASPathing = false;
+	bool EnableOOMRepair = false;
+	bool EnableRallyPoints = false;
+	bool EnableHarvyQueueJump = false;
+    bool EnableHarvyLoadBalancing = false;
+    bool EnableHarvyOptimize = false;
+	bool EnableInstantCapture = false;
+	bool WallsAlwaysHaveFullCost = true;
+	bool EnableAttackMove = false;
+    bool EnableChronoTankAttackMove = false;
+    bool EnableQMoveLoops = false;
+    bool EnableAirQMove = false;
+    bool EnableAirQAMLRecall = false;
+    bool EnableSmarterAircraft = false;
+    bool EnableSmarterRepairBays = false;
+    bool BetterOreGrowth = false;
+    bool OreIndexBugfix = false;
+    bool GemOverloadFix = false;
+    bool EnableInaccuracyBugfix = false;
+    bool EnableWideSupers = false;
+    bool EnableQuickSupers = false;
+    bool EnableSmarterChrono = false;
+    bool EnableTimeQuakeFix = false;
+    bool EnableSharedChronoDisasterOdds = false;
+    bool EnableCumulativeTimelineDamage = false;
+    bool EnableLongGapFix = false;
+    bool EnableMIGAmmoFudge = false;
+    bool EnableBuildingCaptureAnnouncements = false;
+    bool EnableSmarterSonar = false;
+    bool EnableNewSkirmishAI = false;
+
+    int EnableVeterancy = 0;
+    int EnableTanyaGuard = 0;
+    int SafeSabotage = 0;
+	int  HarvyQueueJumpCutoff = 4;
+	int  HarvyOptimizeUnloadWaitWeight = 6;
+    int  HarvyOptimizeThrashingCutoff = 5;
+    int  HarvyOptimizeThrashingNumerator = 2;
+    int  HarvyOptimizeThrashingDenominator = 3;
+    int  HarvyOptimizeThrashingWeight = 4;
+    int  HarvyOptimizeCommunalismNumerator = 9;
+    int  HarvyOptimizeCommunalismDenominator = 4;
+    int  HarvyOptimizeCommunalismWeight = 13;
+	int  OreGrowthScale = 1;
+    int OreToGemPromotionSlowFactor = 8;
+	int  WallBuildLength = 5;
+    int InverseBuildingPreviewMode = 0; // 0=off; 1= MP only; 2 = all game modes
+	int  BuildingGapOffset = 0;
+	int  OreCapacityOffset = 0;
+    int SharedChronoDisasterOdds = 20;
+};
+
+extern CFEPatchConfig ActiveCFEPatchConfig;
 
 #ifdef FIXIT_ANTS
 extern bool AntsEnabled;
@@ -198,6 +253,7 @@ extern MFCD *						GeneralMix;
 extern MFCD *						ScoreMix;
 extern MFCD *						MainMix;
 extern MFCD *						ConquerMix;
+extern MFCD *						RAModMix; // Chthon CFE Note: Apparently RA handles mix files differently. Hope this works...
 extern ThemeClass 				Theme;
 extern SpecialClass 				Special;
 
@@ -279,6 +335,12 @@ extern fixed EngineerDamage;			// Amount of damage an engineer does
 extern fixed EngineerCaptureLevel;	// Building damage level before engineer can capture
 #endif
 #endif
+
+// Chthon CFE Note: Extra varaible for fixing timequake bugs
+extern bool GlobalTimeQuake;
+extern bool PendingGlobalTimeQuake;
+extern DynamicVectorClass<TARGET> MADTimeQuakeCenterList;
+
 
 /*
 **	Loaded data file pointers.
@@ -394,6 +456,7 @@ extern unsigned char const					Pixel2Lepton[24];
 extern COORDINATE const 					StoppingCoordAbs[5];
 extern CELL const 							AdjacentCell[FACING_COUNT];
 extern COORDINATE const 					AdjacentCoord[FACING_COUNT];
+extern const FacingType						FacingCardinals[4];
 extern unsigned char const					RemapCiv2[];
 extern unsigned char const					RemapCiv4[];
 extern unsigned char const					RemapCiv5[];
