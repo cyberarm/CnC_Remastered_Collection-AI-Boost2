@@ -33,7 +33,7 @@ Fixed:
 - Fixed the recalculation of certain building limits when AI steals technology
 - We bring back the way MCV is deployed. AI don't like it to be too close near the tiberium (Bases are more compacted, more stuck units, less effective bases defenses, etc)
 - Added a fix on RA Immersive Heli's mod
-- Added a fix on AI-Refinery-limit-overwrite when dynamic is disabled
+- Fixed the way AI count the refineries. He count according to ennemies average instead of human (because in multiplayer, you can have more than 1 human)
 
 --- 
 
