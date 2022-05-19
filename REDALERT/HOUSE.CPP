@@ -6418,9 +6418,17 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
+		//Set AI refinery limit before dynamic code
+		AIRefineryLimit = Rule.AIRefineryLimitOverwrite;
+		
 		//Dynamic stuff
 		if (Rule.AIAllowDynamicBaseGrow) {
 			if (enemy != NULL) {
+				//Refineries
+				TempCalculation = (int)(enemy->BQuantity[STRUCT_REFINERY] / CountEnemiesForThisAI);
+				if (TempCalculation > AIRefineryLimit) {
+					AIRefineryLimit = TempCalculation;
+				}
 				//Barracks & Tent
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
 				if (TempCalculation > AIBarracksLimit) {
@@ -6588,13 +6596,6 @@ int HouseClass::AI_Building(void)
 		}
 
 		//refinery
-		AIRefineryLimit = Rule.AIRefineryLimitOverwrite;
-		//If humans has more refs, we go more refs too:
-		if (HumanRefs > AIRefineryLimit && Rule.AIAllowDynamicBaseGrow)
-		{
-			AIRefineryLimit = HumanRefs;
-		}
-		
 		if (BQuantity[STRUCT_REFINERY] < AIRefineryLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
