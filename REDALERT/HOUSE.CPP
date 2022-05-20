@@ -5933,7 +5933,7 @@ bool HouseClass::AI_Attack(UrgencyType )
 				fprintf(fp, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
 				fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
 
-				fprintf(fp, "Aircrafts: Total: %d\n", Vessels.Count()); // %d for decimal
+				fprintf(fp, "Aircrafts: Total: %d\n", Aircraft.Count()); // %d for decimal
 
 				fprintf(fp, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
 				fprintf(fp, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
@@ -7330,9 +7330,9 @@ int HouseClass::AI_Unit(void)
 		}
 	}
 
-	//Make MCV by Bast75
+	//Make MCV by Bast75, if no conyard directly, otherwise 33% change of expanding
 	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
-		if (UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) {
+		if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) && (Percent_Chance(33) || BQuantity[STRUCT_CONST] == 0)) {
 			BuildUnit = UNIT_MCV;
 			return(TICKS_PER_SECOND);
 		}
@@ -7340,14 +7340,13 @@ int HouseClass::AI_Unit(void)
 
 	//Naval war and no ground war? Don't make too much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
-		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(33) && (int)UQuantity[UNIT_CHRONOTANK] < Rule.AIMaxChronotanks) {
+		if ((BQuantity[STRUCT_ADVANCED_TECH] > 0) && Percent_Chance(33) && ((int)UQuantity[UNIT_CHRONOTANK] < Rule.AIMaxChronotanks)) {
 			BuildUnit = UNIT_CHRONOTANK; // These can chronoshift to enemy, other units are useless in non-groundwar.
 			return(TICKS_PER_SECOND);
 		}
 		if (Percent_Chance(Rule.AIGroundUnitSlowDown)) {
 			return(TICKS_PER_SECOND);
 		}
-
 	}
 
 	if (Session.Type == GAME_NORMAL) {
@@ -7599,18 +7598,17 @@ int HouseClass::AI_Vessel(void)
 		
 		//New detection method to prevent overproducing vessels for the AI, it just counts the human vessels:
 		if (!IsHuman) {
-			int HumanVessels = 0;
-			for (int indexcounter = 0; indexcounter < Vessels.Count(); indexcounter++) {
-				VesselClass const * vessel = Vessels.Ptr(indexcounter);
-				vessel->House->VScan |= (1L << vessel->Class->Type);
-				if (vessel->House->IsHuman) {
-					HumanVessels++;
+			int EnemyVessels = 0;
+			int AverageEnemyVessels = 0;
+			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+				HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
+				if (CurrentHouse != NULL && !Is_Ally(h)) {
+						EnemyVessels += Vessels.Count();
 				}
 			}
-			//If AI has more vessels than "HumanVessels * Rule.AIVesselMultiLimit"
-			//Or CurVessels more than "HumanVessels + Rule.AIVesselBonus"
-			//Then we skip producing a new one.
-			if ((int)CurVessels > (int)(HumanVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (int)(HumanVessels + Rule.AIVesselBonus)) {
+			AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
+			//if ((int)CurVessels > (AverageEnemyVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (AverageEnemyVessels + Rule.AIVesselBonus)) {
+			if ((int)CurVessels > AverageEnemyVessels) {
 				return(TICKS_PER_SECOND);
 			}
 		}

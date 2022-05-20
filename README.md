@@ -14,6 +14,7 @@ Please follow the steps below to update and reactivate the mod:
 Latest changes:
 - CFE 1.8 included
 - Harvester prio switcher. There is a 10% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
+- fix for vessel limits, the AI counts the total vessels of all his personal enemies, takes the average of this and takes this as his personal limit
 
 Included Mod's:
 - CFE Patch Redux for RA v1.8 (way-points, A* pathfinding, etc.)
