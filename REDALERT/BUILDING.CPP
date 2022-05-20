@@ -164,7 +164,8 @@ bool BuildingClass::Can_Have_Rally_Point() const
 {
   
     // Chthon CFE Note: Added back rally points for repair bays
-    if (ActiveCFEPatchConfig.EnableRallyPoints && ActiveCFEPatchConfig.EnableSmarterRepairBays && (Class->Type == STRUCT_REPAIR)){
+	//if (ActiveCFEPatchConfig.EnableRallyPoints && ActiveCFEPatchConfig.EnableSmarterRepairBays && (Class->Type == STRUCT_REPAIR)){
+    if (Rule.RallyPointsEnabled && Rule.SmarterRepairBaysEnabled && (Class->Type == STRUCT_REPAIR)){
         return true;
     }
     
@@ -174,7 +175,8 @@ bool BuildingClass::Can_Have_Rally_Point() const
 		case RTTI_INFANTRYTYPE:
 		case RTTI_UNITTYPE:
 		case RTTI_VESSELTYPE:
-			return ActiveCFEPatchConfig.EnableRallyPoints;
+			//return ActiveCFEPatchConfig.EnableRallyPoints;
+			return Rule.RallyPointsEnabled;
 
 		default:
 			return false; //(StructType(*this) == STRUCT_REPAIR);
@@ -225,7 +227,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass * from, RadioMessageT
 	switch (message) {
 
 		case RADIO_HELLO:
-			if (Class->Type == STRUCT_REFINERY && ActiveCFEPatchConfig.EnableHarvyQueueJump && In_Radio_Contact()) {
+			//if (Class->Type == STRUCT_REFINERY && ActiveCFEPatchConfig.EnableHarvyQueueJump && In_Radio_Contact()) {
+			if (Class->Type == STRUCT_REFINERY && Rule.HarvesterQueueJumpingEnabled && In_Radio_Contact()) {
 				if (from->What_Am_I() == RTTI_UNIT && *((UnitClass*)from) == UNIT_HARVESTER) {
 
 					UnitClass& currentHarvy = *static_cast<UnitClass*>(Contact_With_Whom());
@@ -233,7 +236,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass * from, RadioMessageT
 
                     int currentHarvyDistance;
                     int newHarvyDistance;
-					if (ActiveCFEPatchConfig.EnableASPathing){
+					//if (ActiveCFEPatchConfig.EnableASPathing){
+					if (Rule.AstarPathFindingEnabled){
                         int currentHarvyDistanceAStar = currentHarvy.Find_Path_AStar(nullptr, Coord_Cell(currentHarvy.Coord),  Coord_Cell(this->Center_Coord()), 1, MOVE_NO, -1);
                         if (currentHarvyDistanceAStar){
                             currentHarvyDistance = currentHarvyDistanceAStar;
@@ -264,10 +268,10 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass * from, RadioMessageT
                     else{ // A-Star not enabled
                         currentHarvyDistance = currentHarvy.Distance(this);
                         newHarvyDistance = newHarvy.Distance(this);
-                        // ActiveCFEPatchConfig.HarvyQueueJumpCutoff converted from cells to leptons in CFEUTIL.CPP
+                        // Rule.HarvyQueueJumpCutoff converted from cells to leptons in CFEUTIL.CPP
                     }
                     
-					if (currentHarvyDistance > ActiveCFEPatchConfig.HarvyQueueJumpCutoff && newHarvyDistance < currentHarvyDistance) {
+					if (currentHarvyDistance > Rule.HarvyQueueJumpCutoff && newHarvyDistance < currentHarvyDistance) {
 
 						//Kick the current harvester out
 						Transmit_Message(RADIO_CANCEL, &currentHarvy);
@@ -491,7 +495,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass * from, RadioMessageT
 			
 			if (*this == STRUCT_REFINERY) {
                 // tell all harvesters that are heading to a refinery, but not first in line to their respective refineries, to re-pick refineries
-                if (ActiveCFEPatchConfig.EnableHarvyOptimize &&  this->IsActive && !this->IsInLimbo && this->HasOpened){
+				//if (ActiveCFEPatchConfig.EnableHarvyOptimize &&  this->IsActive && !this->IsInLimbo && this->HasOpened){
+                if (Rule.HarvesterOptimizeEnabled &&  this->IsActive && !this->IsInLimbo && this->HasOpened){
                     for (int i = 0; i < Units.Count(); ++i) {
                         UnitClass* unit = Units.Ptr(i);
                         if (unit != NULL &&
@@ -722,10 +727,10 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const
             static unsigned char iconlist[MAP_CELL_TOTAL]; //static since it's probably faster to memset 4k of memory than reallocate it every time
             memset(iconlist, 0, MAP_CELL_TOTAL*sizeof(unsigned char));
             
-            //const int buildingGap = ((BuildingTypeClass*)(pendingobject))->Adjacent + ActiveCFEPatchConfig.BuildingGapOffset;
-            // ActiveCFEPatchConfig.BuildingGapOffset should already be incorporated into Adjacent by this point
+            //const int buildingGap = ((BuildingTypeClass*)(pendingobject))->Adjacent + Rule.BuildingGapOffset;
+            // Rule.BuildingGapOffset should already be incorporated into Adjacent by this point
             const int buildingGap = ((BuildingTypeClass*)(pendingobject))->Adjacent;
-            const int walllength = ActiveCFEPatchConfig.WallBuildLength;
+            const int walllength = Rule.WallBuildLength;
             
             bool foundunfriendlywall = false;
             
@@ -1264,14 +1269,14 @@ bool BuildingClass::Unlimbo_Wall(COORDINATE coord)
 					*/
 					for (FacingType dir : FacingCardinals)
 					{
-						const int scanDist = Map.Scan_For_Overlay(placecell, dir, otype, ActiveCFEPatchConfig.WallBuildLength);
+						const int scanDist = Map.Scan_For_Overlay(placecell, dir, otype, Rule.WallBuildLength);
 						CELL adjcell = placecell;
 						for (int i = 0; i < scanDist; ++i)
 						{
 							adjcell = Adjacent_Cell(adjcell, dir);
 
 							//FluffyQuack 14/06/2020: If WallsAlwaysHaveFullCost is true then we charge the player for each extra piece. Abort with "insufficient funds" if player can't afford it
-							if (ActiveCFEPatchConfig.WallsAlwaysHaveFullCost && House->Available_Money() < Class->Cost_Of())
+							if (Rule.WallsAlwaysHaveFullCost && House->Available_Money() < Class->Cost_Of())
 							{
 								Speak(VOX_NO_CASH, House);
 								break;
@@ -1282,7 +1287,7 @@ bool BuildingClass::Unlimbo_Wall(COORDINATE coord)
 								break;
 
 							//Pay the cost of this extra wall
-							if (ActiveCFEPatchConfig.WallsAlwaysHaveFullCost)
+							if (Rule.WallsAlwaysHaveFullCost)
 								House->Spend_Money(Class->Cost_Of());
 						}
 					}
@@ -2191,8 +2196,8 @@ void BuildingClass::Drop_Debris(TARGET source)
     
     if (   Target_Legal(WhomToRepay) &&
             (
-                ((ActiveCFEPatchConfig.SafeSabotage == 1) && (Session.Type == GAME_NORMAL)) ||
-                (ActiveCFEPatchConfig.SafeSabotage == 2)
+                ((Rule.SafeSabotage == 1) && (Session.Type == GAME_NORMAL)) ||
+                (Rule.SafeSabotage == 2)
             )
     ){
 		IsSurvivorless = true;
@@ -2472,14 +2477,16 @@ int BuildingClass::Exit_Object(TechnoClass * base)
 
 				if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX < Map.MapCellWidth/2) {
                     // CFE Chthon Note: have padless helicopters fly in on same Y coord as the primary pad. borrowed from screamingchicken
-                    if (ActiveCFEPatchConfig.EnableSmarterAircraft){
+					//if (ActiveCFEPatchConfig.EnableSmarterAircraft){
+                    if (Rule.SmarterAircraftsEnabled){
                         cell = XY_Cell(Map.MapCellX - 1, Cell_Y(Coord_Cell(Center_Coord())));
                     }
                     else {
                         cell = XY_Cell(Map.MapCellX-1, Random_Pick(0, Map.MapCellHeight-1)+Map.MapCellY);
                     }
 				} else {
-                    if (ActiveCFEPatchConfig.EnableSmarterAircraft){
+					//if (ActiveCFEPatchConfig.EnableSmarterAircraft){
+                    if (Rule.SmarterAircraftsEnabled){
                         cell = XY_Cell(Map.MapCellX + Map.MapCellWidth, Cell_Y(Coord_Cell(Center_Coord())));
                     }
                     else {
@@ -3728,7 +3735,7 @@ bool BuildingClass::Captured(HouseClass * newowner)
 		}
 #endif
         // Chthon CFE Note: Use the generic "structure captured" sound file to complete the above TOFIX
-        if (ActiveCFEPatchConfig.EnableBuildingCaptureAnnouncements){
+        if (Rule.EnableBuildingCaptureAnnouncements){
             if (House->IsHuman){
                 Speak(VOX_BUILDING_CAPTURE, House);
             }
@@ -6482,7 +6489,8 @@ void BuildingClass::Repair_AI(void)
 				Strength = Class->MaxStrength;
 				IsRepairing = false;
 			}
-		} else if (!ActiveCFEPatchConfig.EnableOOMRepair) {
+		//} else if (!ActiveCFEPatchConfig.EnableOOMRepair) {
+		} else if (!Rule.OOM_REPAIR) {
 			IsRepairing = false;
 		}
 	}

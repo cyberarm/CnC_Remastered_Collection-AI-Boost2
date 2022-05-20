@@ -674,11 +674,13 @@ int AircraftClass::Mission_Hunt(void)
 			**	Acquiring target stage.
 			*/
 			case LOOK_FOR_TARGET:
-				if (Target_Legal(TarCom) && (Ammo || !ActiveCFEPatchConfig.EnableSmarterAircraft || IsALoaner)) {
+				//if (Target_Legal(TarCom) && (Ammo || !ActiveCFEPatchConfig.EnableSmarterAircraft || IsALoaner)) {
+				if (Target_Legal(TarCom) && (Ammo || !Rule.SmarterAircraftsEnabled || IsALoaner)) {
 					Status = TAKE_OFF;
 					return(1);
                 }
-                else if (!Ammo && ActiveCFEPatchConfig.EnableSmarterAircraft){
+				//else if (!Ammo && ActiveCFEPatchConfig.EnableSmarterAircraft) {
+                else if (!Ammo && Rule.SmarterAircraftsEnabled){
                     AttacksRemaining = 0;
 					if (Team.Is_Valid()) Team->Remove(this);
 					Enter_Idle_Mode();
@@ -1716,7 +1718,7 @@ BulletClass * AircraftClass::Fire_At(TARGET target, int which)
 		**	Aircraft reveal when firing
 		*/
 		HouseClass *player = HouseClass::As_Pointer(Owner());
-		if (player != nullptr && (player->IsHuman || ActiveCFEPatchConfig.EnableNewSkirmishAI)) {
+		if (player != nullptr && (player->IsHuman || Rule.EnableNewSkirmishAI)) {
 			Map.Sight_From(Coord_Cell(Center_Coord()), 1, player, false);
             // Chthon CFE Note: It should also set its revealed flags itself to owner if it was under shroud
             Revealed(player);
@@ -1850,7 +1852,8 @@ int AircraftClass::Mission_Move(void)
 			case TAKE_OFF:
 
                 // Attack Move rework by ChthonVII -- If "smarter aircraft" mode is also enabled, don't attack move if you don't have any ammo to start with
-                if (AttackMove && ActiveCFEPatchConfig.EnableSmarterAircraft && !IsALoaner && !Ammo){
+				//if (AttackMove && ActiveCFEPatchConfig.EnableSmarterAircraft && !IsALoaner && !Ammo){
+                if (AttackMove && Rule.SmarterAircraftsEnabled && !IsALoaner && !Ammo){
                     //Memorize_Navigation_List();
                     ResetAttackMove();
                     Clear_Navigation_List();
@@ -1984,7 +1987,8 @@ int AircraftClass::Mission_Move(void)
 		*/
 		case VALIDATE_LZ:
 			// Attack Move rework by ChthonVII -- If "smarter aircraft" mode is also enabled, don't attack move if you don't have any ammo to start with
-            if (AttackMove && ActiveCFEPatchConfig.EnableSmarterAircraft && !IsALoaner && !Ammo){
+			//if (AttackMove && ActiveCFEPatchConfig.EnableSmarterAircraft && !IsALoaner && !Ammo){
+            if (AttackMove && Rule.SmarterAircraftsEnabled && !IsALoaner && !Ammo){
                 //Memorize_Navigation_List();
                 ResetAttackMove();
                 Clear_Navigation_List();
@@ -2403,7 +2407,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest)
         else {
             for (int i=0 ; i<Session.Players.Count() ; i++) {
                 HouseClass* someplayer = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-                if (someplayer && (someplayer->IsHuman || ActiveCFEPatchConfig.EnableNewSkirmishAI)){
+                if (someplayer && (someplayer->IsHuman || Rule.EnableNewSkirmishAI)){
                     if (!Is_Discovered_By_Player(someplayer) && Map[cell].Is_Visible(someplayer)) {
                         Revealed(someplayer);
                     }
@@ -2558,8 +2562,8 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target, TA
 		}
 	}
 	
-	
-	if (   ActiveCFEPatchConfig.EnableAirQMove &&
+	//if (   ActiveCFEPatchConfig.EnableAirQMove &&
+	if (Rule.AirQMoveAllowed &&
             PlayerPtr &&
             House && 
             (PlayerPtr == House) &&
@@ -2623,7 +2627,8 @@ ActionType AircraftClass::What_Action(ObjectClass const * target) const
 
 	if (Class->IsFixedWing && action == ACTION_MOVE) {
         // Attack Move rework by ChthonVII -- we need this here so fixed wing planes can attack-move
-        if (ActiveCFEPatchConfig.EnableAttackMove && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+		//if (ActiveCFEPatchConfig.EnableAttackMove && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+        if (Rule.AttackMoveCommandAllowed && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
             action = ACTION_ATTACKMOVE;
         }
         else{
@@ -2685,7 +2690,8 @@ ActionType AircraftClass::What_Action(CELL cell) const
 
 	if (Class->IsFixedWing && action == ACTION_MOVE) {
         // Attack Move rework by ChthonVII -- we need this here so fixed wing planes can attack-move
-        if (ActiveCFEPatchConfig.EnableAttackMove && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+		//if (ActiveCFEPatchConfig.EnableAttackMove && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)) {
+        if (Rule.AttackMoveCommandAllowed && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
             action = ACTION_ATTACKMOVE;
         }
         else {
@@ -2768,7 +2774,8 @@ int AircraftClass::Mission_Attack(void)
 		**	Double check target and validate the attack zone.
 		*/
 		case VALIDATE_AZ:
-			if (!Target_Legal(TarCom) ||  (ActiveCFEPatchConfig.EnableSmarterAircraft && !IsALoaner && !Ammo)) {
+			//if (!Target_Legal(TarCom) ||  (ActiveCFEPatchConfig.EnableSmarterAircraft && !IsALoaner && !Ammo)) {
+			if (!Target_Legal(TarCom) ||  (Rule.SmarterAircraftsEnabled && !IsALoaner && !Ammo)) {
 				Status = RETURN_TO_BASE;
 			} else {
 				Status = PICK_ATTACK_LOCATION;
@@ -2841,7 +2848,8 @@ int AircraftClass::Mission_Attack(void)
 
 				// Chthon CFE Note: Smarter aircraft.
 				// If we've been flying towards the target for 120 ticks, let's make sure it hasn't moved
-				if (ActiveCFEPatchConfig.EnableSmarterAircraft){
+				//if (ActiveCFEPatchConfig.EnableSmarterAircraft) {
+				if (Rule.SmarterAircraftsEnabled){
                     TargetRecheckCounter++;
                     if (TargetRecheckCounter >= 120){
                         TargetRecheckCounter = 0;

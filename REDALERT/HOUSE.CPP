@@ -666,7 +666,7 @@ HouseClass::HouseClass(HousesType house) :
 	new (&SuperWeapon[SPC_GPS]) SuperClass(TICKS_PER_MINUTE * Rule.GPSTime, true, VOX_NONE, VOX_NONE, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
     // Chthon CFE Note: Change the recharges on Chronosphere and Iron Curtain if OpenRA-style supers are enabled
-    if (ActiveCFEPatchConfig.EnableQuickSupers){
+    if (Rule.EnableQuickSupers){
         SuperWeapon[SPC_CHRONOSPHERE].Set_Recharge_Time(2 * TICKS_PER_MINUTE);
         SuperWeapon[SPC_IRON_CURTAIN].Set_Recharge_Time(2 * TICKS_PER_MINUTE);
     }
@@ -2913,7 +2913,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 				for (int index = 0; index < Vessels.Count(); index++) {
 					VesselClass * sub = Vessels.Ptr(index);
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-					if ((*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) && (!ActiveCFEPatchConfig.EnableSmarterSonar || !Is_Ally(sub))) {
+					if ((*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) && (!Rule.EnableSmarterSonar || !Is_Ally(sub))) {
 #else
 					if (*sub == VESSEL_SS) {
 #endif
@@ -3050,7 +3050,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 						case RTTI_VESSEL:
 						case RTTI_AIRCRAFT:
                             // Chthon CFE Note: Shorter duration on OpenRA-style supers
-                            if(ActiveCFEPatchConfig.EnableQuickSupers){
+                            if(Rule.EnableQuickSupers){
                                 tech->IronCurtainCountDown = 20 * TICKS_PER_SECOND;
                             }
                             else {
@@ -3063,7 +3063,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 #endif
 							tech->Mark(MARK_CHANGE);
                             // Chthon CFE Note: OpenRA-style supers hit up to 4 adjacent units
-                            if(ActiveCFEPatchConfig.EnableWideSupers){
+                            if(Rule.EnableWideSupers){
                                 int extraunits = 0;
                                 // first scan the cardinal directions
                                 for (FacingType dir : FacingCardinals){ //FACING_N, FACING_E, FACING_S, FACING_W
@@ -3090,15 +3090,15 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                                                     (someunit->What_Am_I() == RTTI_AIRCRAFT)
                                                 ) &&
                                                 !(
-                                                    ActiveCFEPatchConfig.EnableQuickSupers &&
+                                                    Rule.EnableQuickSupers &&
                                                     (someunit->IronCurtainCountDown == 20 * TICKS_PER_SECOND)
                                                 ) &&
                                                 ! (
-                                                    !ActiveCFEPatchConfig.EnableQuickSupers &&
+                                                    !Rule.EnableQuickSupers &&
                                                     (someunit->IronCurtainCountDown == Rule.IronCurtainDuration * TICKS_PER_SECOND)
                                                 )
                                         ){
-                                            if(ActiveCFEPatchConfig.EnableQuickSupers){
+                                            if(Rule.EnableQuickSupers){
                                                 someunit->IronCurtainCountDown = 20 * TICKS_PER_SECOND;
                                             }
                                             else {
@@ -3149,15 +3149,15 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                                                         (someunit->What_Am_I() == RTTI_AIRCRAFT)
                                                     ) &&
                                                     !(
-                                                        ActiveCFEPatchConfig.EnableQuickSupers &&
+                                                        Rule.EnableQuickSupers &&
                                                         (someunit->IronCurtainCountDown == 20 * TICKS_PER_SECOND)
                                                     ) &&
                                                     ! (
-                                                        !ActiveCFEPatchConfig.EnableQuickSupers &&
+                                                        !Rule.EnableQuickSupers &&
                                                         (someunit->IronCurtainCountDown == Rule.IronCurtainDuration * TICKS_PER_SECOND)
                                                     )
                                             ){
-                                                if(ActiveCFEPatchConfig.EnableQuickSupers){
+                                                if(Rule.EnableQuickSupers){
                                                     someunit->IronCurtainCountDown = 20 * TICKS_PER_SECOND;
                                                 }
                                                 else {
@@ -3262,7 +3262,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 						oldcell = drive->MoebiusCell;
 						drive->Teleport_To(cell);
 						drive->IsMoebius = true;
-                        if (ActiveCFEPatchConfig.EnableSmarterChrono){
+                        if (Rule.EnableSmarterChrono){
                             drive->Unselect_All_Players_Except_Owner();
                             Minimal_Detach_This_From_All(drive->As_Target(), true);
                         }
@@ -3271,7 +3271,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 		drive->IsMoebius = false;
 	}
 	// Chthon CFE Note: Shorter duration on OpenRA-style supers
-	if(ActiveCFEPatchConfig.EnableQuickSupers){
+	if(Rule.EnableQuickSupers){
         drive->MoebiusCountDown = 20 * TICKS_PER_SECOND;
     }
 	else {
@@ -3286,7 +3286,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 
                         // Chthon CFE Note: OpenRA-style supers hit up to 4 adjacent units
                         // only do this if NOT a chronotank
-                        if(    ActiveCFEPatchConfig.EnableWideSupers && 
+                        if(Rule.EnableWideSupers && 
                                 tech &&
                                 tech->IsActive &&
                                 (   (tech->What_Am_I() != RTTI_UNIT) ||
@@ -3331,13 +3331,13 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                                         ((DriveClass *)someunit)->MoebiusCell = newfromcell;
                                         ((DriveClass *)someunit)->Teleport_To(newtocell);
                                         ((DriveClass *)someunit)->IsMoebius = true;
-                                        if(ActiveCFEPatchConfig.EnableQuickSupers){
+                                        if(Rule.EnableQuickSupers){
                                             ((DriveClass *)someunit)->MoebiusCountDown = 20 * TICKS_PER_SECOND;
                                         }
                                         else {
                                             ((DriveClass *)someunit)->MoebiusCountDown = Rule.ChronoDuration * TICKS_PER_MINUTE;;
                                         }
-                                        if (ActiveCFEPatchConfig.EnableSmarterChrono){
+                                        if (Rule.EnableSmarterChrono){
                                             ((DriveClass *)someunit)->Unselect_All_Players_Except_Owner();
                                             Minimal_Detach_This_From_All(((DriveClass *)someunit)->As_Target(), true);
                                         }
@@ -3394,13 +3394,13 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                                             ((DriveClass *)someunit)->MoebiusCell = newfromcell;
                                             ((DriveClass *)someunit)->Teleport_To(newtocell);
                                             ((DriveClass *)someunit)->IsMoebius = true;
-                                            if(ActiveCFEPatchConfig.EnableQuickSupers){
+                                            if(Rule.EnableQuickSupers){
                                                 ((DriveClass *)someunit)->MoebiusCountDown = 20 * TICKS_PER_SECOND;
                                             }
                                             else {
                                                 ((DriveClass *)someunit)->MoebiusCountDown = Rule.ChronoDuration * TICKS_PER_MINUTE;;
                                             }
-                                            if (ActiveCFEPatchConfig.EnableSmarterChrono){
+                                            if (Rule.EnableSmarterChrono){
                                                 ((DriveClass *)someunit)->Unselect_All_Players_Except_Owner();
                                                 Minimal_Detach_This_From_All(((DriveClass *)someunit)->As_Target(), true);
                                             }
@@ -3415,7 +3415,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                         
 						Scen.Do_BW_Fade();
 						Sound_Effect(VOC_CHRONO, drive->Coord);
-                        if (ActiveCFEPatchConfig.EnableSmarterChrono){
+                        if (Rule.EnableSmarterChrono){
                             Sound_Effect(VOC_CHRONO, Cell_Coord(oldcell)); // play sound at both ends
                         }
 
@@ -3423,7 +3423,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 						**	Set active animation on Chronospheres.
 						*/
                         // Chthon CFE Note: Changed so chronosphere doesn't animate if a chronotank shifted itself
-						if(!ActiveCFEPatchConfig.EnableSmarterChrono || (tech && tech->IsActive && (tech->What_Am_I() != RTTI_UNIT || *(UnitClass *)tech != UNIT_CHRONOTANK))) {
+						if(!Rule.EnableSmarterChrono || (tech && tech->IsActive && (tech->What_Am_I() != RTTI_UNIT || *(UnitClass *)tech != UNIT_CHRONOTANK))) {
                             for (int index = 0; index < Buildings.Count(); ++index) {
                                 BuildingClass* building = Buildings.Ptr(index);
                                 if (building != nullptr && building->IsActive && building->Owner() == Class->House && *building == STRUCT_CHRONOSPHERE) {
@@ -3456,15 +3456,15 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                 int vortexbasechance = Rule.VortexChance * 100000;
                 int quakebasechance = Rule.QuakeChance * 100000;
                 // only 1000 for this one since it's not a fraction to begin with
-                int disasterbasechance = ActiveCFEPatchConfig.SharedChronoDisasterOdds * 1000;
+                int disasterbasechance = Rule.SharedChronoDisasterOdds * 1000;
                 // scale down odds if recharges are shorter due to OpenRA-style supers
-                if (ActiveCFEPatchConfig.EnableQuickSupers){
+                if (Rule.EnableQuickSupers){
                     vortexbasechance = (vortexbasechance * 2) / (1 * Rule.ChronoTime);
                     quakebasechance = (quakebasechance * 2 ) / (1 * Rule.ChronoTime);
                     disasterbasechance = (disasterbasechance * 2) / (1 * Rule.ChronoTime);
                 }
 //                 // scale odds for cumulative timeline damage
-                if (ActiveCFEPatchConfig.EnableCumulativeTimelineDamage){
+                if (Rule.EnableCumulativeTimelineDamage){
                     Map.timelinedamage++;
                     disasterbasechance = (disasterbasechance * (Map.timelinedamage +  Map.permanenttimelinedamage) ) / 10;
                     vortexbasechance = (vortexbasechance * (Map.timelinedamage +  Map.permanenttimelinedamage) ) / 10;  
@@ -3472,7 +3472,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                 }
                 if (tech && tech->IsActive && ((tech->What_Am_I() != RTTI_UNIT) || (*(UnitClass *)tech != UNIT_CHRONOTANK))){
                     // shared odds
-                    if (ActiveCFEPatchConfig.EnableTimeQuakeFix && ActiveCFEPatchConfig.EnableSharedChronoDisasterOdds){
+                    if (Rule.EnableTimeQuakeFix && Rule.EnableSharedChronoDisasterOdds){
                         bool dodisaster = false;
                         if (CFE_Patch_FullRange_Random_Pick(0,99999) < disasterbasechance){
                             dodisaster = true;
@@ -3492,7 +3492,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
                         if (CFE_Patch_FullRange_Random_Pick(0,99999) < vortexbasechance){
                             dovortex = true;
                         }
-                        if (ActiveCFEPatchConfig.EnableTimeQuakeFix && CFE_Patch_FullRange_Random_Pick(0,99999) < quakebasechance){
+                        if (Rule.EnableTimeQuakeFix && CFE_Patch_FullRange_Random_Pick(0,99999) < quakebasechance){
                             dotimequake = true;
                         }
                     }
@@ -3509,9 +3509,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
 				//}
 				// Don't do a timequake if disaster odds are shared and there's already a visible vortex.
 				if (dotimequake){
-                    if  (!(ChronalVortex.Is_Active_And_Not_Hidden() && ActiveCFEPatchConfig.EnableSharedChronoDisasterOdds)){
+                    if  (!(ChronalVortex.Is_Active_And_Not_Hidden() && Rule.EnableSharedChronoDisasterOdds)){
                         PendingGlobalTimeQuake = true;
-                        if (ActiveCFEPatchConfig.EnableCumulativeTimelineDamage){
+                        if (Rule.EnableCumulativeTimelineDamage){
                             Map.timelinedamage = 0;
                             Map.permanenttimelinedamage++;
                         }
@@ -3541,15 +3541,15 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell)
     //					} else {
     //						ChronalVortex.Appear(Cell_Coord(cell));
     //					}
-                        if (ActiveCFEPatchConfig.EnableCumulativeTimelineDamage){
+                        if (Rule.EnableCumulativeTimelineDamage){
                             Map.timelinedamage = 0;
                             Map.permanenttimelinedamage++;
                         }
                     }
                     // wake up a hidden vortex if any of our mod stuff that scales odds is active
-                    else if (ChronalVortex.Is_Hidden() && (ActiveCFEPatchConfig.SharedChronoDisasterOdds || ActiveCFEPatchConfig.EnableQuickSupers || ActiveCFEPatchConfig.EnableCumulativeTimelineDamage)){
+                    else if (ChronalVortex.Is_Hidden() && (Rule.SharedChronoDisasterOdds || Rule.EnableQuickSupers || Rule.EnableCumulativeTimelineDamage)){
                         ChronalVortex.Show();
-                        if (ActiveCFEPatchConfig.EnableCumulativeTimelineDamage){
+                        if (Rule.EnableCumulativeTimelineDamage){
                             Map.timelinedamage = 0;
                             Map.permanenttimelinedamage++;
                         }
@@ -4993,11 +4993,11 @@ void HouseClass::Sell_Wall(CELL cell)
 
 					// Disable wall refunds if the player has a wall build length > 1
 					//FluffyQuack 14/06/2020: Always allow refunds if walls have full cost 
-					if (!IsHuman || ActiveCFEPatchConfig.WallBuildLength <= 1 || ActiveCFEPatchConfig.WallsAlwaysHaveFullCost)
+					if (!IsHuman || Rule.WallBuildLength <= 1 || Rule.WallsAlwaysHaveFullCost)
 						Refund_Money(btype->Cost_Of() / 2);
                     // Chthon CFE Note -- it makes more sense for walls to refund at the minimum value that assumes you bought a full-length piece
                     else{
-                        Refund_Money(btype->Cost_Of() / (2 * ActiveCFEPatchConfig.WallBuildLength));
+                        Refund_Money(btype->Cost_Of() / (2 * Rule.WallBuildLength));
                     }
 
 					Map[cell].Overlay = OVERLAY_NONE;
@@ -5841,6 +5841,8 @@ bool HouseClass::AI_Attack(UrgencyType )
 {
 	assert(Houses.ID(this) == ID);
 	int index;
+
+	DoAntiHarvesterRun = (Percent_Chance(10)); // Possibility of 10% that we set harvesters a high prio level, otherwise we set it to normal.
 
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
@@ -8571,7 +8573,7 @@ TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const
 
 	UnitClass * best = 0;
 	int value = 0;
-
+	
 	for (int index = 0; index < Units.Count(); index++) {
 		UnitClass * unit = Units.Ptr(index);
 
@@ -8580,11 +8582,21 @@ TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const
 
 			if (unit->Anti_Air()) val *= 2;
 
-			if (*unit == UNIT_HARVESTER) val = (int)(val/1.2); //By Bast75, was 2
-
 			if (*unit == UNIT_MCV) val = 1; // By Bast75, let give this highest prio!!!
 
 			if (*unit == UNIT_DEMOTRUCK) val = 2; // By Bast75, let give this second highest prio!!!
+
+			if (*unit == UNIT_MAD) val = 3; // By Bast75, let give this 3th highest prio!!!
+
+			// By Bast75, we make the prio for harvesters not always the same.
+			if (*unit == UNIT_HARVESTER) {
+				if (DoAntiHarvesterRun) {
+					val = 4; // extreme prio, but not more than MCV's, Demo trucks and Mad tanks
+				}
+				else {
+					val = (int)(value / 1.2); //low prio (original = /2
+				}
+			}
 
 			if (value == 0 || val < value) {
 				value = val;

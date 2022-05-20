@@ -17,7 +17,7 @@ bool CFE_Patch_Can_Have_Rally_Point(const ObjectClass& object)
 bool CFE_Patch_Should_Extend_Walls()
 {
 	//#CFE TODO: This isn't multiplayer safe  // Chthon CFE Note -- actually it is MP safe.
-	return ActiveCFEPatchConfig.WallBuildLength > 1 && !DLL_Export_Get_Input_Key_State(KN_LCTRL);
+	return Rule.WallBuildLength > 1 && !DLL_Export_Get_Input_Key_State(KN_LCTRL);
 }
 
 

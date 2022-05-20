@@ -660,9 +660,11 @@ void InfantryClass::Per_Cell_Process(PCPType why)
 							iscapturable = tech->Can_Capture();
 						}
 #ifdef FIXIT_ENGINEER	//	checked - ajw 9/28/98
-						if ((ActiveCFEPatchConfig.EnableInstantCapture || tech->Health_Ratio() <= EngineerCaptureLevel) && iscapturable) {
+						//if ((ActiveCFEPatchConfig.EnableInstantCapture || tech->Health_Ratio() <= EngineerCaptureLevel) && iscapturable) {
+						if ((Rule.EngineerInstantCapture || tech->Health_Ratio() <= EngineerCaptureLevel) && iscapturable) {
 #else
-						if ((ActiveCFEPatchConfig.EnableInstantCapture || tech->Health_Ratio() <= Rule.ConditionRed) && iscapturable) {
+						//if ((ActiveCFEPatchConfig.EnableInstantCapture || tech->Health_Ratio() <= Rule.ConditionRed) && iscapturable) {
+						if ((Rule.EngineerInstantCapture || tech->Health_Ratio() <= Rule.ConditionRed) && iscapturable) {
 #endif
 							if (tech->Trigger.Is_Valid()) {
 								tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
@@ -2582,7 +2584,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat) const
 	**	human player.
 	*/
 	if (*this == INFANTRY_TANYA && House->IsHuman) {
-        if ((ActiveCFEPatchConfig.EnableTanyaGuard == 2) || ((ActiveCFEPatchConfig.EnableTanyaGuard == 1) && (Session.Type != GAME_NORMAL))){
+        if ((Rule.EnableTanyaGuard == 2) || ((Rule.EnableTanyaGuard == 1) && (Session.Type != GAME_NORMAL))){
             // Chthon CFE Note -- only target infantry, since colts aren't meaninful against other stuff, and Tanya doesn't switch to bombs for buildings
             return(TechnoClass::Greatest_Threat((threat & (THREAT_RANGE | THREAT_AREA)) | THREAT_INFANTRY));
         }
@@ -3061,9 +3063,11 @@ ActionType InfantryClass::What_Action(ObjectClass const * object) const
 
 				if (bldg->Can_Capture()) {
 #ifdef FIXIT_ENGINEER	//	checked - ajw 9/28/98
-					if (ActiveCFEPatchConfig.EnableInstantCapture || bldg->Health_Ratio() <= EngineerCaptureLevel) {
+					//if (ActiveCFEPatchConfig.EnableInstantCapture || bldg->Health_Ratio() <= EngineerCaptureLevel) {
+					if (Rule.EngineerInstantCapture || bldg->Health_Ratio() <= EngineerCaptureLevel) {
 #else
-					if (ActiveCFEPatchConfig.EnableInstantCapture || bldg->Health_Ratio() <= Rule.ConditionRed) {
+					//if (ActiveCFEPatchConfig.EnableInstantCapture || bldg->Health_Ratio() <= Rule.ConditionRed) {
+					if (Rule.EngineerInstantCapture || bldg->Health_Ratio() <= Rule.ConditionRed) {
 #endif
 						return(ACTION_CAPTURE);
 					}
@@ -3154,7 +3158,8 @@ ActionType InfantryClass::What_Action(ObjectClass const * object) const
 		StructType blah = *((BuildingClass *)object);
 		if (blah == STRUCT_AVMINE || blah == STRUCT_APMINE){
             // Attack Move rework by ChthonVII -- we need this here so that we can attack-move to cells that the InfantryClass-level makes movable (e.g., landmines) 
-            if (ActiveCFEPatchConfig.EnableAttackMove && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+			//if (ActiveCFEPatchConfig.EnableAttackMove && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+            if (Rule.AttackMoveCommandAllowed && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
                 return(ACTION_ATTACKMOVE);
             }
             else {

@@ -2893,7 +2893,7 @@ int TeamClass::TMission_Invulnerable(void)
 {
 	FootClass * foot = Member;
 	while (foot != NULL) {
-        if (ActiveCFEPatchConfig.EnableQuickSupers){
+        if (Rule.EnableQuickSupers){
             foot->IronCurtainCountDown = 20 * TICKS_PER_SECOND;
         }
         else {

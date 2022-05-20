@@ -1319,13 +1319,13 @@ void DriveClass::AI(void)
 #endif
 		if (MoebiusCountDown == 0) {
 			IsMoebius = false;
-            if (ActiveCFEPatchConfig.EnableSmarterChrono){
+            if (Rule.EnableSmarterChrono){
                 Sound_Effect(VOC_CHRONO, Coord); // play sound at both ends
             }
 			Teleport_To(MoebiusCell);
 			MoebiusCell = 0;
             // Chthon CFE Note: Make a chronotank sound effect and unselect and remove from targeting lists
-            if (ActiveCFEPatchConfig.EnableSmarterChrono){
+            if (Rule.EnableSmarterChrono){
                 Sound_Effect(VOC_CHRONO, Coord);
                 Unselect_All_Players();
                 Minimal_Detach_This_From_All(As_Target(), true);

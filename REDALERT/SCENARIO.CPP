@@ -2675,7 +2675,7 @@ bool Read_Scenario_INI(char * fname, bool )
     // Chthon CFE Note: Since we bugfixed fixed-wing two-shooters with odd max ammo getting an extra shot,
     // but people are accustomed to MIG getting that extra shot,
     // add an option to formalize the bugged behavior by increasing max ammo by 1
-    if (ActiveCFEPatchConfig.EnableMIGAmmoFudge){
+    if (Rule.EnableMIGAmmoFudge){
         AircraftTypeClass& miggy = AircraftTypeClass::As_Reference(AIRCRAFT_MIG);
         if ((miggy.MaxAmmo % 2 != 0) && miggy.Is_Two_Shooter()){
             miggy.MaxAmmo++;

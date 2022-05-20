@@ -3815,7 +3815,7 @@ bool BuildingTypeClass::Read_INI(CCINIClass & ini)
 			Power = 0;
 		}
 
-		Capacity = ini.Get_Int(Name(), "Storage", Capacity, ActiveCFEPatchConfig.OreCapacityOffset);
+		Capacity = ini.Get_Int(Name(), "Storage", Capacity, Rule.OreCapacityOffset);
 		if (Capacity < 0) {
 			Capacity = 0;
 		}

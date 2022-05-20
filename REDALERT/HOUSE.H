@@ -458,6 +458,7 @@ class HouseClass {
 		//bool AIAttackMode = true;
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
+		bool DoAntiHarvesterRun = false;
 
 		//For Dynamic AI
 		int IsHumanFriend = 0;

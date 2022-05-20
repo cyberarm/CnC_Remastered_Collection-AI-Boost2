@@ -767,7 +767,8 @@ PathType * FootClass::Find_Path(CELL dest, FacingType * final_moves, int maxlen,
 
 	memset(path.Overlap, 0, sizeof(MainOverlap));
 
-	if (ActiveCFEPatchConfig.EnableASPathing)
+	//if (ActiveCFEPatchConfig.EnableASPathing)
+	if (Rule.AstarPathFindingEnabled)
 	{
         //if (What_Am_I() == RTTI_UNIT && *((UnitClass*)this) == UNIT_HARVESTER){
         //     CFE_Debug_Printf("Unit %i is a harvy & is doing A-Star path.", this);

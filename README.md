@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 19 may 2022
+Last update at: 20 may 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -10,6 +10,10 @@ Please follow the steps below to update and reactivate the mod:
 - The updated mod should then work as intended
 
 --- 
+
+Latest changes:
+- CFE 1.8 included
+- Harvester prio switcher. There is a 10% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 
 Included Mod's:
 - CFE Patch Redux for RA v1.8 (way-points, A* pathfinding, etc.)

@@ -753,7 +753,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const * object, Houses
     bool proximityPass = false;
 //	CELL cell = ZoneCell;
 	//if (building->Adjacent == 1) {
-    if (ActiveCFEPatchConfig.EnableLongGapFix || (building->Adjacent - ActiveCFEPatchConfig.BuildingGapOffset == 1)) {
+    if (Rule.EnableLongGapFix || (building->Adjacent - Rule.BuildingGapOffset == 1)) {
 		while (*ptr != REFRESH_EOL && (retval == -1) ) {
 			cell = trycell + *ptr++;
 //			cell = ZoneCell + ZoneOffset + *ptr++;
@@ -850,7 +850,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const * object, Houses
 	if (!retval && !noradar && ((BuildingTypeClass*)object)->IsWall && (house != HOUSE_NONE)){
         const OverlayType wallOverlay = ((BuildingTypeClass*)object)->Overlay_Type();
         for (FacingType dir : FacingCardinals){
-            const int scandist = Map.Scan_For_Overlay(trycell, dir, wallOverlay, ActiveCFEPatchConfig.WallBuildLength, true, house);
+            const int scandist = Map.Scan_For_Overlay(trycell, dir, wallOverlay, Rule.WallBuildLength, true, house);
             if (scandist >= 0){
                 retval = true;
                 break;
@@ -872,7 +872,7 @@ bool DisplayClass::Passes_Proximity_Check(ObjectTypeClass const * object, Houses
 
 		// For land mines, let's make it check proximity within 10 squares
 		//if (building->Adjacent > 1) {
-        if (!ActiveCFEPatchConfig.EnableLongGapFix && (building->Adjacent - ActiveCFEPatchConfig.BuildingGapOffset > 1)) {
+        if (!Rule.EnableLongGapFix && (building->Adjacent - Rule.BuildingGapOffset > 1)) {
 			for (int index = 0; index < Buildings.Count(); index++) {
 				BuildingClass * obj = Buildings.Ptr(index);
 				if (obj != NULL && !obj->IsInLimbo && obj->House->Class->House == house && obj->Class->IsBase) {
@@ -5279,7 +5279,7 @@ void DisplayClass::Update_Placement_Cursor()
 
 			for (FacingType dir : FacingCardinals)
 			{
-				const int scandist = Scan_For_Overlay(ZoneCell, dir, wallOverlay, ActiveCFEPatchConfig.WallBuildLength);
+				const int scandist = Scan_For_Overlay(ZoneCell, dir, wallOverlay, Rule.WallBuildLength);
 
 				//Break out if we're going to overflow the buffer
 				if (offsetslength + scandist > MaxOffsets)
@@ -5302,10 +5302,10 @@ void DisplayClass::Update_Placement_Cursor()
 	
 		// Inverted preview cursor (works in all game modes)
 	// Marks the player's construction yard to redraw and sets a flag to make it draw the inverted placement preview when it does. 
-	// ActiveCFEPatchConfig.InverseBuildingPreviewMode: 0=off; 1= only in MP, 2 = always
+	// Rule.InverseBuildingPreviewMode: 0=off; 1= only in MP, 2 = always
 	const bool singleplayer = Is_Legacy_Render_Enabled();
-	if (   ActiveCFEPatchConfig.InverseBuildingPreviewMode == 2 || 
-            (!singleplayer && (ActiveCFEPatchConfig.InverseBuildingPreviewMode == 1))
+	if (   Rule.InverseBuildingPreviewMode == 2 || 
+            (!singleplayer && (Rule.InverseBuildingPreviewMode == 1))
     ){
         
         int rounds = 1;

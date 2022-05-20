@@ -446,8 +446,8 @@ bool Init_Game(int , char * [])
 	for (int bindex = 0; bindex < BuildingTypes.Count(); ++bindex) {
 		BuildingTypeClass* building = BuildingTypes.Ptr(bindex);
 
-		if (ActiveCFEPatchConfig.BuildingGapOffset) {
-			building->Adjacent += ActiveCFEPatchConfig.BuildingGapOffset;
+		if (Rule.BuildingGapOffset) {
+			building->Adjacent += Rule.BuildingGapOffset;
 			if (building->Adjacent < 0) {
 				building->Adjacent = 0;
 			}

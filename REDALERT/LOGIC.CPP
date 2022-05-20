@@ -389,11 +389,12 @@ void LogicClass::AI(void)
 	/*
 	**	Map related logic is performed.
 	*/
-    if (ActiveCFEPatchConfig.BetterOreGrowth){
+	//if (ActiveCFEPatchConfig.BetterOreGrowth){
+    if (Rule.BetterOreGrowthEnabled){
         Map.CFELogic();
     }
     else{
-        for (int i = 0; i < ActiveCFEPatchConfig.OreGrowthScale; ++i)
+        for (int i = 0; i < Rule.OreGrowthScale; ++i)
         {
             Map.Logic();
         }

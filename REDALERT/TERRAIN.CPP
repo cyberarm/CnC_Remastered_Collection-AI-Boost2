@@ -494,15 +494,16 @@ void TerrainClass::AI(void)
 	ObjectClass::AI();
     
     if (*this == TERRAIN_MINE){
-        if (ActiveCFEPatchConfig.BetterOreGrowth){
+		//if (ActiveCFEPatchConfig.BetterOreGrowth){
+        if (Rule.BetterOreGrowthEnabled){
             int threshhold = 1;
             if (Session.Type == GAME_GLYPHX_MULTIPLAYER) {
                 if (Session.Options.Tiberium > 1) {
                     threshhold = Session.Options.Tiberium;
                 }
             }
-            if (ActiveCFEPatchConfig.OreGrowthScale > threshhold){
-                threshhold = ActiveCFEPatchConfig.OreGrowthScale;
+            if (Rule.OreGrowthScale > threshhold){
+                threshhold = Rule.OreGrowthScale;
             }
             int maxroll = (Rule.GrowthRate * TICKS_PER_MINUTE) - 1;
             if (CFE_Patch_FullRange_Random_Pick(0, maxroll) < threshhold){

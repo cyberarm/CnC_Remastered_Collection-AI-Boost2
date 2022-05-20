@@ -49,7 +49,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\bin\$(PlatformName)\</OutDir>
+    <OutDir>..\WorkshopContent\AIBoost\Data</OutDir>
     <IntDir>$(PlatformName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -132,8 +132,8 @@
     <ClCompile Include="CDATA.CPP" />
     <ClCompile Include="CDFILE.CPP" />
     <ClCompile Include="CELL.CPP" />
-	<ClCompile Include="CFEPATCHQUERY.CPP" />
-	<ClCompile Include="CFEUTIL.CPP" />
+    <ClCompile Include="CFEPATCHQUERY.CPP" />
+    <ClCompile Include="CFEUTIL.CPP" />
     <ClCompile Include="CHECKBOX.CPP" />
     <ClCompile Include="CHEKLIST.CPP" />
     <ClCompile Include="CLASS.CPP" />
@@ -422,7 +422,7 @@
     <ClInclude Include="CCPTR.H" />
     <ClInclude Include="CDFILE.H" />
     <ClInclude Include="CELL.H" />
-	<ClInclude Include="CFEDEBUG.H" />
+    <ClInclude Include="CFEDEBUG.H" />
     <ClInclude Include="CHECKBOX.H" />
     <ClInclude Include="CHEKLIST.H" />
     <ClInclude Include="COLRLIST.H" />
@@ -555,7 +555,7 @@
     <ClInclude Include="RADIO.H" />
     <ClInclude Include="RAMFILE.H" />
     <ClInclude Include="RANDOM.H" />
-	<ClInclude Include="RANGEWRAPPER.H" />
+    <ClInclude Include="RANGEWRAPPER.H" />
     <ClInclude Include="RAWFILE.H" />
     <ClInclude Include="RAWOLAPI.H" />
     <ClInclude Include="READLINE.H" />

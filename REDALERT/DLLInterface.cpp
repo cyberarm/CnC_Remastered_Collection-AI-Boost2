@@ -5245,7 +5245,7 @@ bool DLLExportClass::Passes_Proximity_Check(CELL cell_in, BuildingTypeClass *pla
     // Using PlayerPtr here only works in LAN multiplayer because this function is only ever called in the context of Get_Placement_State() and that starts with a call to Set_Player_Context() -- don't use this function elsewhere!
     const HousesType myowner = PlayerPtr->Class->House;
     for (FacingType dir : FacingCardinals){
-        const int scandist = Map.Scan_For_Overlay(cell_in, dir, wallOverlay, ActiveCFEPatchConfig.WallBuildLength, true, myowner);
+        const int scandist = Map.Scan_For_Overlay(cell_in, dir, wallOverlay, Rule.WallBuildLength, true, myowner);
         if (scandist >= 0){
             return true;
         }

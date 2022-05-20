@@ -2438,8 +2438,8 @@ void MapClass::CFELogic(void){
 			scalefactor = Session.Options.Tiberium;
 		}
 	}		 
-    if (ActiveCFEPatchConfig.OreGrowthScale > scalefactor){
-        scalefactor = ActiveCFEPatchConfig.OreGrowthScale;
+    if (Rule.OreGrowthScale > scalefactor){
+        scalefactor = Rule.OreGrowthScale;
     }
     // reduce odds to account for doing a complete scan every tick
     float multiplier = ((float)(Rule.GrowthRate * TICKS_PER_MINUTE)) / (float)scalefactor;

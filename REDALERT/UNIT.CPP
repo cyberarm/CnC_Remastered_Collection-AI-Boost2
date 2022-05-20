@@ -456,7 +456,8 @@ void UnitClass::AI(void)
 		/*
 	**	Clear the unload refinery if not haresting or entering a refinery.
 	*/
-	if (Class->IsToHarvest && (ActiveCFEPatchConfig.EnableHarvyLoadBalancing || ActiveCFEPatchConfig.EnableHarvyOptimize)) {
+	//if (Class->IsToHarvest && (ActiveCFEPatchConfig.EnableHarvyLoadBalancing || ActiveCFEPatchConfig.EnableHarvyOptimize)) {
+	if (Class->IsToHarvest && (Rule.HarvesterLoadBalancing || Rule.HarvesterOptimizeEnabled)) {
 		if (Mission != MISSION_HARVEST) {
 			if (Mission != MISSION_ENTER ||
 				!In_Radio_Contact() ||
@@ -1011,7 +1012,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass * from, RadioMessageType 
 					return(RADIO_ROGER);
 				}
 			}
-			else if (ActiveCFEPatchConfig.EnableSmarterRepairBays && In_Radio_Contact()){
+			//else if (ActiveCFEPatchConfig.EnableSmarterRepairBays && In_Radio_Contact()){
+			else if (Rule.SmarterRepairBaysEnabled && In_Radio_Contact()){
                 TechnoClass * contact = Contact_With_Whom();
 				if (contact->What_Am_I() == RTTI_BUILDING && *((BuildingClass*)contact) == STRUCT_REPAIR) {
                     if (DoSmarterRunAway()){
@@ -1255,7 +1257,7 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 					object->Scatter(0, true);
 					if (select) object->Select();
 				} else {
-                    if (((ActiveCFEPatchConfig.EnableVeterancy == 2) || (ActiveCFEPatchConfig.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && XPsource && XPsource->IsActive && !House->Is_Ally(XPsource)){
+                    if (((Rule.EnableVeterancy == 2) || (Rule.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && XPsource && XPsource->IsActive && !House->Is_Ally(XPsource)){
                         XPsource->GainVeterancyXP((object->Strength * object->Class_Of().Cost_Of())/object->Class_Of().MaxStrength);
                     }
 					object->Record_The_Kill(source);
@@ -2610,11 +2612,11 @@ bool UnitClass::Harvesting(void)
 			case OVERLAY_GEMS4:
 				Gems += reducer;
 				if (Rule.BailCount > Tiberium) {Gems++;Tiberium++;}
-				else if (ActiveCFEPatchConfig.GemOverloadFix && Gold){Gems++; Gold--; ptr->DumpOreHere();} // if out of space, dump ore for gems
+				else if (Rule.GemOverLoadFixEnabled && Gold){Gems++; Gold--; ptr->DumpOreHere();} // if out of space, dump ore for gems
 				if (Rule.BailCount > Tiberium) {Gems++;Tiberium++;}
-				else if (ActiveCFEPatchConfig.GemOverloadFix && Gold){Gems++; Gold--; ptr->DumpOreHere();} // if out of space, dump ore for gems
+				else if (Rule.GemOverLoadFixEnabled && Gold){Gems++; Gold--; ptr->DumpOreHere();} // if out of space, dump ore for gems
 				if (Rule.BailCount > Tiberium) {Gems++;Tiberium++;}
-				else if (ActiveCFEPatchConfig.GemOverloadFix && Gold){Gems++; Gold--; ptr->DumpOreHere();} // if out of space, dump ore for gems
+				else if (Rule.GemOverLoadFixEnabled && Gold){Gems++; Gold--; ptr->DumpOreHere();} // if out of space, dump ore for gems
 				break;
 
 			default:
@@ -3137,7 +3139,8 @@ int UnitClass::Mission_Harvest(void)
 			//cfehunter 09th June 2020. Honestly this should probably be here anyway, but don't change normal behaviour unless the feature is turned on
 			//if ((ActiveCFEPatchConfig.EnableHarvyQueueJump || ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing) && Tiberium_Load() == 0x0100) {
             // BUG! Tiberium_Load() was changed from TD to RD. It now returns a fixed point value from 0 to 1
-            if ((ActiveCFEPatchConfig.EnableHarvyQueueJump || ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing) && Tiberium_Load() == 1) {
+			//if ((ActiveCFEPatchConfig.EnableHarvyQueueJump || ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing) && Tiberium_Load() == 1) {
+            if ((Rule.HarvesterQueueJumpingEnabled || Rule.HarvesterOptimizeEnabled || Rule.HarvesterLoadBalancing) && Tiberium_Load() == 1) {
 				IsHarvesting = false;
 				Status = FINDHOME;
                 // Chthon CFE Note: we need to make Target_Legal(NavCom)) false when we roll through the FINDHOME branch next click
@@ -3145,7 +3148,8 @@ int UnitClass::Mission_Harvest(void)
                 Assign_Target(TARGET_NONE); //Clear out the target or it'll assume it already has a refinery to go towards
                 //Assign_Destination(TARGET_NONE);
                 // Only blank the unload refinery if we're using "load balancing" rather than "refinery remembering"
-				if (ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing){
+				//if (ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing){
+				if (Rule.HarvesterOptimizeEnabled || Rule.HarvesterLoadBalancing){
 					TiberiumUnloadRefinery = TARGET_NONE;
 				}
 				return 1;
@@ -3163,7 +3167,8 @@ int UnitClass::Mission_Harvest(void)
 			/*
 			** Look for ore where we last found some - mine the same patch
 			*/
-			if (ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing){
+			//if (ActiveCFEPatchConfig.EnableHarvyOptimize || ActiveCFEPatchConfig.EnableHarvyLoadBalancing){
+			if (Rule.HarvesterOptimizeEnabled || Rule.HarvesterLoadBalancing){
 				TiberiumUnloadRefinery = TARGET_NONE;
 			}
 			if (Target_Legal(ArchiveTarget)) {
@@ -3250,7 +3255,8 @@ int UnitClass::Mission_Harvest(void)
 				**	Find best refinery.
 				*/
 				BuildingClass * nearest = Find_Best_Refinery();
-                if (ActiveCFEPatchConfig.EnableHarvyLoadBalancing || ActiveCFEPatchConfig.EnableHarvyOptimize){
+				//if (ActiveCFEPatchConfig.EnableHarvyLoadBalancing || ActiveCFEPatchConfig.EnableHarvyOptimize){
+                if (Rule.HarvesterLoadBalancing || Rule.HarvesterOptimizeEnabled){
                     if (nearest) {
                         TiberiumUnloadRefinery = nearest->As_Target();
                         if (Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
@@ -3294,7 +3300,8 @@ int UnitClass::Mission_Harvest(void)
                         nearest = Find_Best_Refinery();
                         ScenarioInit--;
                         if (nearest != NULL) {
-                            if (ActiveCFEPatchConfig.EnableHarvyQueueJump && Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
+							//if (ActiveCFEPatchConfig.EnableHarvyQueueJump && Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
+                            if (Rule.HarvesterQueueJumpingEnabled && Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
                                 Status = HEADINGHOME;
                             }
                             else {
@@ -3916,7 +3923,8 @@ ActionType UnitClass::What_Action(ObjectClass const * object) const
 	}
 	
 	// Chthon CFE Note: allow queuing to repair bay even if it's occupied
-	if (   ActiveCFEPatchConfig.EnableSmarterRepairBays &&
+	//if (   ActiveCFEPatchConfig.EnableSmarterRepairBays &&
+	if (Rule.SmarterRepairBaysEnabled &&
             is_player_controlled &&
             (object->What_Am_I() == RTTI_BUILDING) &&
             (*((BuildingClass*)object) == STRUCT_REPAIR)
@@ -3974,7 +3982,8 @@ ActionType UnitClass::What_Action(ObjectClass const * object) const
 	if (action == ACTION_NONE) action = ACTION_NOMOVE;
 
     // Attack Move rework by ChthonVII -- we need this here so that we can attack-move to cells that the UnitClass-level makes movable (e.g., landmines) 
-    if (ActiveCFEPatchConfig.EnableAttackMove && action == ACTION_MOVE && Is_Owned_By_Player() && ((Techno_Type_Class()->PrimaryWeapon != NULL) || (*this == UNIT_MINELAYER)) && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+	//if (ActiveCFEPatchConfig.EnableAttackMove && action == ACTION_MOVE && Is_Owned_By_Player() && ((Techno_Type_Class()->PrimaryWeapon != NULL) || (*this == UNIT_MINELAYER)) && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+    if (Rule.AttackMoveCommandAllowed && action == ACTION_MOVE && Is_Owned_By_Player() && ((Techno_Type_Class()->PrimaryWeapon != NULL) || (*this == UNIT_MINELAYER)) && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
         action = ACTION_ATTACKMOVE;
     }
     
@@ -4800,7 +4809,8 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
      //CFE_Debug_Printf("Harvester %i entered Find_Best_Refinery()", this);
     
     // default behavior from 9/24/2020 hotfix
-    if (!ActiveCFEPatchConfig.EnableHarvyLoadBalancing && !ActiveCFEPatchConfig.EnableHarvyOptimize){
+	//if (!ActiveCFEPatchConfig.EnableHarvyLoadBalancing && !ActiveCFEPatchConfig.EnableHarvyOptimize){
+    if (!Rule.HarvesterLoadBalancing && !Rule.HarvesterOptimizeEnabled){
         /*
         **	Remember our last refinery and prefer that one, if still available and valid.
         */
@@ -4829,7 +4839,8 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
 	static DynamicVectorClass<RefineryData> _refineries;
     
     _refineries.Clear();
-    if (ActiveCFEPatchConfig.EnableASPathing){
+	//if (ActiveCFEPatchConfig.EnableASPathing){
+    if (Rule.AstarPathFindingEnabled){
         for (int i = 0; i < Buildings.Count(); ++i) {
             BuildingClass* refinery = Buildings.Ptr(i);
             if (refinery != NULL &&
@@ -4861,7 +4872,8 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
             //CFE_Debug_Printf("Harvester %i did not find a refinery with A-Star!");
         //}
     }
-    if (!ActiveCFEPatchConfig.EnableASPathing || _refineries.Count() == 0){
+	//if (!ActiveCFEPatchConfig.EnableASPathing || _refineries.Count() == 0){
+    if (!Rule.AstarPathFindingEnabled || _refineries.Count() == 0){
         for (int i = 0; i < Buildings.Count(); ++i) {
             BuildingClass* refinery = Buildings.Ptr(i);
             if (refinery != NULL &&
@@ -4871,7 +4883,8 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
 			*refinery == STRUCT_REFINERY &&
 			Map[refinery->Center_Coord()].Zones[Techno_Type_Class()->MZone] == Map[Center_Coord()].Zones[Techno_Type_Class()->MZone]) {
                 int crowflies_result = Distance(refinery);
-                if (ActiveCFEPatchConfig.EnableASPathing){
+				//if (ActiveCFEPatchConfig.EnableASPathing){
+                if (Rule.AstarPathFindingEnabled){
                     crowflies_result = Lepton_To_Cell(crowflies_result);
                 }
                 _refineries.Add(RefineryData{ refinery, crowflies_result, 0 });
@@ -4903,9 +4916,11 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
                      // settings), then don't count the other other harvy.
                      // Only discount a first-in-line harvy if queue jumping is enabled.
                      // (Status == 2 means they're in FINDHOME state, and thus not first in line)
-                     if (ActiveCFEPatchConfig.EnableHarvyOptimize && (ActiveCFEPatchConfig.EnableHarvyQueueJump || unit->Status == 2)){
+					//if (ActiveCFEPatchConfig.EnableHarvyOptimize && (ActiveCFEPatchConfig.EnableHarvyQueueJump || unit->Status == 2)){
+                     if (Rule.HarvesterOptimizeEnabled && (Rule.HarvesterQueueJumpingEnabled || unit->Status == 2)){
                          int other_harvy_distance;
-                         if (ActiveCFEPatchConfig.EnableASPathing){
+						 //if (ActiveCFEPatchConfig.EnableASPathing){
+                         if (Rule.AstarPathFindingEnabled){
                              int other_harvy_distance_astar = unit->Find_Path_AStar(nullptr, Coord_Cell(unit->Coord),  Coord_Cell(refinery->Center_Coord()), 1, MOVE_NO, -1);
                              if (other_harvy_distance_astar){
                                 other_harvy_distance = other_harvy_distance_astar;
@@ -4925,7 +4940,7 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
                          else{
                             other_harvy_distance = unit->Distance(refinery);
                         }
-                        if (((_refineries[index].Distance + ActiveCFEPatchConfig.HarvyOptimizeCommunalismWeight) < other_harvy_distance) && (other_harvy_distance > ActiveCFEPatchConfig.HarvyQueueJumpCutoff)){
+                        if (((_refineries[index].Distance + Rule.HarvyOptimizeCommunalismWeight) < other_harvy_distance) && (other_harvy_distance > Rule.HarvyQueueJumpCutoff)){
                             //CFE_Debug_Printf("Expect to jump!\n");
                             continue;
                         }
@@ -4940,14 +4955,15 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
 
 	// Increase distance to account for wait times for other harvies to unload
 	// To prevent thrashing, use a lower penalty if you're already very close to the refinery
-	if (ActiveCFEPatchConfig.EnableHarvyOptimize){
+	//if (ActiveCFEPatchConfig.EnableHarvyOptimize){
+	if (Rule.HarvesterOptimizeEnabled){
         for (int i = 0; i < _refineries.Count(); ++i) {
             //CFE_Debug_Printf("Harvster %i thinks Refinery %i distance is %i.\n", this, i,  _refineries[i].Distance);
-            if (_refineries[i].Distance < ActiveCFEPatchConfig.HarvyOptimizeThrashingCutoff){
-                _refineries[i].Distance += (_refineries[i].Harvesters * ActiveCFEPatchConfig.HarvyOptimizeThrashingWeight);
+            if (_refineries[i].Distance < Rule.HarvyOptimizeThrashingCutoff){
+                _refineries[i].Distance += (_refineries[i].Harvesters * Rule.HarvyOptimizeThrashingWeight);
             }
             else{
-                _refineries[i].Distance += (_refineries[i].Harvesters * ActiveCFEPatchConfig.HarvyOptimizeUnloadWaitWeight );
+                _refineries[i].Distance += (_refineries[i].Harvesters * Rule.HarvyOptimizeUnloadWaitWeight );
             }
             // don't do this -- doesn't look like TiberiumUnloadRefinery is cleared until after it leaves
             //if (_refineries[i].ID->Is_Something_Attached()){
@@ -4969,7 +4985,8 @@ BuildingClass* UnitClass::Find_Best_Refinery(void) const
 	}
 
 	// Impact of other harvies is now baked into distance values, so just take the lowest
-	 if (ActiveCFEPatchConfig.EnableHarvyOptimize){
+	// if (ActiveCFEPatchConfig.EnableHarvyOptimize){
+	if (Rule.HarvesterOptimizeEnabled){
         return _refineries[0].Refinery;
     }
 	
@@ -5135,7 +5152,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten)
 						crushed = true;
 
                         // Chthon CFE Note -- get XP for squishing a non-ally
-                        if (((ActiveCFEPatchConfig.EnableVeterancy == 2) || (ActiveCFEPatchConfig.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && object->IsActive && object->What_Am_I() == RTTI_INFANTRY){
+                        if (((Rule.EnableVeterancy == 2) || (Rule.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && object->IsActive && object->What_Am_I() == RTTI_INFANTRY){
                             GainVeterancyXP((object->Strength * object->Class_Of().Cost_Of()) / object->Class_Of().MaxStrength);
                         }
                         

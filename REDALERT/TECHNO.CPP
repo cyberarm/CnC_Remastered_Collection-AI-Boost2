@@ -754,7 +754,7 @@ bool TechnoClass::Revealed(HouseClass * house)
 		IsDiscoveredByComputer = true;
 	}
 	*/
-    if (((Session.Type == GAME_NORMAL) || !ActiveCFEPatchConfig.EnableNewSkirmishAI) && !house->IsHuman && IsDiscoveredByComputer){
+    if (((Session.Type == GAME_NORMAL) || !Rule.EnableNewSkirmishAI) && !house->IsHuman && IsDiscoveredByComputer){
         return false;
     }
 
@@ -813,7 +813,7 @@ bool TechnoClass::Revealed(HouseClass * house)
 		} else {
 			
             // Chthon CFE Note: new skirmish AI is going to care about sight
-			if (house->IsHuman || ActiveCFEPatchConfig.EnableNewSkirmishAI) {
+			if (house->IsHuman || Rule.EnableNewSkirmishAI) {
 				Set_Discovered_By_Player(house);
 			}
 			// RA didn't have this before. Assuming the unreachable junk above was meant to be here.
@@ -869,7 +869,7 @@ void TechnoClass::Hidden(void)
         return;
     }
     // To stay consistent with prior version, retain discovery for the owner
-    if (House->IsHuman || ActiveCFEPatchConfig.EnableNewSkirmishAI){
+    if (House->IsHuman || Rule.EnableNewSkirmishAI){
 		IsDiscoveredByPlayerMask = (1 <<  (int)(House->Class->House));
     }
     else {
@@ -1032,7 +1032,8 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass * from, RadioMessageTyp
                 //}
                     // that doesn't work -- the repair bay doesn't respond with run away
                     // so let's just do the running away directly right here
-                if (    ActiveCFEPatchConfig.EnableSmarterRepairBays &&
+				//if (    ActiveCFEPatchConfig.EnableSmarterRepairBays &&
+                if (Rule.SmarterRepairBaysEnabled &&
                         (Health_Ratio() >= Rule.ConditionGreen) &&
                         !Target_Legal(((UnitClass *)this)->NavCom) &&
                         from &&
@@ -1170,7 +1171,7 @@ void TechnoClass::Per_Cell_Process(PCPType why)
         else {
             for (int i=0 ; i<Session.Players.Count() ; i++) {
                 HouseClass* someplayer = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-                if (someplayer && (someplayer->IsHuman || ActiveCFEPatchConfig.EnableNewSkirmishAI)){
+                if (someplayer && (someplayer->IsHuman || Rule.EnableNewSkirmishAI)){
                     if (!Is_Discovered_By_Player(someplayer) && Map[cell].Is_Visible(someplayer)) {
                         Revealed(someplayer);
                     }
@@ -2648,7 +2649,8 @@ void TechnoClass::AI(void)
         
         // special control for chronotanks
         // if charged, and trying to move, and able to find a clear landing cell near the destination, teleport and drop out of attack-move
-        if (   ActiveCFEPatchConfig.EnableChronoTankAttackMove && 
+		//if (   ActiveCFEPatchConfig.EnableChronoTankAttackMove && 
+        if (Rule.ChronoTankAttackMoveCommandAllowed && 
                 (What_Am_I() == RTTI_UNIT) &&
                 (*((UnitClass*)this) == UNIT_CHRONOTANK) &&
                 (Mission == MISSION_MOVE) &&
@@ -2675,7 +2677,7 @@ void TechnoClass::AI(void)
                 ((UnitClass*)this)->SkipNavQueueUpdate = true;
                 ((UnitClass*)this)->Teleport_To(tpdestination);
                 ((UnitClass*)this)->SkipNavQueueUpdate = false;
-                if (ActiveCFEPatchConfig.EnableSmarterChrono){
+                if (Rule.EnableSmarterChrono){
                     Unselect_All_Players_Except_Owner();
                     Minimal_Detach_This_From_All(As_Target(), true);
                 }
@@ -3015,7 +3017,7 @@ void TechnoClass::Cloaking_AI(void)
                         else {
                             for (int i=0 ; i<Session.Players.Count() ; i++) {
                                 HouseClass* someplayer = HouseClass::As_Pointer(Session.Players[i]->Player.ID);
-                                if (someplayer && (someplayer->IsHuman || ActiveCFEPatchConfig.EnableNewSkirmishAI)){
+                                if (someplayer && (someplayer->IsHuman || Rule.EnableNewSkirmishAI)){
                                     if (Map[cell].Is_Visible(someplayer)) {
                                         Revealed(someplayer);
                                     }
@@ -4083,7 +4085,8 @@ ActionType TechnoClass::What_Action(ObjectClass const * object) const
 		if (altdown) {
 			if (House->IsPlayerControl && Can_Player_Move()) {
                 // Attack Move rework by ChthonVII -- Attack-move and crush
-                if (ActiveCFEPatchConfig.EnableAttackMove && ((Techno_Type_Class()->PrimaryWeapon != NULL) || ((What_Am_I() == RTTI_UNIT) && (*((UnitClass*)this) == UNIT_MINELAYER))) && shiftdown){
+				//if (ActiveCFEPatchConfig.EnableAttackMove && ((Techno_Type_Class()->PrimaryWeapon != NULL) || ((What_Am_I() == RTTI_UNIT) && (*((UnitClass*)this) == UNIT_MINELAYER))) && shiftdown){
+                if (Rule.AttackMoveCommandAllowed && ((Techno_Type_Class()->PrimaryWeapon != NULL) || ((What_Am_I() == RTTI_UNIT) && (*((UnitClass*)this) == UNIT_MINELAYER))) && shiftdown){
                     return(ACTION_ATTACKMOVE);
                 }
                 else {
@@ -4264,7 +4267,8 @@ ActionType TechnoClass::What_Action(CELL cell) const
 		*/
 		if (shiftdown) {
             // Attack Move rework by ChthonVII -- hijack this for attack-move. This should be the main way attack-move input is picked up.
-            if (ActiveCFEPatchConfig.EnableAttackMove && ((Techno_Type_Class()->PrimaryWeapon != NULL) || ((What_Am_I() == RTTI_UNIT) && (*((UnitClass*)this) == UNIT_MINELAYER)))){
+			//if (ActiveCFEPatchConfig.EnableAttackMove && ((Techno_Type_Class()->PrimaryWeapon != NULL) || ((What_Am_I() == RTTI_UNIT) && (*((UnitClass*)this) == UNIT_MINELAYER)))){
+            if (Rule.AttackMoveCommandAllowed && ((Techno_Type_Class()->PrimaryWeapon != NULL) || ((What_Am_I() == RTTI_UNIT) && (*((UnitClass*)this) == UNIT_MINELAYER)))){
                 return(ACTION_ATTACKMOVE);
             }
             else {
@@ -4820,7 +4824,7 @@ ResultType TechnoClass::Take_Damage(int & damage, int distance, WarheadType warh
     }
     
     bool gothealed = (Strength > oldstrength);
-	if (((ActiveCFEPatchConfig.EnableVeterancy == 2) || (ActiveCFEPatchConfig.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && XPsource && XPsource->IsActive && (gothealed || !House->Is_Ally(XPsource))){
+	if (((Rule.EnableVeterancy == 2) || (Rule.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && XPsource && XPsource->IsActive && (gothealed || !House->Is_Ally(XPsource))){
         int delta = oldstrength - Strength;
         if (gothealed){
             delta = Strength - oldstrength;
@@ -5549,7 +5553,7 @@ void TechnoClass::Kill_Cargo(TechnoClass * source)
 		FootClass * foot = Detach_Object();
 		if (foot != NULL) {
             // Chthon CFE Note: Give XP for any passengers killed too
-            if (((ActiveCFEPatchConfig.EnableVeterancy == 2) || (ActiveCFEPatchConfig.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && source && source->IsActive && !House->Is_Ally(source)){
+            if (((Rule.EnableVeterancy == 2) || (Rule.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && source && source->IsActive && !House->Is_Ally(source)){
                 source->GainVeterancyXP((foot->Strength * foot->Class_Of().Cost_Of())/foot->Class_Of().MaxStrength);
             }
 			foot->Record_The_Kill(source);
@@ -7824,10 +7828,10 @@ void TechnoClass::AttackMoveEnterAttackMode(){
 
 void TechnoClass::GainVeterancyXP(unsigned short int XP){
     // bail if veterancy disabled
-    if (!ActiveCFEPatchConfig.EnableVeterancy){
+    if (!Rule.EnableVeterancy){
         return;
     }
-    if ((ActiveCFEPatchConfig.EnableVeterancy < 2) && (Session.Type == GAME_NORMAL)){
+    if ((Rule.EnableVeterancy < 2) && (Session.Type == GAME_NORMAL)){
         return;
     }
     // bail if rank is already maxed (avoid possibility of integer overflow on VeterancyXP)
@@ -8241,7 +8245,7 @@ TARGET TechnoClass::FindChainLightningTarget(const TARGET primarytarget, const i
 void TechnoClass::GainMechanicXPBoost(const int delta){
   
     // bail if veterancy disabled
-    if (!ActiveCFEPatchConfig.EnableVeterancy){
+    if (!Rule.EnableVeterancy){
         return;
     }
     // bail if rank is already maxed (avoid possibility of integer overflow on VeterancyXP)

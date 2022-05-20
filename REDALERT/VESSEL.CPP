@@ -1042,7 +1042,7 @@ ResultType VesselClass::Take_Damage(int & damage, int distance, WarheadType warh
 			**	Only infantry can run from a destroyed vehicle. Even then, it is not a sure
 			**	thing.
 			*/
-            if (((ActiveCFEPatchConfig.EnableVeterancy == 2) || (ActiveCFEPatchConfig.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && XPsource && XPsource->IsActive && !House->Is_Ally(XPsource)){
+            if (((Rule.EnableVeterancy == 2) || (Rule.EnableVeterancy == 1) && (Session.Type != GAME_NORMAL)) && XPsource && XPsource->IsActive && !House->Is_Ally(XPsource)){
                 XPsource->GainVeterancyXP((object->Strength * object->Class_Of().Cost_Of())/object->Class_Of().MaxStrength);
             }
             
@@ -2316,7 +2316,8 @@ ActionType VesselClass::What_Action(CELL cell) const
 	}
 	
     // Attack Move rework by ChthonVII -- we need this here so that we can attack-move to cells that the VesselClass-level makes movable (e.g., beaches) 
-    if (ActiveCFEPatchConfig.EnableAttackMove && action == ACTION_MOVE && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+	//if (ActiveCFEPatchConfig.EnableAttackMove && action == ACTION_MOVE && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
+    if (Rule.AttackMoveCommandAllowed && action == ACTION_MOVE && Is_Owned_By_Player() && Techno_Type_Class()->PrimaryWeapon != NULL && DLL_Export_Get_Input_Key_State(KN_LSHIFT)){
         action = ACTION_ATTACKMOVE;
     }
 	

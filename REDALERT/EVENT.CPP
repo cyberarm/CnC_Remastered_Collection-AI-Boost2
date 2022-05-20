@@ -751,7 +751,8 @@ void EventClass::Execute(void)
 				bool q = ((Data.MegaMission.Mission == MISSION_QMOVE) || (Data.MegaMission.Mission == MISSION_QATTACKMOVE));
 
                 // Attack Move rework by ChthonVII -- now that we are on the back side of the multiplayer communications, swap MISSION_ATTACKMOVE back to MISSION_MOVE and set flag and target
-                if (ActiveCFEPatchConfig.EnableAttackMove){
+				//if (ActiveCFEPatchConfig.EnableAttackMove){
+                if (Rule.AttackMoveCommandAllowed){
                     if ((Data.MegaMission.Mission == MISSION_ATTACKMOVE) || (Data.MegaMission.Mission == MISSION_QATTACKMOVE)){
                         techno->Assign_Mission(MISSION_MOVE);
                         techno->AttackMove = 1;
@@ -882,7 +883,8 @@ void EventClass::Execute(void)
 			techno = Data.Target.Whom.As_Techno();
 			// Attack Move rework by ChthonVII -- exit attack-move because we got a new order
             if (techno && techno->IsActive && !techno->IsInLimbo){
-                if (ActiveCFEPatchConfig.EnableAttackMove){
+				//if (ActiveCFEPatchConfig.EnableAttackMove){
+                if (Rule.AttackMoveCommandAllowed){
                     techno->ResetAttackMove(2);
                 }
                 if (!techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
@@ -890,7 +892,8 @@ void EventClass::Execute(void)
                     techno->Assign_Destination(TARGET_NONE);
                     techno->Assign_Target(TARGET_NONE);
                     // Chthon CFE Note: vanilla bugfix -- clear the nav queue BEFORE entering idle mode so the unit stops right away
-                    if (ActiveCFEPatchConfig.EnableQMoveLoops){
+					//if (ActiveCFEPatchConfig.EnableQMoveLoops){
+                    if (Rule.QmoveLoopsAllowed){
                         if (techno->Is_Foot()) {
                             ((FootClass *)techno)->Clear_Navigation_List();
                         }

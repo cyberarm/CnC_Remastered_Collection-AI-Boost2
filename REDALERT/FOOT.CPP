@@ -2566,7 +2566,8 @@ void FootClass::Queue_Navigation_List(TARGET target)
         CELL tcell = As_Cell(target);
         
         // if the immediate target was just just popped off the queue, count a click here as a loop mode request anyway
-        if (ActiveCFEPatchConfig.EnableQMoveLoops && ((target == NavCom) || (target == UnmodifiedNavCom))){
+		//if (ActiveCFEPatchConfig.EnableQMoveLoops && ((target == NavCom) || (target == UnmodifiedNavCom))){
+        if (Rule.QmoveLoopsAllowed && ((target == NavCom) || (target == UnmodifiedNavCom))){
             //CFE_Debug_Printf("unit %i got loop request via navcom match", this);
             is_loop_request = true;
         }
@@ -2579,7 +2580,8 @@ void FootClass::Queue_Navigation_List(TARGET target)
                 break;
             }
             // clicking in a cell that's already in the queue is treated as a request for loop mode
-            if (tcell == As_Cell(NavQueue[count]) && ActiveCFEPatchConfig.EnableQMoveLoops){
+			//if (tcell == As_Cell(NavQueue[count]) && ActiveCFEPatchConfig.EnableQMoveLoops){
+            if (tcell == As_Cell(NavQueue[count]) && Rule.QmoveLoopsAllowed){
                 //CFE_Debug_Printf("unit %i got loop request via queue match", this);
                 is_loop_request = true;
             }
@@ -2694,7 +2696,8 @@ void FootClass::Queue_Navigation_List(TARGET target)
 			}
 			// if there's no empty space, evict the oldest entry. This seems like the least bad thing to do.
 			// gate behind the mod feature so this change to vanilla behavior can be turned off
-			else if (ActiveCFEPatchConfig.EnableQMoveLoops){
+			//else if (ActiveCFEPatchConfig.EnableQMoveLoops){
+			else if (Rule.QmoveLoopsAllowed){
                 // if this is a loop, then the original head is the oldest
                 if (IsNavQueueLoop && original_head_found){
                     NavQueue[original_head_index] = target;
@@ -3066,7 +3069,8 @@ BuildingClass* FootClass::Find_Docking_Bay(StructType b, bool friendly) const
 void FootClass::Memorize_Navigation_List(){
     
     // just return if we aren't doing a Q-attack-move-loop, since that's the only context we want this
-    if (    !ActiveCFEPatchConfig.EnableAirQAMLRecall ||
+	//if (    !ActiveCFEPatchConfig.EnableAirQAMLRecall ||
+    if (    !Rule.AirQRecallAllowed ||
              !AttackMove ||
              !IsNavQueueLoop ||
              !Target_Legal(NavQueue[0]) ||

@@ -761,7 +761,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir)
 			*/
             //Chthon CFE Note: bugfix as per https://ppmforums.com/topic-52395/the-lol-ww-wtf-omg-series/?sid=0615f7e6bbfa6f79d5b8a79981bb3258
 			//if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
-            if ((ActiveCFEPatchConfig.EnableInaccuracyBugfix && Class->ROT != 0) || Class->IsArcing) {
+            if ((Rule.EnableInaccuracyBugfix && Class->ROT != 0) || Class->IsArcing) {
 				int scatterdist = (::Distance(coord, tcoord)/16)-0x0040;
 				scatterdist = min(scatterdist, Rule.HomingScatter);
 				scatterdist = max(scatterdist, 0);

@@ -217,6 +217,59 @@ class RulesClass {
 		int AIMaxAirSpeed = 100;
 		int AIRefinerySpeed = 1;
 
+		//CFE stuff:
+		int AstarPathFindingEnabled = 1;
+		int	OOM_REPAIR = 1;
+		int	RallyPointsEnabled = 1;
+		int	HarvesterQueueJumpingEnabled = 1;
+		int	HarvesterLoadBalancing = 0;
+		int	HarvesterOptimizeEnabled = 1;
+		int	AttackMoveCommandAllowed = 1;
+		int	ChronoTankAttackMoveCommandAllowed = 1;
+		int	QmoveLoopsAllowed = 1;
+		int	AirQMoveAllowed = 1;
+		int	AirQRecallAllowed = 1;
+		int	SmarterAircraftsEnabled = 1;
+		int	SmarterRepairBaysEnabled = 1;
+		int	BetterOreGrowthEnabled = 1;
+		int	OreIndexBugFixEnabled = 1;
+		int	GemOverLoadFixEnabled = 1;
+		int	EnableInaccuracyBugfix = 1;
+		int	EnableWideSupers = 0;
+		int	EnableQuickSupers = 0;
+		int	EnableSmarterChrono = 0;
+		int	EnableTimeQuakeFix = 0;
+		int	EnableSharedChronoDisasterOdds = 0;
+		int	EnableCumulativeTimelineDamage = 1;
+		int	EnableLongGapFix = 1;
+		int	EnableMIGAmmoFudge = 1;
+		int	EnableBuildingCaptureAnnouncements = 1;
+		int	EnableSmarterSonar = 1;
+		int EnableNewSkirmishAI = 0; //This was not in the ini file, so always disabled. It does something with the sight for the AI, but AI does always see everything.....
+
+		int	EnableVeterancy = 2;
+		int	EnableTanyaGuard = 1;
+		int	SafeSabotage = 1;
+		int	HarvyQueueJumpCutoff = 4;
+		int	HarvyOptimizeUnloadWaitWeight = 6;
+		int	HarvyOptimizeThrashingCutoff = 5;
+		int	HarvyOptimizeThrashingNumerator = 2;
+		int	HarvyOptimizeThrashingDenominator = 3;
+		int HarvyOptimizeThrashingWeight = 4; //This was not in the ini file
+		int	HarvyOptimizeCommunalismNumerator = 9;
+		int	HarvyOptimizeCommunalismDenominator = 4;
+		int HarvyOptimizeCommunalismWeight = 13; //This was not in the ini file
+		int	OreGrowthScale = 1;
+		int	OreToGemPromotionSlowFactor = 8;
+		int	WallBuildLength = 5;
+		int	WallsAlwaysHaveFullCost = 1;
+		int	InverseBuildingPreviewMode = 2;
+		int	BuildingGapOffset = 0;
+		int	OreCapacityOffset = 0;
+		int	SharedChronoDisasterOdds = 20;
+
+
+
 		/*
 		**	This specifies the turbo boost speed for missiles when they are fired upon
 		**	aircraft and the weapon is specified as having a turbo boost bonus.

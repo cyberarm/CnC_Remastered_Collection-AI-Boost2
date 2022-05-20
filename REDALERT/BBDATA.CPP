@@ -281,7 +281,7 @@ bool BulletTypeClass::Read_INI(CCINIClass & ini)
 		IsFlameEquipped = ini.Get_Bool(Name(), "Animates", IsFlameEquipped);
 		IsFueled = ini.Get_Bool(Name(), "Ranged", IsFueled);
         //Chthon CFE Note: bugfix as per https://ppmforums.com/topic-52395/the-lol-ww-wtf-omg-series/?sid=0615f7e6bbfa6f79d5b8a79981bb3258
-		if (ActiveCFEPatchConfig.EnableInaccuracyBugfix){
+		if (Rule.EnableInaccuracyBugfix){
             IsInaccurate = ini.Get_Bool(Name(), "Inaccurate", IsInaccurate);
         }
         else {

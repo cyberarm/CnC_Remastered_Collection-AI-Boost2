@@ -1709,7 +1709,8 @@ int CellClass::Reduce_Tiberium(int levels)
             // Chthon CFE Note: Vanilla bugfix. OverlayData is zero-indexed. The spread routine creates ore at OverlayData == 0, and there's a graphic for level 0 ore.
             // Therefore, removing the 0th level of ore should count as removing 1 level.
             // Otherwise the harvester gets no value at all from harvesting level 0 cells. See UnitClass::Harvesting()
-            if (ActiveCFEPatchConfig.OreIndexBugfix){
+			//if (ActiveCFEPatchConfig.OreIndexBugfix){
+            if (Rule.OreIndexBugFixEnabled){
                 reducer++;
             }
 			OverlayData = 0;
@@ -2167,7 +2168,8 @@ long CellClass::Tiberium_Adjust(bool pregame)
 				OverlayData = min(OverlayData, 2);
 			} else {
 				//OverlayData = _adj[count];
-                if (ActiveCFEPatchConfig.OreIndexBugfix){
+				//if (ActiveCFEPatchConfig.OreIndexBugfix){
+                if (Rule.OreIndexBugFixEnabled){
                     if (count == 0){
                         OverlayData = better_adj[Random_Pick(0,2)];
                     }
@@ -2454,7 +2456,7 @@ bool CellClass::Goodie_Check(FootClass * object)
 			case CRATE_TIMEQUAKE:
 				TimeQuake = true;
                 // Chthon CFE Note: If timequakes are fixed, make sthis do something
-                if (ActiveCFEPatchConfig.EnableTimeQuakeFix){
+                if (Rule.EnableTimeQuakeFix){
                     Scen.Do_BW_Fade();
                     Sound_Effect(VOC_CHRONO, Cell_Coord());
                     PendingGlobalTimeQuake = true;
@@ -3194,7 +3196,8 @@ bool CellClass::Can_Tiberium_Spread(void) const
 	if (Land_Type() != LAND_TIBERIUM) return(false);
 
 	//if (OverlayData <= 6) return(false);
-    const int spreadthreshhold = ActiveCFEPatchConfig.OreIndexBugfix ? 5 : 6;
+	//const int spreadthreshhold = ActiveCFEPatchConfig.OreIndexBugfix ? 5 : 6;
+    const int spreadthreshhold = Rule.OreIndexBugFixEnabled ? 5 : 6;
     if (OverlayData <= spreadthreshhold) return(false);
 
 	if (Overlay != OVERLAY_GOLD1 && Overlay != OVERLAY_GOLD2 && Overlay != OVERLAY_GOLD3 && Overlay != OVERLAY_GOLD4) return(false);
@@ -3335,8 +3338,9 @@ bool CellClass::CFESpread_Tiberium(bool forced)
     }
     */
     // changed odds so that chance to change * value of change  = 25 credits (see comments in CFEOreMineSpread_Tiberium())
-    const int bugfixoffset = ActiveCFEPatchConfig.OreIndexBugfix ? 1 : 0;
-    int maxroll = (((((Rule.GemValue * 4 * (3 + (3 * bugfixoffset))) / 3) - (Rule.GoldValue * (11 + bugfixoffset))) * ActiveCFEPatchConfig.OreToGemPromotionSlowFactor) / Rule.GoldValue) - 1;
+	//const int bugfixoffset = ActiveCFEPatchConfig.OreIndexBugfix ? 1 : 0;
+    const int bugfixoffset = Rule.OreIndexBugFixEnabled ? 1 : 0;
+    int maxroll = (((((Rule.GemValue * 4 * (3 + (3 * bugfixoffset))) / 3) - (Rule.GoldValue * (11 + bugfixoffset))) * Rule.OreToGemPromotionSlowFactor) / Rule.GoldValue) - 1;
     if (maxroll < 1){
         maxroll = 99; // fall back to 1% if gems are worth *less* on average than fully grown ore. (which is the case without OreIndexBugfix)
     }
@@ -3414,8 +3418,9 @@ bool CellClass:: CFEOreMineSpread_Tiberium(){
     // Two problems with the above: (1) gems look to uniformwithout the samll ones, (2) way too many gems.
     // So added a fudge factor to slow it down, and used odds for average case and then picked 0-2 gem level.
     if (foundgembackup){
-        const int bugfixoffset = ActiveCFEPatchConfig.OreIndexBugfix ? 1 : 0;
-        int maxroll = (((((Rule.GemValue * 4 * (3 + (3 * bugfixoffset))) / 3) - (Rule.GoldValue * (11 + bugfixoffset))) * ActiveCFEPatchConfig.OreToGemPromotionSlowFactor) / Rule.GoldValue) - 1;
+		//const int bugfixoffset = ActiveCFEPatchConfig.OreIndexBugfix ? 1 : 0;
+        const int bugfixoffset = Rule.OreIndexBugFixEnabled ? 1 : 0;
+        int maxroll = (((((Rule.GemValue * 4 * (3 + (3 * bugfixoffset))) / 3) - (Rule.GoldValue * (11 + bugfixoffset))) * Rule.OreToGemPromotionSlowFactor) / Rule.GoldValue) - 1;
         if (maxroll < 1){
             maxroll = 99; // fall back to 1% if gems are worth *less* on average than fully grown ore. (which is the case without OreIndexBugfix)
         }

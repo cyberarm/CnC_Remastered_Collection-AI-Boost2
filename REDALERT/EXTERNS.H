@@ -91,61 +91,61 @@ extern void const *LightningShapes;
 
 extern int NewINIFormat;
 
-struct CFEPatchConfig
-{
-	bool EnableASPathing = false;
-	bool EnableOOMRepair = false;
-	bool EnableRallyPoints = false;
-	bool EnableHarvyQueueJump = false;
-    bool EnableHarvyLoadBalancing = false;
-    bool EnableHarvyOptimize = false;
-	bool EnableInstantCapture = false;
-	bool WallsAlwaysHaveFullCost = true;
-	bool EnableAttackMove = false;
-    bool EnableChronoTankAttackMove = false;
-    bool EnableQMoveLoops = false;
-    bool EnableAirQMove = false;
-    bool EnableAirQAMLRecall = false;
-    bool EnableSmarterAircraft = false;
-    bool EnableSmarterRepairBays = false;
-    bool BetterOreGrowth = false;
-    bool OreIndexBugfix = false;
-    bool GemOverloadFix = false;
-    bool EnableInaccuracyBugfix = false;
-    bool EnableWideSupers = false;
-    bool EnableQuickSupers = false;
-    bool EnableSmarterChrono = false;
-    bool EnableTimeQuakeFix = false;
-    bool EnableSharedChronoDisasterOdds = false;
-    bool EnableCumulativeTimelineDamage = false;
-    bool EnableLongGapFix = false;
-    bool EnableMIGAmmoFudge = false;
-    bool EnableBuildingCaptureAnnouncements = false;
-    bool EnableSmarterSonar = false;
-    bool EnableNewSkirmishAI = false;
+//struct CFEPatchConfig
+//{
+	//bool EnableASPathing = false;
+//	bool EnableOOMRepair = false;
+//	bool EnableRallyPoints = false;
+//	bool EnableHarvyQueueJump = false;
+//    bool EnableHarvyLoadBalancing = false;
+//    bool EnableHarvyOptimize = false;
+//	bool EnableInstantCapture = false;
+//	bool WallsAlwaysHaveFullCost = true;
+//	bool EnableAttackMove = false;
+//    bool EnableChronoTankAttackMove = false;
+//    bool EnableQMoveLoops = false;
+//    bool EnableAirQMove = false;
+//    bool EnableAirQAMLRecall = false;
+//    bool EnableSmarterAircraft = false;
+//    bool EnableSmarterRepairBays = false;
+//    bool BetterOreGrowth = false;
+//    bool OreIndexBugfix = false;
+//    bool GemOverloadFix = false;
+//    bool EnableInaccuracyBugfix = false;
+//    bool EnableWideSupers = false;
+//    bool EnableQuickSupers = false;
+//    bool EnableSmarterChrono = false;
+//    bool EnableTimeQuakeFix = false;
+//    bool EnableSharedChronoDisasterOdds = false;
+//    bool EnableCumulativeTimelineDamage = false;
+//    bool EnableLongGapFix = false;
+//    bool EnableMIGAmmoFudge = false;
+//    bool EnableBuildingCaptureAnnouncements = false;
+//    bool EnableSmarterSonar = false;
+//    bool EnableNewSkirmishAI = false;
 
-    int EnableVeterancy = 0;
-    int EnableTanyaGuard = 0;
-    int SafeSabotage = 0;
-	int  HarvyQueueJumpCutoff = 4;
-	int  HarvyOptimizeUnloadWaitWeight = 6;
-    int  HarvyOptimizeThrashingCutoff = 5;
-    int  HarvyOptimizeThrashingNumerator = 2;
-    int  HarvyOptimizeThrashingDenominator = 3;
-    int  HarvyOptimizeThrashingWeight = 4;
-    int  HarvyOptimizeCommunalismNumerator = 9;
-    int  HarvyOptimizeCommunalismDenominator = 4;
-    int  HarvyOptimizeCommunalismWeight = 13;
-	int  OreGrowthScale = 1;
-    int OreToGemPromotionSlowFactor = 8;
-	int  WallBuildLength = 5;
-    int InverseBuildingPreviewMode = 0; // 0=off; 1= MP only; 2 = all game modes
-	int  BuildingGapOffset = 0;
-	int  OreCapacityOffset = 0;
-    int SharedChronoDisasterOdds = 20;
-};
+//    int EnableVeterancy = 0;
+//    int EnableTanyaGuard = 0;
+//    int SafeSabotage = 0;
+//	int  HarvyQueueJumpCutoff = 4;
+//	int  HarvyOptimizeUnloadWaitWeight = 6;
+//    int  HarvyOptimizeThrashingCutoff = 5;
+//    int  HarvyOptimizeThrashingNumerator = 2;
+//    int  HarvyOptimizeThrashingDenominator = 3;
+//    int  HarvyOptimizeThrashingWeight = 4;
+//    int  HarvyOptimizeCommunalismNumerator = 9;
+//    int  HarvyOptimizeCommunalismDenominator = 4;
+//    int  HarvyOptimizeCommunalismWeight = 13;
+//	int  OreGrowthScale = 1;
+//    int OreToGemPromotionSlowFactor = 8;
+//	int  WallBuildLength = 5;
+//    int InverseBuildingPreviewMode = 0; // 0=off; 1= MP only; 2 = all game modes
+//	int  BuildingGapOffset = 0;
+//	int  OreCapacityOffset = 0;
+//    int SharedChronoDisasterOdds = 20;
+//};
 
-extern CFEPatchConfig ActiveCFEPatchConfig;
+//extern CFEPatchConfig ActiveCFEPatchConfig;
 
 #ifdef FIXIT_ANTS
 extern bool AntsEnabled;
