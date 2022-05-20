@@ -53,6 +53,9 @@ AI changes:
 - AI build MCV's and deploys them, AI limitations for buildings, etc.
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
+- AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
+- You can now set the boost for your allies and your enemies independently (when dynamic AI boost is disabled)
+- Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to re-balance
 
 ---
 
