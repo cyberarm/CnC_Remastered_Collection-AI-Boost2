@@ -5843,7 +5843,7 @@ bool HouseClass::AI_Attack(UrgencyType )
 	int index;
 
 	// Possibility of 10% that we set harvesters a high prio level, otherwise we set it to normal.
-	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHaversterHuntMadness));
+	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHarvesterHuntMadness));
 
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
@@ -7321,7 +7321,7 @@ int HouseClass::AI_Unit(void)
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
 			if ((int)UQuantity[UNIT_HARVESTER] < (int)Rule.AIHarvesterMaxLimit) {
-				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplyer) || (int)UQuantity[UNIT_HARVESTER] < 2) {
+				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplier) || (int)UQuantity[UNIT_HARVESTER] < 2) {
 					if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
 						BuildUnit = UNIT_HARVESTER;
 						return(TICKS_PER_SECOND);
@@ -7608,7 +7608,7 @@ int HouseClass::AI_Vessel(void)
 				}
 			}
 			if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
-				AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
+				AverageEnemyVessels = (int)(EnemyVessels / CountEnemiesForThisAI);
 			}
 			else {
 				AverageEnemyVessels = 0;

@@ -526,10 +526,10 @@ bool RulesClass::General(CCINIClass & ini)
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
-		AIHarvesterMultiplyer = ini.Get_Fixed(MOREQOL, "AIHarvesterMultiplyer", "1,2");
+		AIHarvesterMultiplier = ini.Get_Fixed(MOREQOL, "AIHarvesterMultiplier", "1,2");
 		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
-		AIHaversterHuntMadness = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
-		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIHaversterHuntMadness", 5);
+		AIHarvesterHuntMadness = ini.Get_Int(MOREQOL, "AIHarvesterHuntMadness", 5);
+		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 20);
 		AINoShroud = ini.Get_Bool(MOREQOL, "AINoShroud", false);
