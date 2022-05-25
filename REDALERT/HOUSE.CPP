@@ -7089,28 +7089,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//Allied tech center
-		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-				}
-			}
-		}
-
-		//Soviet tech center
-		if (BQuantity[STRUCT_SOVIET_TECH] < 1) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-				}
-			}
-		}
-
 		//airstrip
 		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
@@ -7189,6 +7167,28 @@ int HouseClass::AI_Building(void)
 					if (choiceptr != NULL) {
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_AAGUN] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
+				}
+			}
+		}
+
+		//Allied tech center
+		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
+		//Soviet tech center
+		if (BQuantity[STRUCT_SOVIET_TECH] < 1) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
 				}
 			}
 		}
@@ -7598,22 +7598,25 @@ int HouseClass::AI_Vessel(void)
 		
 		//New detection method to prevent overproducing vessels for the AI, he count according to the ennemies average:
 		if (!IsHuman) {
-			return(TICKS_PER_SECOND);
+			int EnemyVessels = 0;
+			int AverageEnemyVessels = 0;
+			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+				HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
+				if (CurrentHouse != NULL && !Is_Ally(h)) {
+						EnemyVessels += Vessels.Count();
+				}
+			}
+			if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
+				AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
+			}
+			else {
+				AverageEnemyVessels = 0;
+			}
+			//if ((int)CurVessels > (AverageEnemyVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (AverageEnemyVessels + Rule.AIVesselBonus)) {
+			if ((int)CurVessels > AverageEnemyVessels) {
+				return(TICKS_PER_SECOND);
+			}
 		}
-		//	int EnemyVessels = 0;
-		//	int AverageEnemyVessels = 0;
-		//	for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-		//		HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
-		//		if (CurrentHouse != NULL && !Is_Ally(h)) {
-		//				EnemyVessels += Vessels.Count();
-		//		}
-		//	}
-		//	AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
-		//	//if ((int)CurVessels > (AverageEnemyVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (AverageEnemyVessels + Rule.AIVesselBonus)) {
-		//	if ((int)CurVessels > AverageEnemyVessels) {
-		//		return(TICKS_PER_SECOND);
-		//	}
-		//}
 
 		//allies, x change of first unit, otherwise x change of second unit, else make the 3rth one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_PT), ActLike) && Percent_Chance(Rule.AIAlliesVesselPTPercentage))
