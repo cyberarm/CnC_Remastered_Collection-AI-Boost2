@@ -7598,20 +7598,22 @@ int HouseClass::AI_Vessel(void)
 		
 		//New detection method to prevent overproducing vessels for the AI, he count according to the ennemies average:
 		if (!IsHuman) {
-			int EnemyVessels = 0;
-			int AverageEnemyVessels = 0;
-			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-				HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
-				if (CurrentHouse != NULL && !Is_Ally(h)) {
-						EnemyVessels += Vessels.Count();
-				}
-			}
-			AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
-			//if ((int)CurVessels > (AverageEnemyVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (AverageEnemyVessels + Rule.AIVesselBonus)) {
-			if ((int)CurVessels > AverageEnemyVessels) {
-				return(TICKS_PER_SECOND);
-			}
+			return(TICKS_PER_SECOND);
 		}
+		//	int EnemyVessels = 0;
+		//	int AverageEnemyVessels = 0;
+		//	for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+		//		HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
+		//		if (CurrentHouse != NULL && !Is_Ally(h)) {
+		//				EnemyVessels += Vessels.Count();
+		//		}
+		//	}
+		//	AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
+		//	//if ((int)CurVessels > (AverageEnemyVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (AverageEnemyVessels + Rule.AIVesselBonus)) {
+		//	if ((int)CurVessels > AverageEnemyVessels) {
+		//		return(TICKS_PER_SECOND);
+		//	}
+		//}
 
 		//allies, x change of first unit, otherwise x change of second unit, else make the 3rth one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_PT), ActLike) && Percent_Chance(Rule.AIAlliesVesselPTPercentage))
