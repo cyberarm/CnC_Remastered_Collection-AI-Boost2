@@ -5842,7 +5842,8 @@ bool HouseClass::AI_Attack(UrgencyType )
 	assert(Houses.ID(this) == ID);
 	int index;
 
-	DoAntiHarvesterRun = (Percent_Chance(10)); // Possibility of 10% that we set harvesters a high prio level, otherwise we set it to normal.
+	// Possibility of 10% that we set harvesters a high prio level, otherwise we set it to normal.
+	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHaversterHuntMadness));
 
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
@@ -6061,9 +6062,8 @@ bool HouseClass::AI_Attack(UrgencyType )
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					if (*u == UNIT_CHRONOTANK) {
 						// Weird enough this must been set before the jump, otherways they run home after jumping.
-						//if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMaxChronotanks) {
-					    if (Rule.AIAllowChronotanksGroupShifting) {
-								//We are allowed to jump, so do it. :-)
+						if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMaxChronotanks) {
+							//We are allowed to jump in groups, so do all to the same calculated building. (FarthestEnemyBuildingDist)
 							u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
 							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 							CELL TargetCell = Coord_Cell(TargetCoord);

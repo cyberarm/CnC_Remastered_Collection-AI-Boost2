@@ -527,7 +527,8 @@ bool RulesClass::General(CCINIClass & ini)
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
 		AIHarvesterMultiplyer = ini.Get_Fixed(MOREQOL, "AIHarvesterMultiplyer", "1,2");
 		AIHarvesterMaxLimit = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
-		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIBuildingsMultiplier", 3);
+		AIHaversterHuntMadness = ini.Get_Int(MOREQOL, "AIHarvesterMaxLimit", 10);
+		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIHaversterHuntMadness", 5);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 20);
 		AINoShroud = ini.Get_Bool(MOREQOL, "AINoShroud", false);

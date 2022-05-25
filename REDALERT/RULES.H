@@ -100,6 +100,7 @@ class RulesClass {
 		fixed AIHarvesterMultiplyer;
 		int AIHarvesterMemoryValue = 10;
 		int AIHarvesterMaxLimit = 10;
+		int AIHaversterHuntMadness = 5;
 		int AIBuildingsMultiplier = 2;
 		//int AIUnitMultiplier = 3;
 		int AIMaxEngineers = 20;
