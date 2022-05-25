@@ -522,6 +522,7 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
+		AISurrenderObjectCountThreshold = ini.Get_Int(MOREQOL, "AISurrenderObjectCountThreshold", AISurrenderObjectCountThreshold);
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);

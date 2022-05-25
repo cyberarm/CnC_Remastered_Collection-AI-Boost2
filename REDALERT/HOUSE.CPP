@@ -6014,7 +6014,7 @@ bool HouseClass::AI_Attack(UrgencyType )
 
 	// Tank units
 
-	int AICurrentChronotanksNr = 0;
+	//int AICurrentChronotanksNr = 0;
 	int FarthestEnemyBuildingDist = -1;
 	if (Rule.AIAllowChronotanksGroupShifting) {
 		//Calculate chronoshift target for all Chronotanks (group jump):
@@ -6035,12 +6035,12 @@ bool HouseClass::AI_Attack(UrgencyType )
 		}
 
 		//count Chronotanks
-		for (index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0 && *u == UNIT_CHRONOTANK) {
-				AICurrentChronotanksNr++;
-			}
-		}
+		//for (index = 0; index < Units.Count(); index++) {
+		//	UnitClass * u = Units.Ptr(index);
+		//	if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0 && *u == UNIT_CHRONOTANK) {
+		//		AICurrentChronotanksNr++;
+		//	}
+		//}
 	}
 
 	//Do the tanks
@@ -6062,7 +6062,8 @@ bool HouseClass::AI_Attack(UrgencyType )
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					if (*u == UNIT_CHRONOTANK) {
 						// Weird enough this must been set before the jump, otherways they run home after jumping.
-						if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMaxChronotanks) {
+						//if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMaxChronotanks) {
+						if (Rule.AIAllowChronotanksGroupShifting && UQuantity[UNIT_CHRONOTANK] >= Rule.AIMaxChronotanks) {
 							//We are allowed to jump in groups, so do all to the same calculated building. (FarthestEnemyBuildingDist)
 							u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
 							COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
