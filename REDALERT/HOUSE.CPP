@@ -7217,6 +7217,9 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
+		//Iron curtain and Chronosphere are both default disabled.
+		//It doesn't work in LAN/Skirmish or online games....
+
 		//iron curtain
 		//if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
 		//	b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);

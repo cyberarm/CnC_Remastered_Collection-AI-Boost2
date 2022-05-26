@@ -1086,11 +1086,6 @@ class RulesClass {
 			RB_SELECTED = 0,
 			RB_ALWAYS,
 		} ResourceBarDisplayMode;
-		/*
-		**	The AI completely surrenders if it has already entered fire-sale
-		**	mode and has fewer objects left than this.
-		*/
-		int AISurrenderObjectCountThreshold = 8;
 };
 
 
