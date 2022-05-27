@@ -14,7 +14,7 @@ Please follow the steps below to update and reactivate the mod:
 Latest changes:
 - CFE 1.8 included: https://steamcommunity.com/sharedfiles/filedetails/?id=2268301299
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
-- Fixed the way AI count the refineries and the vessel units. He count according to the ennemies average instead of human (because in multiplayer, you can have more than 1 human)
+- Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
 
 Included Mod's:
 - CFE Patch Redux for RA v1.8 (way-points, A* pathfinding, etc.)
