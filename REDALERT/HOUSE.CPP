@@ -7600,7 +7600,7 @@ int HouseClass::AI_Vessel(void)
 		//	if (CurVessels > Rule.AIVesselMultiLimit * enemy->ActiveVScan) { return(TICKS_PER_SECOND); } // if we have x times enemy naval, stop making more.
 		//}
 		
-		//New detection method to prevent overproducing vessels for the AI, he count according to the ennemies average:
+		//New detection method to prevent overproducing vessels for the AI, he count according to the enemies average:
 		if (!IsHuman) {
 			int EnemyVessels = 0;
 			int AverageEnemyVessels = 0;
