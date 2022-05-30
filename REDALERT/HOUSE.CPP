@@ -5998,12 +5998,13 @@ bool HouseClass::AI_Attack(UrgencyType )
 			if (Rule.AISpeedRush == 0 || Percent_Chance(10)) {
 				v->Scatter(false, true, true);
 			}
-			if (v->Is_Weapon_Equipped() && (forced || Percent_Chance(PercentageToSend))) {
-				if (Percent_Chance(80)) {
-					v->Assign_Mission(MISSION_HUNT);
+			//if (v->Is_Weapon_Equipped() && (forced || Percent_Chance(PercentageToSend))) {
+			if (v->Is_Weapon_Equipped()) {
+				if (Percent_Chance(50)) {
+					v->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
 				}
 				else {
-					v->Assign_Mission(MISSION_ATTACK);
+					v->Assign_Mission(MISSION_ATTACK); // Set to attack something with high points and easy to attack.
 				}
 			}
 			else {
