@@ -6927,9 +6927,6 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
 						prio = prio + 2;
 					}
-					if (airthreat) {
-						prio = prio + 2;
-					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 2;
 					}
@@ -6951,9 +6948,6 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
 						prio = prio + 1;
 					}
-					if (airthreat) {
-						prio = prio + 1;
-					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 1;
 					}
@@ -6973,9 +6967,6 @@ int HouseClass::AI_Building(void)
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 3;
-					}
-					if (airthreat) {
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -7020,9 +7011,6 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
 						prio = prio + 4;
 					}
-					if (airthreat) {
-						prio = prio + 4;
-					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 4;
 					}
@@ -7042,9 +7030,6 @@ int HouseClass::AI_Building(void)
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
-						prio = prio + 3;
-					}
-					if (airthreat) {
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -7123,6 +7108,28 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
+		//air defense
+		if (airthreat) {
+			if (BQuantity[STRUCT_SAM] < AIAirdefenseLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
+				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_SAM] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					}
+				}
+			}
+			if (BQuantity[STRUCT_AAGUN] < AIAirdefenseLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
+				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_AAGUN] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					}
+				}
+			}
+		}
+
 		//Only try Naval if human does.
 		if (AIDetectedNavalWar) {
 			//naval allies
@@ -7145,28 +7152,6 @@ int HouseClass::AI_Building(void)
 					if (choiceptr != NULL) {
 						prio = 2;
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-					}
-				}
-			}
-		}
-
-		//air defense
-		if (airthreat) {
-			if (BQuantity[STRUCT_SAM] < AIAirdefenseLimit) {
-				b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-					choiceptr = BuildChoice.Alloc();
-					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SAM] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_SAM] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-					}
-				}
-			}
-			if (BQuantity[STRUCT_AAGUN] < AIAirdefenseLimit) {
-				b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-					choiceptr = BuildChoice.Alloc();
-					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AAGUN] < (int)((airthreat_quantity * 2) / CountEnemiesForThisAI) || BQuantity[STRUCT_AAGUN] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}

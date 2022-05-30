@@ -1,11 +1,11 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 30 may 2022 (Currently being tested, not stable yet)
+Last update at: 30 may 2022
 
 Please follow the steps below to update and reactivate the mod:
-- Disable the mod in the Mods Menu
-- Unsubscribe from the mod in the in-game Workshop Mods menu
+- Disable the mod in the mods Menu
+- Unsubscribe from the mod in the in-game Workshop mods menu
 - Quit and restart the game
-- Re-subscribe to the mod via the Workshop Mods menu
+- Re-subscribe to the mod via the Workshop mods menu
 - Activate the mod and restart the game as prompted
 - The updated mod should then work as intended
 
@@ -15,20 +15,20 @@ Latest changes:
 - CFE 1.8 included: https://steamcommunity.com/sharedfiles/filedetails/?id=2268301299
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 - Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
-- Some AI-tweaks for Naval War
+- Several AI-tweaks for Naval War
 
-Included Mod's:
-- CFE Patch Redux for RA v1.8 (way-points, A* pathfinding, etc.)
-- The Rampastring Quality of Live MOD
+Included mod's:
+- CFE Patch Redux for RA v1.8 (A* pathfinding, veterancy, Queue Moving, vanilla fixes, etc.)
+- The Rampastring Quality of Live mod
 - Engineer instant capture
 - Additional Zoom Levels
-- RA Immersive Heli's Mod (And all Air units have a sight) (Use 'L' to land)
-- Attack-Move MOD (Use Shift)
-- Aftermath fast build MOD (Use .ini to enable/disable)
+- RA Immersive Heli's mod (And all Air units have a sight) (Use 'L' to land)
+- Attack-Move mod (Use Shift)
+- Aftermath fast build mod (Use .ini to enable/disable)
 - ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo
 - Added the option to remove shroud from the map
 
-Own Mod's:
+Own mod's:
 - Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 - Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot
 - Now it's possible to add more starting cash and units! Editable by the .ini file
