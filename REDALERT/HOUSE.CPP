@@ -1970,9 +1970,9 @@ void HouseClass::Harvested(unsigned tiberium)
 	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
-		//New dynamic boost method
-
 		//Dynamic boost calculations:
+		TotalBoost = 0;
+		DynamicBoost = 0;
 		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
 		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
 		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
@@ -5934,11 +5934,9 @@ bool HouseClass::AI_Attack(UrgencyType )
 
 	//Recalculate all enemies and friends stuff:
 	IsHumanFriend = 0;
-	TotalBoost = 0;
 	CountEnemiesForThisAI = 0;
 	CountFriendliesForThisAI = 0;
 	CountHousesStillAlive = 0;
-	DynamicBoost = 0;
 	EnemyVessels = 0;
 	for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
 		HouseClass const * hptr = HouseClass::As_Pointer(h);
@@ -6205,7 +6203,8 @@ bool HouseClass::AI_Attack(UrgencyType )
 		Attack = TICKS_PER_SECOND * 2;
 	}
 	else {
-		Attack = TICKS_PER_MINUTE * Rule.AIAttackInterval;
+		//Do not do always the exact time for next attack: Random between 1 and 30 seconds extra
+		Attack = (TICKS_PER_MINUTE * Rule.AIAttackInterval) + Random_Pick(1, TICKS_PER_SECOND * 30);
 	}
 	return(true);
 }

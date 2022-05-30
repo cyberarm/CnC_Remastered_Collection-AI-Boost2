@@ -464,9 +464,9 @@ class HouseClass {
 		int IsHumanFriend = 0;
 		int DynamicBoost = 0;
 		int TotalBoost = 0;
-		int CountEnemiesForThisAI = 0;
+		int CountEnemiesForThisAI = 1; //We always start with a enemy
 		int CountFriendliesForThisAI = 0;
-		int CountHousesStillAlive = 0;
+		int CountHousesStillAlive = 2; //We always start with minimal 2 houses
 		int EnemyVessels = 0;
 		int AverageEnemyVessels = 0;
 
