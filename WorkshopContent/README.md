@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 26 may 2022 (Currently being tested, not stable yet)
+Last update at: 30 may 2022 (Currently being tested, not stable yet)
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -15,6 +15,7 @@ Latest changes:
 - CFE 1.8 included: https://steamcommunity.com/sharedfiles/filedetails/?id=2268301299
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 - Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
+- Some AI-tweaks for Naval War
 
 Included Mod's:
 - CFE Patch Redux for RA v1.8 (way-points, A* pathfinding, etc.)
