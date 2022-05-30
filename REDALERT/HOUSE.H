@@ -469,7 +469,7 @@ class HouseClass {
 		int CountHousesStillAlive = 2; //We always start with minimal 2 houses
 		int EnemyVessels = 0;
 		int AverageEnemyVessels = 0;
-
+		int NrOfHumanTanks = 0;
 
 		bool HouseHasFlag = false;
 
