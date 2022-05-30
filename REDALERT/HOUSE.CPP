@@ -1971,32 +1971,7 @@ void HouseClass::Harvested(unsigned tiberium)
 	//Yes its kind of cheating... It's an public known secret.
 	if (!IsHuman) {
 		//New dynamic boost method
-		//Recalculate all enemies and friends stuff:
-		IsHumanFriend = 0;
-		TotalBoost = 0;
-		CountEnemiesForThisAI = 0;
-		CountFriendliesForThisAI = 0;
-		CountHousesStillAlive = 0;
-		DynamicBoost = 0;
-		for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
-			HouseClass const * hptr = HouseClass::As_Pointer(h);
-			if (hptr != NULL) {
-				if (hptr->CurBuildings > 0) {
-					CountHousesStillAlive++;
-					if (!Is_Ally(h)) {
-						CountEnemiesForThisAI++;
-					}
-					else {
-						if (ID != hptr->ID) {
-							CountFriendliesForThisAI++;
-							if (hptr->IsHuman) {
-								IsHumanFriend = 1;
-							}
-						}
-					}
-				}
-			}
-		}
+
 		//Dynamic boost calculations:
 		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
 		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
@@ -5957,6 +5932,40 @@ bool HouseClass::AI_Attack(UrgencyType )
 	}
 	// End of debugging stuff.
 
+	//Recalculate all enemies and friends stuff:
+	IsHumanFriend = 0;
+	TotalBoost = 0;
+	CountEnemiesForThisAI = 0;
+	CountFriendliesForThisAI = 0;
+	CountHousesStillAlive = 0;
+	DynamicBoost = 0;
+	EnemyVessels = 0;
+	for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
+		HouseClass const * hptr = HouseClass::As_Pointer(h);
+		if (hptr != NULL) {
+			if (hptr->CurBuildings > 0) {
+				CountHousesStillAlive++;
+				if (!Is_Ally(h)) {
+					CountEnemiesForThisAI++;
+					EnemyVessels += Vessels.Count();
+				}
+				else {
+					if (ID != hptr->ID) {
+						CountFriendliesForThisAI++;
+						if (hptr->IsHuman) {
+							IsHumanFriend = 1;
+						}
+					}
+				}
+			}
+		}
+	}
+	if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
+		AverageEnemyVessels = (int)(EnemyVessels / CountEnemiesForThisAI);
+	}
+	else {
+		AverageEnemyVessels = 0;
+	}
 
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
 	bool forced = (CurBuildings == 0); // Why only force on no buildings? If we have enough base defense, we can send all units.
@@ -7292,6 +7301,7 @@ int HouseClass::AI_Unit(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
+	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
 	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
 
 	//AI Max units
@@ -7467,6 +7477,8 @@ int HouseClass::AI_Vessel(void)
 	
 	if (BuildVessel != VESSEL_NONE) return(TICKS_PER_SECOND);
 
+	if ((int)(BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) == 0) return(TICKS_PER_SECOND);
+
 	// Check if nr of Vessels isn't above game limit
 	if (CurVessels >= Control.MaxVessel && !IsHuman) {
 		return(TICKS_PER_SECOND);
@@ -7578,30 +7590,7 @@ int HouseClass::AI_Vessel(void)
 
 	if (IsBaseBuilding) {
 		//Added by Bast75, this was empy, result no naval units in skirmish. We want them!!!
-
-		//This one calculates all the vessels for all enemies, resulting AI keeps producing because they want to have the same as the sum of all enemies.
-		//HouseClass const * enemy = NULL;
-		//if (Enemy != HOUSE_NONE) {
-		//	enemy = HouseClass::As_Pointer(Enemy);
-		//	if (CurVessels > Rule.AIVesselMultiLimit * enemy->ActiveVScan) { return(TICKS_PER_SECOND); } // if we have x times enemy naval, stop making more.
-		//}
-		
-		//New detection method to prevent overproducing vessels for the AI, he count according to the enemies average:
 		if (!IsHuman) {
-			int EnemyVessels = 0;
-			int AverageEnemyVessels = 0;
-			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-				HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
-				if (CurrentHouse != NULL && !Is_Ally(h)) {
-						EnemyVessels += Vessels.Count();
-				}
-			}
-			if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
-				AverageEnemyVessels = (int)(EnemyVessels / CountEnemiesForThisAI);
-			}
-			else {
-				AverageEnemyVessels = 0;
-			}
 			//if ((int)CurVessels > (AverageEnemyVessels * Rule.AIVesselMultiLimit) || (int)CurVessels > (AverageEnemyVessels + Rule.AIVesselBonus)) {
 			if ((int)CurVessels > AverageEnemyVessels) {
 				return(TICKS_PER_SECOND);
@@ -7663,7 +7652,7 @@ int HouseClass::AI_Infantry(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildInfantry != INFANTRY_NONE) return(TICKS_PER_SECOND);
-
+	if ((int)(BQuantity[STRUCT_BARRACKS] + BQuantity[STRUCT_TENT]) == 0) return(TICKS_PER_SECOND);
 	if (CurInfantry >= Control.MaxInfantry && !IsHuman) return(TICKS_PER_SECOND);
 
 	//AI Max infantry

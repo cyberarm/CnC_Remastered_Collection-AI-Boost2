@@ -467,7 +467,8 @@ class HouseClass {
 		int CountEnemiesForThisAI = 0;
 		int CountFriendliesForThisAI = 0;
 		int CountHousesStillAlive = 0;
-
+		int EnemyVessels = 0;
+		int AverageEnemyVessels = 0;
 
 
 		bool HouseHasFlag = false;
