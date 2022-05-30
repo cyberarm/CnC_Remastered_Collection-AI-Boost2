@@ -6899,8 +6899,14 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					prio = 1;
+					if ((int)BQuantity[STRUCT_TENT] + BQuantity[STRUCT_BARRACKS] > 0) {
+						prio = prio + 1;
+					}
 					if ((int)BQuantity[STRUCT_WEAP] > 0) {
-						prio = prio + 2;
+						prio = prio + 1;
+					}
+					if ((int)BQuantity[STRUCT_WEAP] > 2) {
+						prio = prio + 1;
 					}
 					if ((int)BQuantity[STRUCT_RADAR] > 0) {
 						prio = prio + 1;
@@ -6914,7 +6920,7 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_CONST] > 1) {
 						prio = prio + 1;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
