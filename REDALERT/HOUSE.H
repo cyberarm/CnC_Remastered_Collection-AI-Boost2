@@ -427,7 +427,6 @@ class HouseClass {
 
 		//By Bast75
 		unsigned int current = 0;
-		int HumanRefs = 0;
 		int prio = 0; //Used to calculate prio.
 		int TempCalculation = 0;
 		int HumanBuildingCount = 0;

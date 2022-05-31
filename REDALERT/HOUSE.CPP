@@ -5773,7 +5773,7 @@ bool HouseClass::AI_Attack(UrgencyType )
 
 	AI_CalcDynamics();
 
-	// Possibility of 10% that we set harvesters a high prio level, otherwise we set it to normal.
+	// Possibility of 5% that we set harvesters a high prio level, otherwise we set it to normal.
 	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHarvesterHuntMadness));
 
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
@@ -6458,13 +6458,6 @@ int HouseClass::AI_Building(void)
 		}
 
 		//refinery
-		AIRefineryLimit = Rule.AIRefineryLimitOverwrite;
-		//If humans has more refs, we go more refs too:
-		if (HumanRefs > AIRefineryLimit && Rule.AIAllowDynamicBaseGrow)
-		{
-			AIRefineryLimit = HumanRefs;
-		}
-		
 		if (BQuantity[STRUCT_REFINERY] < AIRefineryLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
@@ -6510,7 +6503,7 @@ int HouseClass::AI_Building(void)
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 2;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 2;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -6531,7 +6524,7 @@ int HouseClass::AI_Building(void)
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 1;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -6552,7 +6545,7 @@ int HouseClass::AI_Building(void)
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 3;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -6576,7 +6569,7 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_CONST] > 1) {
 						prio = prio + 1;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
@@ -6621,7 +6614,7 @@ int HouseClass::AI_Building(void)
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 4;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 4;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -6642,7 +6635,7 @@ int HouseClass::AI_Building(void)
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 3;
 					}
-					if (BQuantity[STRUCT_ADVANCED_TECH] > 0 || BQuantity[STRUCT_SOVIET_TECH] > 0) {
+					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 3;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
@@ -9354,7 +9347,6 @@ void HouseClass::AI_CalcDynamics(void)
 						//human house has naval factories and/or naval units, so we are allowed to upgrade our naval to extreme.
 						AIDetectedNavalWar = true;
 					}
-					HumanRefs = hptr->BQuantity[STRUCT_REFINERY];
 				}
 				else {
 					//if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalLimitBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalLimitBasic) {
@@ -9451,9 +9443,17 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 		}
 
+		//Set AI refinery limit before dynamic code
+		AIRefineryLimit = Rule.AIRefineryLimitOverwrite;
+
 		//Dynamic stuff
 		if (Rule.AIAllowDynamicBaseGrow) {
 			if (enemy != NULL) {
+				//Refineries
+				TempCalculation = (int)(enemy->BQuantity[STRUCT_REFINERY] / CountEnemiesForThisAI);
+				if (TempCalculation > AIRefineryLimit) {
+					AIRefineryLimit = TempCalculation;
+				}
 				//Barracks & Tent
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
 				if (TempCalculation > AIBarracksLimit) {
