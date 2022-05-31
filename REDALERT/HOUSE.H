@@ -426,6 +426,17 @@ class HouseClass {
 		long Capacity;
 
 		//By Bast75
+		unsigned int current = 0;
+		int HumanRefs = 0;
+		int prio = 0; //Used to calculate prio.
+		int TempCalculation = 0;
+		int HumanBuildingCount = 0;
+		HouseClass const * enemy = NULL;
+
+		//check air-threat
+		bool airthreat = false;
+		int airthreat_quantity = 0;
+
 		int AIDogKennelLimit = 1;
 		int AIBarracksLimit = 1;
 		int AIWarFactoryLimit = 1;
@@ -823,6 +834,9 @@ class HouseClass {
 		static HouseClass * As_Pointer(HousesType house);
 		static void Recalc_Attributes(void);
 
+		//By Bast75
+		void AI_CalcDynamics(void);
+
 		/*
 		** New default win mode to avoid griefing. ST - 1/31/2020 3:33PM
 		*/
@@ -896,6 +910,7 @@ class HouseClass {
 
 	private:
 		void Silo_Redraw_Check(long oldtib, long oldcap);
+
 		int AI_Building(void);
 		int AI_Unit(void);
 		int AI_Vessel(void);

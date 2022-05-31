@@ -692,6 +692,9 @@ HouseClass::HouseClass(HousesType house) :
 	Attack = TICKS_PER_MINUTE * Rule.AIAttackFirstTime;
 
 	Init_Unit_Trackers();
+
+	//By Bast75
+	AI_CalcDynamics();
 }
 
 
@@ -1441,6 +1444,7 @@ void HouseClass::AI(void)
 			}
 		}
 	}
+
 }
 
 /***********************************************************************************************
@@ -1965,61 +1969,11 @@ void HouseClass::Harvested(unsigned tiberium)
 				}
 			}
 		}
-	}
 
-	//By Bast75, this is why the AI is better in Red Alert 2. There it's called the VirtualOrePurrifier
-	//Yes its kind of cheating... It's an public known secret.
-	if (!IsHuman) {
-		//Dynamic boost calculations:
-		TotalBoost = 0;
-		DynamicBoost = 0;
-		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
-		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
-		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
-		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 0) { DynamicBoost = 1; }
-		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 2) { DynamicBoost = 2; }
-		TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
-		if (TotalBoost > Rule.AIDynamicBoostIQMax) {
-			TotalBoost = Rule.AIDynamicBoostIQMax;
-		}
-		if (TotalBoost < Rule.AIDynamicBoostIQMin) {
-			TotalBoost = Rule.AIDynamicBoostIQMin;
-		}
-
-		if (FFAgame) {
-			//Nobody have friends, all AI's are the same and use the .ini settings.
-			TotalBoost = Rule.AIBoostIQLevel;
-		}
-		else {
-			//Playing in teams (Not an FFA)
-
-			if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
-				//Dynamic boost, use the above calculated stuff.
-			}
-			else {
-				//No dynamic boost
-
-				if (IsHumanFriend == 1) {
-					//I'm a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
-					TotalBoost = Rule.AIBoostIQLevelForAllies;
-				}
-				else {
-					//I hate the human and his so called friends, default AIBoostIQLevel
-					TotalBoost = Rule.AIBoostIQLevel;
-				}
-			}
-		}
-
+		//Give the AI the boost
 		tiberium *= TotalBoost;
-
-		//Old boost function:
-		//if (BQuantity[STRUCT_MSLO] > 0) {
-		//	tiberium *= Rule.AIBOostIQLevelMCVFallback;
-		//}
-		//else {
-			//tiberium *= Rule.AIBoostIQLevel;
-		//}
 	}
+	
 
 	Tiberium += tiberium;
 	if (Tiberium > Capacity) {
@@ -5817,156 +5771,10 @@ bool HouseClass::AI_Attack(UrgencyType )
 	assert(Houses.ID(this) == ID);
 	int index;
 
+	AI_CalcDynamics();
+
 	// Possibility of 10% that we set harvesters a high prio level, otherwise we set it to normal.
 	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHarvesterHuntMadness));
-
-	// Some debug stuff by Bast75
-	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
-		FILE *fp;
-		fp = fopen("aiboost-debug.log", "a+");
-		if (fp) {
-			fprintf(fp, "------------------\n"); // %d for decimal
-			fprintf(fp, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
-			fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
-			fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
-			fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
-			fprintf(fp, "Game: Nr of Human Tanks: %d\n", NrOfHumanTanks); // %d for decimal
-			fprintf(fp, "Game: AI Human Ground War Tank Trigger: %d\n", Rule.AIHumanGroundWarTankTrigger); // %d for decimal
-
-			fprintf(fp, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
-			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
-			fprintf(fp, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
-			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
-			fprintf(fp, "Player: %s %d\n", IniName, ID-12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
-			if (Buildings.Count()==0) {
-				fprintf(fp, "Is defeated: 1\n"); // %s for strings 
-			}
-			else {
-				fprintf(fp, "Is defeated: 0\n"); // %s for strings 
-				// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
-				// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
-				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
-				fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
-				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
-				fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
-				fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
-				fprintf(fp, "Power produced: %d\n", Power); // %d for decimal
-				fprintf(fp, "Power drain: %d\n", Drain); // %d for decimal
-				fprintf(fp, "Power plus: %d\n", AIPowerPlus); // %d for decimal
-				fprintf(fp, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
-				fprintf(fp, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
-				fprintf(fp, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
-				fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
-
-				fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
-				fprintf(fp, "AIBoostIQLevelForAllies (.ini file): %d\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
-				if (FFAgame) {
-					fprintf(fp, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
-				}
-				else {
-					if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
-						fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
-					}
-					else {
-						if (IsHumanFriend == 1) {
-							fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
-						}
-						else {
-							fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
-						}
-					}
-				}
-				fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
-
-				fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
-				fprintf(fp, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
-				fprintf(fp, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
-				fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
-				fprintf(fp, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
-				fprintf(fp, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
-				fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
-				fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
-				fprintf(fp, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
-				fprintf(fp, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
-				fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
-				fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
-				fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
-				fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
-				fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
-				fprintf(fp, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
-				fprintf(fp, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
-				fprintf(fp, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
-				fprintf(fp, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
-				fprintf(fp, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
-				fprintf(fp, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
-				fprintf(fp, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
-				fprintf(fp, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
-				fprintf(fp, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
-				fprintf(fp, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
-				fprintf(fp, "Buildings: Total: %d\n", Buildings.Count()); // %d for decimal
-
-				fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
-				fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
-				fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
-				fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
-				fprintf(fp, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
-				fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
-
-				fprintf(fp, "Aircrafts: Total: %d\n", Aircraft.Count()); // %d for decimal
-
-				fprintf(fp, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
-				fprintf(fp, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
-				fprintf(fp, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
-				fprintf(fp, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
-				fprintf(fp, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
-				fprintf(fp, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
-				fprintf(fp, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
-				fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
-				fprintf(fp, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
-				fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
-				fprintf(fp, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
-				fprintf(fp, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
-				fprintf(fp, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
-				fprintf(fp, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
-				fprintf(fp, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
-				fclose(fp);
-			}
-		}
-	}
-	// End of debugging stuff.
-
-	//Recalculate all enemies and friends stuff:
-	IsHumanFriend = 0;
-	CountEnemiesForThisAI = 0;
-	CountFriendliesForThisAI = 0;
-	CountHousesStillAlive = 0;
-	EnemyVessels = 0;
-	for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
-		HouseClass const * hptr = HouseClass::As_Pointer(h);
-		if (hptr != NULL) {
-			if (hptr->CurBuildings > 0) {
-				CountHousesStillAlive++;
-				if (!Is_Ally(h)) {
-					CountEnemiesForThisAI++;
-					EnemyVessels += Vessels.Count();
-				}
-				else {
-					if (ID != hptr->ID) {
-						CountFriendliesForThisAI++;
-						if (hptr->IsHuman) {
-							IsHumanFriend = 1;
-						}
-					}
-				}
-			}
-		}
-	}
-	if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
-		AverageEnemyVessels = (int)(EnemyVessels / CountEnemiesForThisAI);
-	}
-	else {
-		AverageEnemyVessels = 0;
-	}
 
 	//bool shuffle = false; // No shuffle,  send all to attack       !((Frame > TICKS_PER_MINUTE && !CurBuildings) || Percent_Chance(33));
 	bool forced = (CurBuildings == 0); // Why only force on no buildings? If we have enough base defense, we can send all units.
@@ -6154,7 +5962,7 @@ bool HouseClass::AI_Attack(UrgencyType )
 				}
 				//if (!shuffle && u->Is_Weapon_Equipped() && (forced || Percent_Chance(75))) {
 				else if (forced || Percent_Chance(PercentageToSend)) {
-					if (Percent_Chance(50)) {
+					if (Percent_Chance(95)) {
 						u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
 					}
 					else {
@@ -6190,7 +5998,7 @@ bool HouseClass::AI_Attack(UrgencyType )
 				//if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) && (forced || Percent_Chance(90))) {
 				if (forced || Percent_Chance(PercentageToSend) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
 					//if (i->Team) i->Team->Remove(i); //make it not a member of a team
-					if (Percent_Chance(80) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
+					if (Percent_Chance(95) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
 						i->Assign_Mission(MISSION_HUNT);
 					}
 					else {
@@ -6574,8 +6382,6 @@ int HouseClass::AI_Building(void)
 	}
 
 	if (IsBaseBuilding) {
-		unsigned int HumanBuildingCount = 0;
-
 		BuildChoice.Free_All();
 		BuildChoiceClass * choiceptr;
 		StructType stype = STRUCT_NONE;
@@ -6583,261 +6389,19 @@ int HouseClass::AI_Building(void)
 		int level = Control.TechLevel;
 		bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort && UQuantity[UNIT_HARVESTER] > 0);
 		BuildingTypeClass const * b = NULL;
-		HouseClass const * enemy = NULL;
 		if (Enemy != HOUSE_NONE) {
 			enemy = HouseClass::As_Pointer(Enemy);
 		}
 
 		level = Control.TechLevel;
-		unsigned int current = 0;
-		int HumanRefs = 0;
-		int prio = 0; //Used to calculate prio.
-		int TempCalculation = 0;
-		//int PlayerCount = 0; // How many players do we have on this map?
 
-		//check air-threat
-		bool airthreat = false;
-		int airthreat_quantity = 0;
 		if (enemy != NULL && enemy->AScan != 0) {
 			airthreat = true;
 			airthreat_quantity = enemy->CurAircraft;
 		}
 
-		//By Bast75 : Added ground war & naval war detection
-		// Rescan to make sure we still have the correct game mode.
-		AIDetectHumanGroundWar = false; // Rescan to make sure we still have the correct game mode
-		AIDetectedNavalWar = false; // Rescan to make sure we still have the correct game mode
-		//for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-		for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {		
-			HouseClass const * hptr = HouseClass::As_Pointer(h);
-			if (hptr != NULL) {
-				//PlayerCount++;
-				if (hptr->IsHuman) {
-					HumanBuildingCount = hptr->CurBuildings;
-					NrOfHumanTanks = (int)hptr->CurUnits - (int)hptr->UQuantity[UNIT_HARVESTER]; // count all units except the harvesters
-					if (hptr->BQuantity[STRUCT_WEAP] > 2 
-						|| hptr->BQuantity[STRUCT_TENT] > 2 
-						|| hptr->BQuantity[STRUCT_BARRACKS] > 2 
-						|| NrOfHumanTanks > Rule.AIHumanGroundWarTankTrigger
-						) {
-						//human house has multiple war-factories and/or multiple barracks/tents, or more as x tanks -> ground-war enabled
-						AIDetectHumanGroundWar = true;
-					}
-					if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0) { // || hptr->VScan > 0) {
-						//human house has naval factories and/or naval units, so we are allowed to upgrade our naval to extreme.
-						AIDetectedNavalWar = true;
-					}
-					HumanRefs = hptr->BQuantity[STRUCT_REFINERY];
-				}
-				else {
-					//if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalLimitBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalLimitBasic) {
-					//	//A AI house has switched to Navalwar=true, so we are allowed to switch too.
-					//	AIDetectedNavalWar = true;
-					//}
-					if (!airthreat) {
-						if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
-							airthreat = true;
-						}
-					}
-				}
-			}
-		}
-		if (!AIDetectedNavalWar) {
-			//No Naval, so it must be ground war
-			AIDetectHumanGroundWar = true;
-		}
+		//Lets do the build stuff:
 
-		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
-		if (!AIDetectedNavalWar) {
-			AIMaxConYardsAndMCVs = Rule.AIMaxMCVsBasic;
-			AIDogKennelLimit = Rule.AIDogHouseLimitBasic;
-			AIBarracksLimit = Rule.AIBarracksLimitBasic;
-			AIWarFactoryLimit = Rule.AIWarFactoryLimitBasic;
-			AINavalLimit = Rule.AINavalLimitBasic;
-			AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitBasic;
-			AIHelipadSovietLimit = Rule.AIHelipadSovietLimitBasic;
-			AIAirstripLimit = Rule.AIAirstripLimitBasic;
-			AIAirdefenseLimit = Rule.AIAirdefenseLimitBasic;
-			AIPillBoxLimit = Rule.AIPillBoxLimitBasic;
-			AICamoPillBoxLimit = Rule.AICamoPillBoxLimitBasic;
-			AIFlameTurretLimit = Rule.AIFlameTurretLimitBasic;
-			AITurretGunLimit = Rule.AITurretGunLimitBasic;
-			AITeslaGunLimit = Rule.AITeslaLimitBasic;
-			AIGapLimit = Rule.AIGapLimitBasic;
-			AINukeLimit = Rule.AINukeLimitBasic;
-			AIRepairBayLimit = Rule.AIRepairBayLimitBasic;
-			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
-			AIMaxTanksNr = Rule.AIMaxTanksBasic;
-			AIMaxNavalNr = Rule.AIMaxNavalBasic;
-			AIMaxInfantryNr = Rule.AIMaxInfantryBasic;
-			AIMaxAirNr = Rule.AIMaxAirBasic;
-		}
-		else {
-			//Naval war or mixed
-			if (AIDetectHumanGroundWar) {
-				//naval war and ground war, focus on everything
-				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsMix;
-				AIDogKennelLimit = Rule.AIDogHouseLimitMix;
-				AIBarracksLimit = Rule.AIBarracksLimitMix;
-				AIWarFactoryLimit = Rule.AIWarFactoryLimitMix;
-				AINavalLimit = Rule.AINavalLimitMix;
-				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitMix;
-				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitMix;
-				AIAirdefenseLimit = Rule.AIAirdefenseLimitMix;
-				AIPillBoxLimit = Rule.AIPillBoxLimitMix;
-				AITurretGunLimit = Rule.AITurretGunLimitMix;
-				AIFlameTurretLimit = Rule.AIFlameTurretLimitMix;
-				AITeslaGunLimit = Rule.AITeslaLimitMix;
-				AIGapLimit = Rule.AIGapLimitMix;
-				AINukeLimit = Rule.AINukeLimitMix;
-				AIRepairBayLimit = Rule.AIRepairBayLimitMix;
-				AIMaxBuildings = Rule.AIMaxBuildingsMix;
-				//AIMaxMCVs = Rule.AIMaxMCVsMix;
-				AIMaxTanksNr = Rule.AIMaxTanksMix;
-				AIMaxNavalNr = Rule.AIMaxNavalMix;
-				AIMaxInfantryNr = Rule.AIMaxInfantryMix;
-				AIMaxAirNr = Rule.AIMaxAirMix;
-			}
-			else {
-				//naval war but no ground war, focus on naval and air only
-				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsNaval;
-				AIDogKennelLimit = Rule.AIDogHouseLimitNaval;
-				AIBarracksLimit = Rule.AIBarracksLimitNaval;
-				AIWarFactoryLimit = Rule.AIWarFactoryLimitNaval;
-				AINavalLimit = Rule.AINavalLimitNaval;
-				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitNaval;
-				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitNaval;
-				AIAirdefenseLimit = Rule.AIAirdefenseLimitNaval;
-				AIPillBoxLimit = Rule.AIPillBoxLimitNaval;
-				AITurretGunLimit = Rule.AITurretGunLimitNaval;
-				AIFlameTurretLimit = Rule.AIFlameTurretLimitNaval;
-				AITeslaGunLimit = Rule.AITeslaLimitNaval;
-				AIGapLimit = Rule.AIGapLimitNaval;
-				AINukeLimit = Rule.AINukeLimitNaval;
-				AIRepairBayLimit = Rule.AIRepairBayLimitNaval;
-				AIMaxBuildings = Rule.AIMaxBuildingsNaval;
-				//AIMaxMCVs = Rule.AIMaxMCVsNaval;
-				AIMaxTanksNr = Rule.AIMaxTanksNaval;
-				AIMaxNavalNr = Rule.AIMaxNavalNaval;
-				AIMaxInfantryNr = Rule.AIMaxInfantryNaval;
-				AIMaxAirNr = Rule.AIMaxAirNaval;
-			}
-		}
-
-		//Dynamic stuff
-		if (Rule.AIAllowDynamicBaseGrow) {
-			if (enemy != NULL) {
-				//Barracks & Tent
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
-				if (TempCalculation > AIBarracksLimit) {
-					AIBarracksLimit = TempCalculation;
-				}
-				//Allied air units
-				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
-				if (TempCalculation > AIHelipadAlliedLimit) {
-					AIHelipadAlliedLimit = TempCalculation;
-				}
-				//Soviet air units
-				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
-				if (TempCalculation > AIHelipadSovietLimit + AIAirstripLimit) {
-					AIHelipadSovietLimit = (int)(TempCalculation / 2);
-					AIAirstripLimit = (int)(TempCalculation / 2);
-				}
-				//Air defenses
-				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
-				if (TempCalculation > AIAirdefenseLimit) {
-					AIAirdefenseLimit = TempCalculation;
-				}
-				//Pillbox & Camo Pillbox
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
-				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
-					AIPillBoxLimit = (int)(TempCalculation / 2);
-					AICamoPillBoxLimit = (int)(TempCalculation / 2);
-				}
-				//Flame turret
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
-				if (AIFlameTurretLimit < TempCalculation) {
-					AIFlameTurretLimit = TempCalculation;
-				}
-				//Tesla & Turretgun
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
-				if (AITurretGunLimit + (AITeslaGunLimit * 2) < TempCalculation) {
-					AITurretGunLimit = (int)(TempCalculation / 2);
-					AITeslaGunLimit = (int)(TempCalculation / 4);
-				}
-			}
-		}
-
-		//Switch from infantry rush to tank/air/naval rush?
-		if (AIDetectedNavalWar) {
-			//naval & air
-			Rule.InfantryReserve = 999000; //Build unlimited infantry if more cash than this
-			Rule.InfantryBaseMult = 1; // nr of infantry * nr of buildings
-			if (AIDetectHumanGroundWar) {
-				//naval & air & ground units
-				Rule.InfantryReserve = 12000;
-				Rule.InfantryBaseMult = 3;
-			}
-		}
-		else if (BQuantity[STRUCT_WEAP] > 1) {
-			//ground & air unit
-			Rule.InfantryReserve = 12000; //Build unlimited infantry if more cash than this
-			Rule.InfantryBaseMult = 4; // nr of infantry * nr of buildings
-		}
-		else {
-			//infantry rush
-			Rule.InfantryReserve = 100; //Build unlimited infantry if more cash than this
-			Rule.InfantryBaseMult = 1000; // nr of infantry * nr of buildings
-		}
-
-		if (BQuantity[STRUCT_RADAR] > 0)
-		{
-			AIPowerPlus = Rule.AIPowerPlusExtra;
-		}
-		else {
-			AIPowerPlus = Rule.AIPowerPlusMinimal;
-		}
-		if (BQuantity[STRUCT_REFINERY] < 2) {
-			AIPowerPlus = 5;
-		}
-
-		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
-		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
-			if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
-				AIWarFactoryLimit += 2;
-			}
-			if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
-				AIMaxConYardsAndMCVs += 2;
-			}
-			if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
-				AINavalLimit += 2;
-			}
-		}
-
-		if (Rule.AISpeedRush == 1) {
-			AIDogKennelLimit = Rule.AIDogHouseSpeed;
-			AIBarracksLimit = Rule.AIBarracksSpeed;
-			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
-			AINavalLimit = Rule.AINavalSpeed;
-			AIHelipadAlliedLimit = Rule.AIHelipadSpeed;
-			AIHelipadSovietLimit = Rule.AIHelipadSpeed;
-			AIAirstripLimit = Rule.AIAirStripSpeed;
-			AIAirdefenseLimit = Rule.AIAirdefenseSpeed;
-			AIPillBoxLimit = Rule.AIFlameTurretSpeed;
-			AITurretGunLimit = Rule.AIGunTeslaSpeed;
-			AIGapLimit = Rule.AIGapSpeed;
-			AINukeLimit = Rule.AINukeSpeed;
-			AIRepairBayLimit = Rule.AIRepairBaySpeed;
-			AIMaxBuildings = Rule.AIMaxBuildingsSpeed;
-			AIMaxConYardsAndMCVs = 1;
-			AIMaxTanksNr = Rule.AIMaxTanksSpeed;
-			AIMaxNavalNr = Rule.AIMaxNavalSpeed;
-			AIMaxInfantryNr = Rule.AIMaxInfantrySpeed;
-			AIMaxAirNr = Rule.AIMaxAirSpeed;
-			Rule.AIRefineryLimitOverwrite = Rule.AIRefinerySpeed;
-			AIDetectHumanGroundWar = true;
-			AIDetectedNavalWar = true;
-		}
 
 		//Power
 		if (Power <= Drain + AIPowerPlus) {
@@ -9683,5 +9247,438 @@ void HouseClass::Free_Unit_Trackers(void)
 	if (TotalCrates) {
 		delete TotalCrates;
 		TotalCrates = NULL;
+	}
+}
+
+
+void HouseClass::AI_CalcDynamics(void)
+{
+	assert(Houses.ID(this) == ID);
+
+	if (!IsHuman) {
+		//Dynamic boost calculations:
+
+		//Recalculate all enemies and friends stuff:
+		IsHumanFriend = 0;
+		CountEnemiesForThisAI = 0;
+		CountFriendliesForThisAI = 0;
+		CountHousesStillAlive = 0;
+		EnemyVessels = 0;
+		for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
+			HouseClass const * hptr = HouseClass::As_Pointer(h);
+			if (hptr != NULL) {
+				if (hptr->CurBuildings > 0) {
+					CountHousesStillAlive++;
+					if (!Is_Ally(h)) {
+						CountEnemiesForThisAI++;
+						EnemyVessels += Vessels.Count();
+					}
+					else {
+						if (ID != hptr->ID) {
+							CountFriendliesForThisAI++;
+							if (hptr->IsHuman) {
+								IsHumanFriend = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
+			AverageEnemyVessels = (int)(EnemyVessels / CountEnemiesForThisAI);
+		}
+		else {
+			AverageEnemyVessels = 0;
+		}
+
+		TotalBoost = 0;
+		DynamicBoost = 0;
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < -2) { DynamicBoost = -2; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) == 0) { DynamicBoost = 0; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 0) { DynamicBoost = 1; }
+		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) > 2) { DynamicBoost = 2; }
+		TotalBoost = Rule.AIBoostIQLevel + DynamicBoost;
+		if (TotalBoost > Rule.AIDynamicBoostIQMax) {
+			TotalBoost = Rule.AIDynamicBoostIQMax;
+		}
+		if (TotalBoost < Rule.AIDynamicBoostIQMin) {
+			TotalBoost = Rule.AIDynamicBoostIQMin;
+		}
+
+		if (FFAgame) {
+			//Nobody have friends, all AI's are the same and use the .ini settings.
+			TotalBoost = Rule.AIBoostIQLevel;
+		}
+		else {
+			//Playing in teams (Not an FFA)
+
+			if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+				//Dynamic boost, use the above calculated stuff.
+			}
+			else {
+				//No dynamic boost
+
+				if (IsHumanFriend == 1) {
+					//I'm a friend of the Human, i will use 'AIBoostIQLevelForAllies' to compensate stupid human's actions.
+					TotalBoost = Rule.AIBoostIQLevelForAllies;
+				}
+				else {
+					//I hate the human and his so called friends, default AIBoostIQLevel
+					TotalBoost = Rule.AIBoostIQLevel;
+				}
+			}
+		}
+
+		//By Bast75 : Added ground war & naval war detection
+        // Rescan to make sure we still have the correct game mode.
+		AIDetectHumanGroundWar = false; // Rescan to make sure we still have the correct game mode
+		AIDetectedNavalWar = false; // Rescan to make sure we still have the correct game mode
+		//for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+		for (HousesType h = HOUSE_MULTI1; h < HOUSE_COUNT; h++) {
+			HouseClass const * hptr = HouseClass::As_Pointer(h);
+			if (hptr != NULL) {
+				//PlayerCount++;
+				if (hptr->IsHuman) {
+					HumanBuildingCount = hptr->CurBuildings;
+					NrOfHumanTanks = (int)hptr->CurUnits - (int)hptr->UQuantity[UNIT_HARVESTER]; // count all units except the harvesters
+					if (hptr->BQuantity[STRUCT_WEAP] > 2
+						|| hptr->BQuantity[STRUCT_TENT] > 2
+						|| hptr->BQuantity[STRUCT_BARRACKS] > 2
+						|| NrOfHumanTanks > Rule.AIHumanGroundWarTankTrigger
+						) {
+						//human house has multiple war-factories and/or multiple barracks/tents, or more as x tanks -> ground-war enabled
+						AIDetectHumanGroundWar = true;
+					}
+					if (hptr->BQuantity[STRUCT_SUB_PEN] > 0 || hptr->BQuantity[STRUCT_SHIP_YARD] > 0) { // || hptr->VScan > 0) {
+						//human house has naval factories and/or naval units, so we are allowed to upgrade our naval to extreme.
+						AIDetectedNavalWar = true;
+					}
+					HumanRefs = hptr->BQuantity[STRUCT_REFINERY];
+				}
+				else {
+					//if (hptr->BQuantity[STRUCT_SUB_PEN] > Rule.AINavalLimitBasic || hptr->BQuantity[STRUCT_SHIP_YARD] > Rule.AINavalLimitBasic) {
+					//	//A AI house has switched to Navalwar=true, so we are allowed to switch too.
+					//	AIDetectedNavalWar = true;
+					//}
+					if (!airthreat) {
+						if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
+							airthreat = true;
+						}
+					}
+				}
+			}
+		}
+		if (!AIDetectedNavalWar) {
+			//No Naval, so it must be ground war
+			AIDetectHumanGroundWar = true;
+		}
+
+		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
+		if (!AIDetectedNavalWar) {
+			AIMaxConYardsAndMCVs = Rule.AIMaxMCVsBasic;
+			AIDogKennelLimit = Rule.AIDogHouseLimitBasic;
+			AIBarracksLimit = Rule.AIBarracksLimitBasic;
+			AIWarFactoryLimit = Rule.AIWarFactoryLimitBasic;
+			AINavalLimit = Rule.AINavalLimitBasic;
+			AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitBasic;
+			AIHelipadSovietLimit = Rule.AIHelipadSovietLimitBasic;
+			AIAirstripLimit = Rule.AIAirstripLimitBasic;
+			AIAirdefenseLimit = Rule.AIAirdefenseLimitBasic;
+			AIPillBoxLimit = Rule.AIPillBoxLimitBasic;
+			AICamoPillBoxLimit = Rule.AICamoPillBoxLimitBasic;
+			AIFlameTurretLimit = Rule.AIFlameTurretLimitBasic;
+			AITurretGunLimit = Rule.AITurretGunLimitBasic;
+			AITeslaGunLimit = Rule.AITeslaLimitBasic;
+			AIGapLimit = Rule.AIGapLimitBasic;
+			AINukeLimit = Rule.AINukeLimitBasic;
+			AIRepairBayLimit = Rule.AIRepairBayLimitBasic;
+			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
+			AIMaxTanksNr = Rule.AIMaxTanksBasic;
+			AIMaxNavalNr = Rule.AIMaxNavalBasic;
+			AIMaxInfantryNr = Rule.AIMaxInfantryBasic;
+			AIMaxAirNr = Rule.AIMaxAirBasic;
+		}
+		else {
+			//Naval war or mixed
+			if (AIDetectHumanGroundWar) {
+				//naval war and ground war, focus on everything
+				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsMix;
+				AIDogKennelLimit = Rule.AIDogHouseLimitMix;
+				AIBarracksLimit = Rule.AIBarracksLimitMix;
+				AIWarFactoryLimit = Rule.AIWarFactoryLimitMix;
+				AINavalLimit = Rule.AINavalLimitMix;
+				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitMix;
+				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitMix;
+				AIAirdefenseLimit = Rule.AIAirdefenseLimitMix;
+				AIPillBoxLimit = Rule.AIPillBoxLimitMix;
+				AITurretGunLimit = Rule.AITurretGunLimitMix;
+				AIFlameTurretLimit = Rule.AIFlameTurretLimitMix;
+				AITeslaGunLimit = Rule.AITeslaLimitMix;
+				AIGapLimit = Rule.AIGapLimitMix;
+				AINukeLimit = Rule.AINukeLimitMix;
+				AIRepairBayLimit = Rule.AIRepairBayLimitMix;
+				AIMaxBuildings = Rule.AIMaxBuildingsMix;
+				//AIMaxMCVs = Rule.AIMaxMCVsMix;
+				AIMaxTanksNr = Rule.AIMaxTanksMix;
+				AIMaxNavalNr = Rule.AIMaxNavalMix;
+				AIMaxInfantryNr = Rule.AIMaxInfantryMix;
+				AIMaxAirNr = Rule.AIMaxAirMix;
+			}
+			else {
+				//naval war but no ground war, focus on naval and air only
+				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsNaval;
+				AIDogKennelLimit = Rule.AIDogHouseLimitNaval;
+				AIBarracksLimit = Rule.AIBarracksLimitNaval;
+				AIWarFactoryLimit = Rule.AIWarFactoryLimitNaval;
+				AINavalLimit = Rule.AINavalLimitNaval;
+				AIHelipadAlliedLimit = Rule.AIHelipadAlliedLimitNaval;
+				AIHelipadSovietLimit = Rule.AIHelipadSovietLimitNaval;
+				AIAirdefenseLimit = Rule.AIAirdefenseLimitNaval;
+				AIPillBoxLimit = Rule.AIPillBoxLimitNaval;
+				AITurretGunLimit = Rule.AITurretGunLimitNaval;
+				AIFlameTurretLimit = Rule.AIFlameTurretLimitNaval;
+				AITeslaGunLimit = Rule.AITeslaLimitNaval;
+				AIGapLimit = Rule.AIGapLimitNaval;
+				AINukeLimit = Rule.AINukeLimitNaval;
+				AIRepairBayLimit = Rule.AIRepairBayLimitNaval;
+				AIMaxBuildings = Rule.AIMaxBuildingsNaval;
+				//AIMaxMCVs = Rule.AIMaxMCVsNaval;
+				AIMaxTanksNr = Rule.AIMaxTanksNaval;
+				AIMaxNavalNr = Rule.AIMaxNavalNaval;
+				AIMaxInfantryNr = Rule.AIMaxInfantryNaval;
+				AIMaxAirNr = Rule.AIMaxAirNaval;
+			}
+		}
+
+		//Dynamic stuff
+		if (Rule.AIAllowDynamicBaseGrow) {
+			if (enemy != NULL) {
+				//Barracks & Tent
+				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
+				if (TempCalculation > AIBarracksLimit) {
+					AIBarracksLimit = TempCalculation;
+				}
+				//Allied air units
+				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
+				if (TempCalculation > AIHelipadAlliedLimit) {
+					AIHelipadAlliedLimit = TempCalculation;
+				}
+				//Soviet air units
+				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
+				if (TempCalculation > AIHelipadSovietLimit + AIAirstripLimit) {
+					AIHelipadSovietLimit = (int)(TempCalculation / 2);
+					AIAirstripLimit = (int)(TempCalculation / 2);
+				}
+				//Air defenses
+				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
+				if (TempCalculation > AIAirdefenseLimit) {
+					AIAirdefenseLimit = TempCalculation;
+				}
+				//Pillbox & Camo Pillbox
+				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
+				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
+					AIPillBoxLimit = (int)(TempCalculation / 2);
+					AICamoPillBoxLimit = (int)(TempCalculation / 2);
+				}
+				//Flame turret
+				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
+				if (AIFlameTurretLimit < TempCalculation) {
+					AIFlameTurretLimit = TempCalculation;
+				}
+				//Tesla & Turretgun
+				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
+				if (AITurretGunLimit + (AITeslaGunLimit * 2) < TempCalculation) {
+					AITurretGunLimit = (int)(TempCalculation / 2);
+					AITeslaGunLimit = (int)(TempCalculation / 4);
+				}
+			}
+		}
+
+		//Switch from infantry rush to tank/air/naval rush?
+		if (AIDetectedNavalWar) {
+			//naval & air
+			Rule.InfantryReserve = 999000; //Build unlimited infantry if more cash than this
+			Rule.InfantryBaseMult = 1; // nr of infantry * nr of buildings
+			if (AIDetectHumanGroundWar) {
+				//naval & air & ground units
+				Rule.InfantryReserve = 12000;
+				Rule.InfantryBaseMult = 3;
+			}
+		}
+		else if (BQuantity[STRUCT_WEAP] > 1) {
+			//ground & air unit
+			Rule.InfantryReserve = 12000; //Build unlimited infantry if more cash than this
+			Rule.InfantryBaseMult = 4; // nr of infantry * nr of buildings
+		}
+		else {
+			//infantry rush
+			Rule.InfantryReserve = 100; //Build unlimited infantry if more cash than this
+			Rule.InfantryBaseMult = 1000; // nr of infantry * nr of buildings
+		}
+
+		if (BQuantity[STRUCT_RADAR] > 0)
+		{
+			AIPowerPlus = Rule.AIPowerPlusExtra;
+		}
+		else {
+			AIPowerPlus = Rule.AIPowerPlusMinimal;
+		}
+		if (BQuantity[STRUCT_REFINERY] < 2) {
+			AIPowerPlus = 5;
+		}
+
+		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
+		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
+			if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
+				AIWarFactoryLimit += 2;
+			}
+			if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
+				AIMaxConYardsAndMCVs += 2;
+			}
+			if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
+				AINavalLimit += 2;
+			}
+		}
+
+		if (Rule.AISpeedRush == 1) {
+			AIDogKennelLimit = Rule.AIDogHouseSpeed;
+			AIBarracksLimit = Rule.AIBarracksSpeed;
+			AIWarFactoryLimit = Rule.AIWarFactorySpeed;
+			AINavalLimit = Rule.AINavalSpeed;
+			AIHelipadAlliedLimit = Rule.AIHelipadSpeed;
+			AIHelipadSovietLimit = Rule.AIHelipadSpeed;
+			AIAirstripLimit = Rule.AIAirStripSpeed;
+			AIAirdefenseLimit = Rule.AIAirdefenseSpeed;
+			AIPillBoxLimit = Rule.AIFlameTurretSpeed;
+			AITurretGunLimit = Rule.AIGunTeslaSpeed;
+			AIGapLimit = Rule.AIGapSpeed;
+			AINukeLimit = Rule.AINukeSpeed;
+			AIRepairBayLimit = Rule.AIRepairBaySpeed;
+			AIMaxBuildings = Rule.AIMaxBuildingsSpeed;
+			AIMaxConYardsAndMCVs = 1;
+			AIMaxTanksNr = Rule.AIMaxTanksSpeed;
+			AIMaxNavalNr = Rule.AIMaxNavalSpeed;
+			AIMaxInfantryNr = Rule.AIMaxInfantrySpeed;
+			AIMaxAirNr = Rule.AIMaxAirSpeed;
+			Rule.AIRefineryLimitOverwrite = Rule.AIRefinerySpeed;
+			AIDetectHumanGroundWar = true;
+			AIDetectedNavalWar = true;
+		}
+
+		// Some debug stuff by Bast75
+		if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
+			FILE *fp;
+			fp = fopen("aiboost-debug.log", "a+");
+			if (fp) {
+				fprintf(fp, "------------------\n"); // %d for decimal
+				fprintf(fp, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
+				fprintf(fp, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
+				fprintf(fp, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
+				fprintf(fp, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
+				fprintf(fp, "Game: Nr of Human Tanks: %d\n", NrOfHumanTanks); // %d for decimal
+				fprintf(fp, "Game: AI Human Ground War Tank Trigger: %d\n", Rule.AIHumanGroundWarTankTrigger); // %d for decimal
+
+				fprintf(fp, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
+				fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
+				fprintf(fp, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
+				//fprintf(fp, "ID: %d\n", ID); // %d for decimal
+				fprintf(fp, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
+				if (Buildings.Count() == 0) {
+					fprintf(fp, "Is defeated: 1\n"); // %s for strings 
+				}
+				else {
+					fprintf(fp, "Is defeated: 0\n"); // %s for strings 
+					// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
+					// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
+					//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
+					fprintf(fp, "IQ: %d\n", IQ); // %d for decimal
+					//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
+					fprintf(fp, "Tiberium: %d\n", Tiberium); // %d for decimal
+					fprintf(fp, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
+					fprintf(fp, "Power produced: %d\n", Power); // %d for decimal
+					fprintf(fp, "Power drain: %d\n", Drain); // %d for decimal
+					fprintf(fp, "Power plus: %d\n", AIPowerPlus); // %d for decimal
+					fprintf(fp, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
+					fprintf(fp, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
+					fprintf(fp, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
+					fprintf(fp, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
+
+					fprintf(fp, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
+					fprintf(fp, "AIBoostIQLevelForAllies (.ini file): %d\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
+					if (FFAgame) {
+						fprintf(fp, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
+					}
+					else {
+						if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+							fprintf(fp, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
+						}
+						else {
+							if (IsHumanFriend == 1) {
+								fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
+							}
+							else {
+								fprintf(fp, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
+							}
+						}
+					}
+					fprintf(fp, "TotalBoost: %d\n", TotalBoost); // %d for decimal
+
+					fprintf(fp, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
+					fprintf(fp, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
+					fprintf(fp, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
+					fprintf(fp, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
+					fprintf(fp, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
+					fprintf(fp, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
+					fprintf(fp, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
+					fprintf(fp, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
+					fprintf(fp, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
+					fprintf(fp, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
+					fprintf(fp, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
+					fprintf(fp, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
+					fprintf(fp, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
+					fprintf(fp, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
+					fprintf(fp, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
+					fprintf(fp, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
+					fprintf(fp, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
+					fprintf(fp, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
+					fprintf(fp, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
+					fprintf(fp, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
+					fprintf(fp, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
+					fprintf(fp, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
+					fprintf(fp, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
+					fprintf(fp, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
+					fprintf(fp, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
+					fprintf(fp, "Buildings: Total: %d\n", Buildings.Count()); // %d for decimal
+
+					fprintf(fp, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
+					fprintf(fp, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
+					fprintf(fp, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
+					fprintf(fp, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
+					fprintf(fp, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
+					fprintf(fp, "Units: Total: %d\n", Units.Count()); // %d for decimal
+
+					fprintf(fp, "Aircrafts: Total: %d\n", Aircraft.Count()); // %d for decimal
+
+					fprintf(fp, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
+					fprintf(fp, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
+					fprintf(fp, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
+					fprintf(fp, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
+					fprintf(fp, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
+					fprintf(fp, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
+					fprintf(fp, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
+					fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+					fprintf(fp, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
+					fprintf(fp, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+					fprintf(fp, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
+					fprintf(fp, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
+					fprintf(fp, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
+					fprintf(fp, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
+					fprintf(fp, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
+					fclose(fp);
+				}
+			}
+		}
+		// End of debugging stuff.
 	}
 }
