@@ -1,5 +1,5 @@
 # AI-Boost 2.0 for Red Alert
-Last update at: 25 may 2022
+Last update at: 16 may 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the Mods Menu
@@ -33,7 +33,6 @@ Fixed:
 - Fixed the recalculation of certain building limits when AI steals technology
 - We bring back the way MCV is deployed. AI don't like it to be too close near the tiberium (Bases are more compacted, more stuck units, less effective bases defenses, etc)
 - Added a fix on RA Immersive Heli's mod
-- Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
 
 --- 
 
