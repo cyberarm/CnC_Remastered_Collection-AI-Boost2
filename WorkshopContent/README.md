@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 31 may 2022
+Last update at: 1 june 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -14,12 +14,14 @@ Please follow the steps below to update and reactivate the mod:
 Latest changes:
 - CFE 1.8 included: https://steamcommunity.com/sharedfiles/filedetails/?id=2268301299
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
-- Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
-- Several AI-tweaks for Naval War
+- Harvester pathfinding fix. No more harvesters running away
+- Fixed the way AI count the refineries and the vessel units. He counts according to the enemies average instead of human count (because in multiplayer, you can have more than 1 human)
+- Several AI-tweaks for Naval War and Mixed War
+- Several AI-tweaks for Air and Anti-Air production
 - Fixed some performance issues
 
 Included mod's:
-- CFE Patch Redux for RA v1.8 (A* pathfinding, veterancy, Queue Moving, vanilla fixes, etc.)
+- CFE Patch Redux for RA v1.8 (Veterancy, vanilla fixes, etc.)
 - The Rampastring Quality of Live mod
 - Engineer instant capture
 - Additional Zoom Levels
@@ -34,7 +36,6 @@ Own mod's:
 - Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot
 - Now it's possible to add more starting cash and units! Editable by the .ini file
 - You can now remove toggle with space between old/new graphic in gameconstant.xml
-- Harvesters have memory of latest harvest location, this is now editable by .ini file
 - Added extra zoom levels to the mod: "Additional Zoom Levels"
 
 AI changes:
@@ -50,9 +51,9 @@ AI changes:
 - AI lowers tank production if human goes naval and doesn't produce a lot of tanks (Still builds Chronotanks because they can Chronoshift)
 - AI Engineers automatically choose new target after capturing or loosing focus on previous selected target
 - AI Engineers no longer walk in groups. They choose their own targets
-- AI Medics and Mechanics now only repair friendly units
+- AI Medics and Mechanics now only repair friendly units, not enemy units
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level (Radar, Air units, etc.)
-- AI build MCV's and deploys them, AI limitations for buildings, etc.
+- AI build MCV's and deploys them, AI limitations for buildings, etc. are increased on such a deploy
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 - AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
