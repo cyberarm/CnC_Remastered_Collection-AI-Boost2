@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 1 June 2022
+Last update at: 3 June 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -12,26 +12,23 @@ Please follow the steps below to update and reactivate the mod:
 --- 
 
 Latest changes:
-- CFE 1.8 included: https://steamcommunity.com/sharedfiles/filedetails/?id=2268301299
-- Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
-- Harvester pathfinding fix. No more harvesters running away
-- Fixed the way AI count the refineries and the vessel units. He counts according to the enemies average instead of human count (because in multiplayer, you can have more than 1 human)
-- Several AI-tweaks for Naval War and Mixed War
-- Several AI-tweaks for Air and Anti-Air production
-- Fixed some performance issues
+- Bugfix for AI not building Chronotanks in Ground War only
+- More Zoom Levels added
+- Prio for Tesla & Power buildings improved
 
 Included mod's:
-- CFE Patch Redux for RA v1.8 (Veterancy, vanilla fixes, etc.)
+- CFE Patch Redux for RA v1.8 (Veterancy default disabled, vanilla fixes, etc.)
 - The Rampastring Quality of Live mod
 - Engineer instant capture
-- Additional Zoom Levels
+- Additional Zoom Levels+++
 - RA Immersive Heli's mod (And all Air units have a sight) (Use 'L' to land)
 - Attack-Move mod (Use Shift)
-- Aftermath fast build mod (Use .ini to enable/disable)
+- Aftermath fast build mod (Use .ini to enable/disable, default disabled)
 - ChronoKillCargo set to False. Chronoshifting APCs or transports will not kill any passengers or cargo
 - Added the option to remove shroud from the map
 
 Own mod's:
+- Added some performance features, the game runs smoother now
 - Tech stealing by capturing a building with an Engineer (Allies vs Soviets)
 - Sight range of the MCV is increased, this was needed to get the AI to find a deploy spot
 - Now it's possible to add more starting cash and units! Editable by the .ini file
@@ -44,6 +41,7 @@ AI changes:
 - AI scatters all units on new attack launch to unlock stuck/blocked units
 - AI understands importance of buildings & units a lot better and uses it during attack
 - AI attacks interval uses different ways (Hunt, Closest enemy, etc.)
+- AI Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 - AI Air units no longer just attack Refineries, it selects random between base-defense, factories, power, buildings, naval units or all threats
 - AI knows how to use Thief's, Spies, MAD Tanks, Demo truck and chrono shifting with a Chrono Tank
 - AI knows how to use Naval stuff

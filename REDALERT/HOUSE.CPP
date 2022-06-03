@@ -1955,10 +1955,10 @@ void HouseClass::Attacked(BuildingClass* source)
 void HouseClass::Harvested(unsigned tiberium)
 {
 	assert(Houses.ID(this) == ID);
-
+	
 	long oldtib = Tiberium;
 
-	if (!IsHuman) {
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
 		//Added MCVs deploy loop to speed up his MCVs:
 		for (int index = 0; index < Units.Count(); index++) {
 			UnitClass * u = Units.Ptr(index);
@@ -7143,7 +7143,12 @@ int HouseClass::AI_Unit(void)
 		UnitType index;
 		for (index = UNIT_FIRST; index < UNIT_COUNT; index++) {
 			UnitTypeClass const * utype = &UnitTypeClass::As_Reference(index);
-			if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER && utype->Type != UNIT_MINELAYER && utype->Type != UNIT_MCV && utype->Type != UNIT_CHRONOTANK) { // && utype->Type != UNIT_MAD
+			if (Can_Build(utype, ActLike) 
+				&& utype->Type != UNIT_HARVESTER 
+				&& utype->Type != UNIT_MINELAYER 
+				&& utype->Type != UNIT_MCV 
+				&& (utype->Type != UNIT_CHRONOTANK || (utype->Type == UNIT_CHRONOTANK && UQuantity[UNIT_CHRONOTANK] < Rule.AIMaxChronotanks +1))
+				) { // && utype->Type != UNIT_MAD
 				if (utype->PrimaryWeapon != NULL) {
 					counter[index] = 20; // default prio level for a unit with a PrimaryWeapon
 				}
