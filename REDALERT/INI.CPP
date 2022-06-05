@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/INI.CPP 1     3/03/97 10:24a Joe_bostic $ */
@@ -796,9 +796,6 @@ bool INIClass::Put_Int(char const * section, char const * entry, int number, int
  *                                                                                             *
  *          defvalue -- The default value to use if the specified entry could not be found.    *
  *                                                                                             *
- *          offset   -- The offset is applied only if a value was read successfully.           *
- *                      This is to prevent default value stacking of non existing entries.     *
- *                                                                                             *
  * OUTPUT:  Returns with the integer value specified in the INI database or else returns the   *
  *          default value.                                                                     *
  *                                                                                             *
@@ -807,9 +804,8 @@ bool INIClass::Put_Int(char const * section, char const * entry, int number, int
  * HISTORY:                                                                                    *
  *   07/02/1996 JLB : Created.                                                                 *
  *   07/10/1996 JLB : Handles multiple integer formats.                                        *
- *   06/20/2020 R-C : Allow to offset integer value.                                           *
  *=============================================================================================*/
-int INIClass::Get_Int(char const * section, char const * entry, int defvalue, int offset) const
+int INIClass::Get_Int(char const * section, char const * entry, int defvalue) const
 {
 	/*
 	**	Verify that the parameters are nominally correct.
@@ -828,8 +824,6 @@ int INIClass::Get_Int(char const * section, char const * entry, int defvalue, in
 				defvalue = atoi(entryptr->Value);
 			}
 		}
-
-		defvalue += offset;
 	}
 	return(defvalue);
 }
@@ -1290,27 +1284,4 @@ void INIClass::Strip_Comments(char * buffer)
 			strtrim(buffer);
 		}
 	}
-}
-
-const char* INIClass::INISectionIterator::operator*()
-{
-	return Base::operator->()->Section;
-}
-
-std::pair<const char*, const char*> INIClass::INIEntryIterator::operator*()
-{
-	const INIEntry* const entry = NodeIterator<const INIEntry>::operator->();
-	return { entry->Entry, entry->Value };
-}
-
-INIClass::INIEntryIterator INIClass::section_begin(const char* section) const
-{
-	const INISection* s = Find_Section(section);
-	return s ? s->EntryList.begin() : INIEntryIterator();
-}
-
-INIClass::INIEntryIterator INIClass::section_end(const char* section) const
-{
-	const INISection* s = Find_Section(section);
-	return s ? s->EntryList.end() : INIEntryIterator();
 }

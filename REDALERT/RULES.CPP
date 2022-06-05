@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/RULES.CPP 1     3/03/97 10:25a Joe_bostic $ */
@@ -116,8 +116,8 @@ RulesClass::RulesClass(void) :
 	RefineryRatio(".16"),
 	BaseSizeAdd(3),
 	PowerSurplus(50),
-	InfantryReserve(2000),
-	InfantryBaseMult(2),
+	InfantryReserve(2000), //Bast75, was 2000, less means more tanks
+	InfantryBaseMult(2), //Bast75, was 2
 	ChronoDuration(3),
 	WaterCrateChance(".2"),
 	SoloCrateMoney(2000),
@@ -269,7 +269,13 @@ RulesClass::RulesClass(void) :
 	TiberiumShortScan(0x0600),
 	TiberiumLongScan(0x2000),
 	HealthBarDisplayMode(HB_SELECTED),
-	ResourceBarDisplayMode(RB_SELECTED)
+	ResourceBarDisplayMode(RB_SELECTED),
+	MaxFreeRefineryDistanceBias(10),
+	MinHarvesterQueueJumpDistance(7),
+	MaxWallExtensionDistance(4),
+	WallSellPriceDivisor(3),
+	AutoRepairFacilityKickOut(true),
+	AISurrenderObjectCountThreshold(8)
 {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	NewUnitsEnabled = SecretUnitsEnabled = 0;
@@ -384,6 +390,7 @@ bool RulesClass::General(CCINIClass & ini)
 	static char const * const GENERAL = "General";
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	static char const * const AFTERMATH = "Aftermath";
+	//static char const * const MOREQOL = "MoreQoL";
 	static char const * const MOREQOL = "AIBoost";
 
 	if(ini.Is_Present(AFTERMATH)) {
@@ -522,6 +529,13 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
+		MaxFreeRefineryDistanceBias = ini.Get_Int(MOREQOL, "MaxFreeRefineryDistanceBias", MaxFreeRefineryDistanceBias);
+		MinHarvesterQueueJumpDistance = ini.Get_Int(MOREQOL, "MinHarvesterQueueJumpDistance", MinHarvesterQueueJumpDistance);
+		MaxWallExtensionDistance = ini.Get_Int(MOREQOL, "MaxWallExtensionDistance", MaxWallExtensionDistance);
+		WallSellPriceDivisor = ini.Get_Int(MOREQOL, "WallSellPriceDivisor", WallSellPriceDivisor);
+		AutoRepairFacilityKickOut = ini.Get_Bool(MOREQOL, "AutoRepairFacilityKickOut", AutoRepairFacilityKickOut);
+		AISurrenderObjectCountThreshold = ini.Get_Int(MOREQOL, "AISurrenderObjectCountThreshold", AISurrenderObjectCountThreshold);
+
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
@@ -672,65 +686,6 @@ bool RulesClass::General(CCINIClass & ini)
 		IQSellBack = 5;
 		ChronoTechLevel = 5;
 		
-		//CFE stuff:
-		AstarPathFindingEnabled = ini.Get_Int(MOREQOL, "AstarPathFindingEnabled", 1);
-		OOM_REPAIR = ini.Get_Int(MOREQOL, "OOM_REPAIR", 1);
-		RallyPointsEnabled = ini.Get_Int(MOREQOL, "RallyPointsEnabled", 1);
-		HarvesterQueueJumpingEnabled = ini.Get_Int(MOREQOL, "HarvesterQueueJumpingEnabled", 1);
-		HarvesterLoadBalancing = ini.Get_Int(MOREQOL, "HarvesterLoadBalancing", 0);
-		HarvesterOptimizeEnabled = ini.Get_Int(MOREQOL, "HarvesterOptimizeEnabled", 1);
-		AttackMoveCommandAllowed = ini.Get_Int(MOREQOL, "AttackMoveCommandAllowed", 1);
-		ChronoTankAttackMoveCommandAllowed = ini.Get_Int(MOREQOL, "ChronoTankAttackMoveCommandAllowed", 1);
-		QmoveLoopsAllowed = ini.Get_Int(MOREQOL, "QmoveLoopsAllowed", 1);
-		AirQMoveAllowed = ini.Get_Int(MOREQOL, "AirQMoveAllowed", 1);
-		AirQRecallAllowed = ini.Get_Int(MOREQOL, "AirQRecallAllowed", 1);
-		SmarterAircraftsEnabled = ini.Get_Int(MOREQOL, "SmarterAircraftsEnabled", 1);
-		SmarterRepairBaysEnabled = ini.Get_Int(MOREQOL, "SmarterRepairBaysEnabled", 1);
-		BetterOreGrowthEnabled = ini.Get_Int(MOREQOL, "BetterOreGrowthEnabled", 1);
-		OreIndexBugFixEnabled = ini.Get_Int(MOREQOL, "OreIndexBugFixEnabled", 1);
-		GemOverLoadFixEnabled = ini.Get_Int(MOREQOL, "GemOverLoadFixEnabled", 1);
-		EnableInaccuracyBugfix = ini.Get_Int(MOREQOL, "EnableInaccuracyBugfix", 1);
-		EnableWideSupers = ini.Get_Int(MOREQOL, "EnableWideSupers", 0);
-		EnableQuickSupers = ini.Get_Int(MOREQOL, "EnableQuickSupers", 0);
-		EnableSmarterChrono = ini.Get_Int(MOREQOL, "EnableSmarterChrono", 0);
-		EnableTimeQuakeFix = ini.Get_Int(MOREQOL, "EnableTimeQuakeFix", 0);
-		EnableSharedChronoDisasterOdds = ini.Get_Int(MOREQOL, "EnableSharedChronoDisasterOdds", 0);
-		WallsAlwaysHaveFullCost = ini.Get_Int(MOREQOL, "WallsAlwaysHaveFullCost", 1);
-		EnableCumulativeTimelineDamage = ini.Get_Int(MOREQOL, "EnableCumulativeTimelineDamage", 1);
-		EnableLongGapFix = ini.Get_Int(MOREQOL, "EnableLongGapFix", 1);
-		EnableMIGAmmoFudge = ini.Get_Int(MOREQOL, "EnableMIGAmmoFudge", 1);
-		EnableBuildingCaptureAnnouncements = ini.Get_Int(MOREQOL, "EnableBuildingCaptureAnnouncements", 1);
-		EnableSmarterSonar = ini.Get_Int(MOREQOL, "EnableSmarterSonar", 1);
-		EnableNewSkirmishAI = ini.Get_Int(MOREQOL, "EnableNewSkirmishAI", 0);
-		EnableVeterancy = ini.Get_Int(MOREQOL, "EnableVeterancy", 2);
-		EnableTanyaGuard = ini.Get_Int(MOREQOL, "EnableTanyaGuard", 1);
-		SafeSabotage = ini.Get_Int(MOREQOL, "SafeSabotage", 1);
-		HarvyQueueJumpCutoff = ini.Get_Int(MOREQOL, "HarvyQueueJumpCutoff", 4);
-		HarvyOptimizeUnloadWaitWeight = ini.Get_Int(MOREQOL, "HarvyOptimizeUnloadWaitWeight", 6);
-		HarvyOptimizeThrashingCutoff = ini.Get_Int(MOREQOL, "HarvyOptimizeThrashingCutoff", 5);
-		HarvyOptimizeThrashingNumerator = ini.Get_Int(MOREQOL, "HarvyOptimizeThrashingNumerator", 2);
-		HarvyOptimizeThrashingDenominator = ini.Get_Int(MOREQOL, "HarvyOptimizeThrashingDenominator", 3);
-		HarvyOptimizeThrashingWeight = ini.Get_Int(MOREQOL, "HarvyOptimizeThrashingWeight", 4);
-		HarvyOptimizeCommunalismNumerator = ini.Get_Int(MOREQOL, "HarvyOptimizeCommunalismNumerator", 9);
-		HarvyOptimizeCommunalismDenominator = ini.Get_Int(MOREQOL, "HarvyOptimizeCommunalismDenominator", 4);
-		HarvyOptimizeCommunalismWeight = ini.Get_Int(MOREQOL, "HarvyOptimizeCommunalismWeight", 13);
-		OreGrowthScale = ini.Get_Int(MOREQOL, "OreGrowthScale", 1);
-		OreToGemPromotionSlowFactor = ini.Get_Int(MOREQOL, "OreToGemPromotionSlowFactor", 8);
-		WallBuildLength = ini.Get_Int(MOREQOL, "WallBuildLength", 5);
-		if (WallBuildLength > 9) {
-			WallBuildLength = 9;
-		}
-		if (WallBuildLength < 1) {
-			WallBuildLength = 1;
-		}
-		InverseBuildingPreviewMode = ini.Get_Int(MOREQOL, "InverseBuildingPreviewMode", 2);
-		if (InverseBuildingPreviewMode < 1 || InverseBuildingPreviewMode > 2) {
-			InverseBuildingPreviewMode = 0;
-		}
-		BuildingGapOffset = ini.Get_Int(MOREQOL, "BuildingGapOffset", 0);
-		OreCapacityOffset = ini.Get_Int(MOREQOL, "OreCapacityOffset", 0);
-		SharedChronoDisasterOdds = ini.Get_Int(MOREQOL, "SharedChronoDisasterOdds", 20);
-
 	}
 
 	//By Bast75, make sure its not overwritten

@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/INFANTRY.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -164,7 +164,7 @@ class InfantryClass : public FootClass
 		virtual ActionType What_Action(ObjectClass const * object) const;
 		virtual ActionType What_Action(CELL cell) const;
 		virtual BulletClass * Fire_At(TARGET target, int which);
-		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false, TARGET indirectsource = TARGET_NONE, ArmorPenType specialarmorpen = ARMORPEN_NONE); // Chthon CFE Note: Added indirectsource so minelayers can get XP
+		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false);
 		virtual FireErrorType Can_Fire(TARGET target, int which) const;
 		virtual COORDINATE Fire_Coord(int which) const;
 		virtual void Assign_Target(TARGET);
@@ -225,31 +225,14 @@ class InfantryClass : public FootClass
 		**	axis.
 		*/
 		static int const HumanShape[32];
-        
-        // Chthon CFE Note: New function
-        // Rank3 veteran dogs can "howl."
-        // The howl causes other dogs in range of the same house to aggro to this dog's target if they don't already have a target.
-        // Range is 6 cells. This is arbitrary and subject to change once I see how well it works in game.
-        void AlphaPuppersHowl();
-        
-        // returns true if within the guard radius of an unfriendly dog
-        bool UnfriendlyDogCheck();
 
 	private:
 
 		static DoStruct const MasterDoControls[DO_COUNT];
 
-        
-    // Chthon CFE Note: extra variables for mod use
-    //public:
-        // moved to FootClass
-        
-    private:
-        
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
-        // Chthon CFE Note: original padding was 32
 		unsigned char SaveLoadPadding[32];
 };
 

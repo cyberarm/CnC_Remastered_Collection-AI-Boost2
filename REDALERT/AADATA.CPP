@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/AADATA.CPP 1     3/03/97 10:24a Joe_bostic $ */
@@ -576,12 +576,7 @@ int AircraftTypeClass::Max_Pips(void) const
 	if (PrimaryWeapon != NULL) {
 		// Camera weapon (ex. on the Spy plane) doesn't display any pips
 		if (!PrimaryWeapon->IsCamera) {
-			// Chthon CFE Note: As per Vanilla Conquer, fix ammo display so MIG can show 3 ammo pips
-            //return(5);
-            if (MaxAmmo > 5) {
-                return 5;
-            }
-            return MaxAmmo;
+			return(5);
 		}
 	}
 	return(Max_Passengers());

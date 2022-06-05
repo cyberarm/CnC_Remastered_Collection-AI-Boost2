@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 
@@ -288,10 +288,6 @@ class DLLExportClass {
 		static void Decode_Pointers(void);
 
 		static bool Get_Game_Over() { return GameOver; }
-		
-		// Chthon CFE Note: workaround for not being able to extern a static variable
-        // also need a wrapper outside the class
-        static BuildingTypeClass* GetPlacementType(unsigned int index) { return PlacementType[index]; }
 
 	private:
 		static void Calculate_Single_Player_Score(EventCallbackStruct&);
@@ -406,12 +402,6 @@ int GetRandSeed()
 	return abs( static_cast<int>(microseconds_since_epoch.time_since_epoch().count()) );
 }
 
-
-// Chthon CFE Note: workaround for not being able to extern a static variable
-// wrapper outside the class
-BuildingTypeClass* GetPlacementType(unsigned int index) {
-    return DLLExportClass::GetPlacementType(index);
-}
 
 
 void Play_Movie_GlyphX(const char * movie_name, ThemeType theme, bool immediate = false)
@@ -1707,11 +1697,8 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	TimeQuake = PendingTimeQuake;
 	PendingTimeQuake = false;
-    GlobalTimeQuake = PendingGlobalTimeQuake;
-	PendingGlobalTimeQuake = false;
 #else
 	TimeQuake = false;
-    GlobalTimeQuake = false;
 #endif
 			
 	/*
@@ -1786,11 +1773,9 @@ extern "C" __declspec(dllexport) bool __cdecl CNC_Advance_Instance(uint64 player
 	FirstUpdate = false;
 
 	TimeQuake = false;
-    GlobalTimeQuake = false;
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	if (!PendingTimeQuake) {
 		TimeQuakeCenter = 0;
-        MADTimeQuakeCenterList.Clear();
 	}
 #endif
 
@@ -2392,11 +2377,6 @@ void DLLExportClass::On_Display_Briefing_Text()
 	EventCallbackStruct new_event;
 	new_event.EventType = CALLBACK_EVENT_BRIEFING_SCREEN;
 	EventCallback(new_event);
-}
-
-// Chthon CFE Note: We need a class-free wrapper so we can extern this
-void On_Sound_Effect(const HouseClass* player_ptr, int sound_effect_index, const char* extension, int variation, COORDINATE coord){
-    DLLExportClass::On_Sound_Effect(player_ptr, sound_effect_index, extension, variation, coord);
 }
 
 /**************************************************************************************************
@@ -3346,7 +3326,6 @@ void DLL_Draw_Pip_Intercept(const ObjectClass* object, int pip)
 	DLLExportClass::DLL_Draw_Pip_Intercept(object, pip);
 }
 
-
 void DLL_Draw_Line_Intercept(int x, int y, int x1, int y1, unsigned char color, int frame)
 {
 	DLLExportClass::DLL_Draw_Line_Intercept(x, y, x1, y1, color, frame);
@@ -3464,9 +3443,7 @@ void DLLExportClass::DLL_Draw_Intercept(int shape_number, int x, int y, int widt
 		new_object.MaxPips = 0;
 		new_object.CanDemolish = object->Can_Demolish();
 		new_object.CanDemolishUnit = object->Can_Demolish_Unit();
-		// Chthon CFE Note: Bugfix for missing scold sound. (Maybe.) Make GlyphX think you can repair full-health buildings so it will allow you to invoke the repair routine and get the scold sound
-        //new_object.CanRepair = object->Can_Repair();
-        new_object.CanRepair = (new_object.Type == BUILDING) && ((BuildingClass*)object)->Techno_Type_Class()->IsRepairable;
+		new_object.CanRepair = object->Can_Repair();
 		memset(new_object.CanMove, false, sizeof(new_object.CanMove));
 		memset(new_object.CanFire, false, sizeof(new_object.CanFire));
 		memset(new_object.ActionWithSelected, DAT_NONE, sizeof(new_object.ActionWithSelected));
@@ -3550,8 +3527,7 @@ void DLLExportClass::DLL_Draw_Intercept(int shape_number, int x, int y, int widt
 		if (object->Is_Foot()) {
 			const FootClass* foot = static_cast<const FootClass*>(object);
 			new_object.ControlGroup = foot->Group;
-            //new_object.IsInFormation = foot->XFormOffset != 0x80000000UL;
-			new_object.IsInFormation = foot->XFormOffset != INVALID_FORMATION;
+			new_object.IsInFormation = foot->XFormOffset != 0x80000000UL;
 		}
 
 		bool is_infantry = what_is_object == RTTI_INFANTRY;
@@ -3702,21 +3678,6 @@ void DLLExportClass::DLL_Draw_Intercept(int shape_number, int x, int y, int widt
 		memset(new_object.ActionWithSelected, DAT_NONE, sizeof(new_object.ActionWithSelected));
 	}
 
-    // Chthon CFE Note: Special fix to make sure veterancy pips only show for owner in multiplayer
-    if ((shape_file_name != NULL) && object && object->Is_Techno() && 
-        (   (strcmp(shape_file_name, "ZVTRN") == 0) ||
-            (strcmp(shape_file_name, "DOTSML") == 0) ||
-            (strcmp(shape_file_name, "DOTALLY") == 0) ||
-            (strcmp(shape_file_name, "DOTUSSR") == 0) ||
-            (strcmp(shape_file_name, "ZWALLH") == 0) ||
-            (strcmp(shape_file_name, "ZWALLV") == 0)
-        )
-    ){
-        // seems like VisibleFlags uses the same type of mask as HouseClass.Allies -- left shift 1 by the house number
-        new_object.VisibleFlags = ((unsigned int)1 << (unsigned int)(((TechnoClass*)object)->House->Class->House)); 
-        new_object.IsIronCurtain = false;
-    }
-	
 	CurrentDrawCount++;
 }
 
@@ -3740,8 +3701,6 @@ void DLLExportClass::DLL_Draw_Pip_Intercept(const ObjectClass* object, int pip)
 	}
 }
 
-
-
 void DLLExportClass::DLL_Draw_Line_Intercept(int x, int y, int x1, int y1, unsigned char color, int frame)
 {
 	CNCObjectStruct& root_object = ObjectList->Objects[TotalObjectCount];
@@ -3757,7 +3716,6 @@ void DLLExportClass::DLL_Draw_Line_Intercept(int x, int y, int x1, int y1, unsig
 		root_object.NumLines++;
 	}
 }
-
 
 
 /**************************************************************************************************
@@ -4876,7 +4834,6 @@ void DLLExportClass::Convert_Action_Type(ActionType type, ObjectClass* object, T
 		default:
 			dll_type = DAT_NONE;
 			break;
-        case ACTION_ATTACKMOVE: // Attack Move rework by ChthonVII -- fall through to ACTION_MOVE
 		case ACTION_MOVE:
 			dll_type = DAT_MOVE;
 			break;
@@ -5063,7 +5020,7 @@ void DLLExportClass::Calculate_Placement_Distances(BuildingTypeClass* placement_
 		map_cell_height++;
 	}
 
-	if (map_cell_height < MAP_MAX_CELL_HEIGHT) { //Chthon bugfix!
+	if (map_cell_height < MAP_MAX_CELL_WIDTH) {
 		map_cell_height++;
 	}
 
@@ -5079,34 +5036,19 @@ void DLLExportClass::Calculate_Placement_Distances(BuildingTypeClass* placement_
 		for (int x = 0; x < map_cell_width; x++) {
 			CELL cell = (CELL)map_cell_x + x + ((map_cell_y + y) << _map_width_shift_bits);
 			BuildingClass* base = (BuildingClass*)Map[cell].Cell_Find_Object(RTTI_BUILDING);
-			// Chthon CFE Note: check for active to avoid potential crash
-            if ((base && base->IsActive && (base->House->Class->House == PlayerPtr->Class->House) && base->Class->IsBase) ||
+			if ((base && base->House->Class->House == PlayerPtr->Class->House && base->Class->IsBase) ||
 				((placement_type->IsWall || ((Map[cell].Smudge != SMUDGE_NONE) && SmudgeTypeClass::As_Reference(Map[cell].Smudge).IsBib)) &&
 					Map[cell].Owner == PlayerPtr->Class->House)) {
 				placement_distance[cell] = 0U;
 				CELL startcell = cell;
-                // Chthon CFE Note: Need to check for map-wrapping!
-                // Adjacent_Cell() will happily wrap the map unless you go below 0 or above MAP_CELL_TOTAL
-                // (This isn't super efficient. TD's code might be faster.)
-                int minX = max(0, Cell_X(cell) - (placement_type->Adjacent + 1));
-                int minY = max(0, Cell_Y(cell) - (placement_type->Adjacent + 1));
-                int maxX = min(MAP_MAX_CELL_WIDTH -1, Cell_X(cell) + (placement_type->Adjacent + 1));
-                int maxY = min(MAP_MAX_CELL_HEIGHT -1, Cell_Y(cell) + (placement_type->Adjacent + 1));
 				for (unsigned char distance = 1U; distance <= (placement_type->Adjacent + 1U); distance++) {
-                    startcell = Adjacent_Cell(startcell, FACING_NW);
+					startcell = Adjacent_Cell(startcell, FACING_NW);
 					CELL scancell = startcell;
 					for (int i = 0; i < ARRAY_SIZE(_scan_facings); i++) {
 						CELL nextcell = scancell;
 						for (unsigned char scan = 0U; scan <= (distance * 2U); scan++) {
 							scancell = nextcell;
-                            int scanX = Cell_X(scancell);
-                            int scanY = Cell_Y(scancell);
-							if ( Map.In_Radar(scancell) &&
-                                  (scanX >= minX) &&
-                                  (scanX <= maxX) &&
-                                  (scanY >= minY) &&
-                                  (scanY <= maxY)
-                               ) {
+							if (Map.In_Radar(scancell)) {
 								placement_distance[scancell] = min(placement_distance[scancell], distance);
 							}
 							nextcell = Adjacent_Cell(scancell, _scan_facings[i]);
@@ -5234,23 +5176,6 @@ bool DLLExportClass::Passes_Proximity_Check(CELL cell_in, BuildingTypeClass *pla
 			return true;
 		}
 	}
-	
-	// stop here if this isn't a wall
-    if (!placement_type->IsWall){
-        return false;
-    }
-    
-    // Chthon CFE Note -- make additional check for friendly wall out to max wall length for TS-style wall building
-    const OverlayType wallOverlay = placement_type->Overlay_Type();
-    // Using PlayerPtr here only works in LAN multiplayer because this function is only ever called in the context of Get_Placement_State() and that starts with a call to Set_Player_Context() -- don't use this function elsewhere!
-    const HousesType myowner = PlayerPtr->Class->House;
-    for (FacingType dir : FacingCardinals){
-        const int scandist = Map.Scan_For_Overlay(cell_in, dir, wallOverlay, Rule.WallBuildLength, true, myowner);
-        if (scandist >= 0){
-            return true;
-        }
-    }
-	
 
 	return false;
 }
@@ -6722,6 +6647,34 @@ if (debug_output) {
 		}
 	}
 
+	/*
+	** Render wall placement cursor as temporary smudges.
+	** This reduces the visual glitches associated with the asynchronous build preview updates.
+	** pchote - "Modern Wall Building" mod.
+	*/
+	if (cell_ptr->IsCursorHere && ((BuildingTypeClass*)Map.PendingObject)->IsWall && cell != Map.ZoneCell) {
+
+		CNCDynamicMapEntryStruct& flag_entry = dynamic_map->Entries[entry_index++];
+
+		strncpy(flag_entry.AssetName, cell_ptr->Is_Clear_To_Build() ? "PLACEMENT_GOOD" : "PLACEMENT_BAD", CNC_OBJECT_ASSET_NAME_LENGTH);
+		flag_entry.AssetName[CNC_OBJECT_ASSET_NAME_LENGTH - 1] = 0;
+		flag_entry.Type = -1;
+		flag_entry.Owner = cell_ptr->Owner;
+		flag_entry.DrawFlags = SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING;
+		flag_entry.PositionX = xpixel + (ICON_PIXEL_W / 2);
+		flag_entry.PositionY = ypixel + (ICON_PIXEL_H / 2);
+		flag_entry.Width = 24;
+		flag_entry.Height = 24;
+		flag_entry.CellX = Cell_X(cell);
+		flag_entry.CellY = Cell_Y(cell);
+		flag_entry.ShapeIndex = 0;
+		flag_entry.IsSmudge = true;
+		flag_entry.IsOverlay = false;
+		flag_entry.IsResource = false;
+		flag_entry.IsSellable = false;
+		flag_entry.IsTheaterShape = false;
+		flag_entry.IsFlag = false;
+	}
 
 	if (cell_ptr->IsFlagged) {
 
@@ -6751,35 +6704,8 @@ if (debug_output) {
 		}
 
 	}
-
-	/*	cfehunter 12/06/2020
-	**	Render wall placement markers.
-	**	Special thanks to pchote for this, getting the cursor rendering in classic was easy
-	**	getting it to render in glyphX has been difficult
-	*/
-	if (cell_ptr->IsCursorHere && Map.PendingObject && CFE_Patch_Is_Wall(*Map.PendingObject) && Map.ZoneCell != cell_ptr->Cell_Number()) {
-		CNCDynamicMapEntryStruct& cursorEntry = dynamic_map->Entries[entry_index++];
-
-		strncpy(cursorEntry.AssetName, cell_ptr->Is_Clear_To_Build(SPEED_NONE) ? "PLACEMENT_EXTRA" : "PLACEMENT_BAD", CNC_OBJECT_ASSET_NAME_LENGTH);
-		cursorEntry.AssetName[CNC_OBJECT_ASSET_NAME_LENGTH - 1] = 0;
-		cursorEntry.Type = -1;
-		cursorEntry.Owner = (char)cell_ptr->Owner;
-		cursorEntry.DrawFlags = SHAPE_CENTER | SHAPE_GHOST | SHAPE_COLOR;
-		cursorEntry.PositionX = xpixel + (ICON_PIXEL_W / 2);
-		cursorEntry.PositionY = ypixel + (ICON_PIXEL_H / 2);
-		cursorEntry.Width = 24;
-		cursorEntry.Height = 24;
-		cursorEntry.CellX = Cell_X(cell);
-		cursorEntry.CellY = Cell_Y(cell);
-		cursorEntry.ShapeIndex = 0;
-		cursorEntry.IsSmudge = true;
-		cursorEntry.IsOverlay = false;
-		cursorEntry.IsResource = false;
-		cursorEntry.IsSellable = false;
-		cursorEntry.IsTheaterShape = false;
-		cursorEntry.IsFlag = false;
-	}
-}
+		  
+}			  
 
 
 
@@ -7491,9 +7417,8 @@ void DLLExportClass::Repair(uint64 player_id, int object_id)
 			if (!building->IsActive) {
 				GlyphX_Debug_Print("DLLExportClass::Repair -- trying to repair a non-active building");
 			} else {
-                // Chthon CFE Note: Bugfix missing scold sound -- This should still go through to Repair() at full health.
-				//if (building->Can_Repair() && building->House.Is_Valid() && building->House->Class->House == PlayerPtr->Class->House)
-                if (building->Techno_Type_Class()->IsRepairable && building->House.Is_Valid() && (building->House->Class->House == PlayerPtr->Class->House))
+
+				if (building->Can_Repair() && building->House.Is_Valid() && building->House->Class->House == PlayerPtr->Class->House)
 				{
 					building->Repair(-1);
 				}
@@ -7783,7 +7708,6 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 	** the formation's offsets, or clearing them.  If they currently have
 	** illegal offsets (as in 0x80000000), then we're setting.
 	*/
-    // Chthon CFE Note: use as constant as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/b9dd91283bd6e43f85c047a36a49dc2e007f01a1
 	for (index = 0; index < Units.Count(); index++) {
 		UnitClass * obj = Units.Ptr(index);
 		if (obj) {
@@ -7792,9 +7716,8 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 					if (obj->Is_Selected_By_Player(PlayerPtr)) {
 						team = obj->Group;
 						if (team < MAX_TEAMS) {
-							//setform = obj->XFormOffset == (int)0x80000000;
-							setform = obj->XFormOffset == INVALID_FORMATION;
-                            team_form_data.TeamSpeed[team] = SPEED_WHEEL;
+							setform = obj->XFormOffset == (int)0x80000000;
+							team_form_data.TeamSpeed[team] = SPEED_WHEEL;
 							team_form_data.TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
 							break;
 						}
@@ -7812,8 +7735,7 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 						if (obj->Is_Selected_By_Player(PlayerPtr)) {
 							team = obj->Group;
 							if (team < MAX_TEAMS) {
-								//setform = obj->XFormOffset == (int)0x80000000;
-                                setform = obj->XFormOffset == INVALID_FORMATION;
+								setform = obj->XFormOffset == (int)0x80000000;
 								team_form_data.TeamSpeed[team] = SPEED_WHEEL;
 								team_form_data.TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
 								break;
@@ -7834,8 +7756,7 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 						if (obj->Is_Selected_By_Player(PlayerPtr)) {
 							team = obj->Group;
 							if (team < MAX_TEAMS) {
-								//setform = obj->XFormOffset == 0x80000000UL;
-                                setform = obj->XFormOffset == INVALID_FORMATION;
+								setform = obj->XFormOffset == 0x80000000UL;
 								team_form_data.TeamSpeed[team] = SPEED_WHEEL;
 								team_form_data.TeamMaxSpeed[team] = MPH_LIGHT_SPEED;
 								break;
@@ -7867,8 +7788,7 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 					team_form_data.TeamSpeed[team] = obj->Class->Speed;
 				}
 			} else {
-                //obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
-				obj->XFormOffset = obj->YFormOffset = INVALID_FORMATION;
+				obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
 			}
 		}
 	}
@@ -7888,8 +7808,7 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 					team_form_data.TeamMaxSpeed[team] = obj->Class->MaxSpeed;
 				}
 			} else {
-				//obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
-                obj->XFormOffset = obj->YFormOffset = INVALID_FORMATION;
+				obj->XFormOffset = obj->YFormOffset = (int)0x80000000;
 			}
 		}
 	}
@@ -7909,8 +7828,7 @@ void DLLExportClass::Team_Units_Formation_Toggle_On(uint64 player_id)
 					team_form_data.TeamMaxSpeed[team] = obj->Class->MaxSpeed;
 				}
 			} else {
-				//obj->XFormOffset = obj->YFormOffset = 0x80000000UL;
-                obj->XFormOffset = obj->YFormOffset = INVALID_FORMATION;
+				obj->XFormOffset = obj->YFormOffset = 0x80000000UL;
 			}
 		}
 	}

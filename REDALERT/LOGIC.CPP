@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/LOGIC.CPP 1     3/03/97 10:25a Joe_bostic $ */
@@ -302,14 +302,11 @@ void LogicClass::AI(void)
 		Teams.Ptr(index)->AI();
 	}
 
-	// Chthon CFE Note: Try to both fix the original global timequake so it works again
-	// and fix the bug with only one timequake per frame even though multiple MAD tanks and a global timequake (once I fix that) could all fire on the same frame
-	
 	/*
 	** If there's a time quake, handle it here.
 	*/
-	if (TimeQuake || GlobalTimeQuake) {
-		Sound_Effect(VOC_KABOOM15); // do we still want this sound for global timequake too?
+	if (TimeQuake) {
+		Sound_Effect(VOC_KABOOM15);
 		Shake_The_Screen(8);
 	}
 
@@ -325,26 +322,12 @@ void LogicClass::AI(void)
 		obj->AI();
 		BEnd(BENCH_AI);
 
-        // handle the local and global timequakes independently
-        if (GlobalTimeQuake && (obj != NULL) && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
-            int damage = (int)obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
-            obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
-        }
-        
 		if (TimeQuake && obj != NULL && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
 			int damage = (int)obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
-			//if (TimeQuakeCenter) {
-            if (MADTimeQuakeCenterList.Count() > 0){
-                bool hitme = false;
-                for (int qcount=0; qcount < MADTimeQuakeCenterList.Count(); qcount++){
-                    if (::Distance(obj->As_Target(),MADTimeQuakeCenterList[qcount])/256 < MTankDistance){
-                        hitme = true;
-                    }
-                }
-				//if(::Distance(obj->As_Target(),TimeQuakeCenter)/256 < MTankDistance) {
-				if (hitme){
-                    switch(obj->What_Am_I()) {
+			if (TimeQuakeCenter) {
+				if(::Distance(obj->As_Target(),TimeQuakeCenter)/256 < MTankDistance) {
+					switch(obj->What_Am_I()) {
 						case RTTI_INFANTRY:
 							damage = QuakeInfantryDamage;
 							break;
@@ -361,18 +344,13 @@ void LogicClass::AI(void)
 					}
 					obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
 				}
-			// This else clause was unreachable in the original code because TimeQuake would just get unset without TimeQuakePending, which was only set by MAD tanks so TimeQuakeCenter was also set.
-			// Seems like a bug introduced in Aftermath.
-			// Now it should be removed because global timequakes are handled independently.
-            }
-			//} else {
-			//	obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
-			//}
+			} else {
+				obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
+			}
 #else
 			obj->Take_Damage(damage, 0, WARHEAD_AP, 0, true);
 #endif
 		}
-		
 		/*
 		**	If the object was destroyed in the process of performing its AI, then
 		**	adjust the index so that no object gets skipped.
@@ -382,23 +360,12 @@ void LogicClass::AI(void)
 			index += count_diff;
 		}
 	}
-    
-	
 	HouseClass::Recalc_Attributes();
 
 	/*
 	**	Map related logic is performed.
 	*/
-	//if (ActiveCFEPatchConfig.BetterOreGrowth){
-    if (Rule.BetterOreGrowthEnabled){
-        Map.CFELogic();
-    }
-    else{
-        for (int i = 0; i < Rule.OreGrowthScale; ++i)
-        {
-            Map.Logic();
-        }
-    }
+	Map.Logic();
 
 	/*
 	**	Factory processing is performed.
@@ -444,9 +411,7 @@ void LogicClass::AI(void)
 		if( bAutoSonarPulse )
 		{
 			Map.Activate_Pulse();
-            // Chthon CFE Note: fix for MP
-			//Sound_Effect(VOC_SONAR);
-            CFE_Patch_Sound_Effect_For_All_Humans(VOC_SONAR);
+			Sound_Effect(VOC_SONAR);
 			bAutoSonarPulse = false;
 		}
 #define AUTOSONAR_PERIOD	TICKS_PER_SECOND * 40;

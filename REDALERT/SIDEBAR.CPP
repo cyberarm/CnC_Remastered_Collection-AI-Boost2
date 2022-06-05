@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /counterstrike/SIDEBAR.CPP 2     3/17/97 1:05a Steve_tall $ */
@@ -1408,8 +1408,7 @@ void SidebarClass::StripClass::Deactivate(void)
  *=============================================================================================*/
 bool SidebarClass::StripClass::Add(RTTIType type, int id, bool via_capture)
 {
-    // Chthon CFE Note: bugfix as per https://github.com/electronicarts/CnC_Remastered_Collection/issues/105
-	if (BuildableCount < MAX_BUILDABLES) {
+	if (BuildableCount <= MAX_BUILDABLES) {
 		for (int index = 0; index < BuildableCount; index++) {
 			if (Buildables[index].BuildableType == type && Buildables[index].BuildableID == id) {
 				return(false);
@@ -1943,8 +1942,7 @@ bool SidebarClass::StripClass::Recalc(void)
 			**	Removes this entry from the list.
 			*/
 			if (BuildableCount > 1 && index < BuildableCount-1) {
-				//memcpy(&Buildables[index], &Buildables[index+1], sizeof(Buildables[0])*((BuildableCount-index)-1));
-                memmove(&Buildables[index], &Buildables[index+1], sizeof(Buildables[0])*((BuildableCount-index)-1));
+				memcpy(&Buildables[index], &Buildables[index+1], sizeof(Buildables[0])*((BuildableCount-index)-1));
 			}
 			TopIndex = 0;
 			IsToRedraw = true;

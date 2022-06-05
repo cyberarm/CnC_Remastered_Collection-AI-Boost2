@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/CELL.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -288,17 +288,13 @@ class CellClass
 		*/
 		bool Grow_Tiberium(void);
 		bool Spread_Tiberium(bool forced=false);
-        bool CFESpread_Tiberium(bool forced=false); //Chthon CFE Note: for better ore growth
-        bool CFEOreMineSpread_Tiberium(); //Chthon CFE Note: for better ore growth, special function for ore mines
-        bool DumpOreHere(); // Chthon CFE Note: harvester dumps ore into the cell (to make room for gems)
 		long Tiberium_Adjust(bool pregame=false);
 		void Wall_Update(void);
 		void Concrete_Calc(void);
 		void Recalc_Attributes(void);
 		int  Reduce_Tiberium(int levels);
 		int  Reduce_Wall(int damage);
-        // Chthon CFE Note: added parameter for scattering only veteran infantry
-		void Incoming(COORDINATE threat=0, bool forced=false, bool nokidding=false, bool veteransonly = false);
+		void Incoming(COORDINATE threat=0, bool forced=false, bool nokidding=false);
 		void Adjust_Threat(HousesType house, int threat_value);
 
 		int operator != (CellClass const &) const {return 0;}

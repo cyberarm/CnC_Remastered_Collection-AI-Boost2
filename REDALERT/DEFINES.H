@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/DEFINES.H 4     3/07/97 9:55a Joe_bostic $ */
@@ -1033,8 +1033,6 @@ typedef enum MissionType : char {
 	MISSION_RESCUE,
 	MISSION_MISSILE,
 	MISSION_HARMLESS,			// Sit around and don't appear like a threat.
-    MISSION_ATTACKMOVE,     // Attack Move rework by ChthonVII -- new mission type so the fact that we're attack-moving can go into the multiplayer communication queue
-    MISSION_QATTACKMOVE,    // another new mission type so we can do attack-move and Q-move simultaneously
 
 	MISSION_COUNT,
 	MISSION_FIRST=0
@@ -1069,6 +1067,7 @@ typedef enum BStateType : char {
 typedef enum ActionType : unsigned char {
 	ACTION_NONE,			// Either undefined action or "do nothing".
 	ACTION_MOVE,			// Can move there or at least try to.
+	ACTION_ATTACKMOVE,		// Attack Move by Butch: Attack move
 	ACTION_NOMOVE,			// Special case for movable object, but illegal mouse position.
 	ACTION_ENTER,			// Special case for infantry->APC or vehicle->Repair facility.
 	ACTION_SELF,			// Self select special case.
@@ -1100,7 +1099,6 @@ typedef enum ActionType : unsigned char {
 	ACTION_NO_ENTER,
 	ACTION_NO_GREPAIR,
 	ACTION_TOGGLE_PRIMARY,	// Toggle the primary status of the factory.
-    ACTION_ATTACKMOVE,        //Attack Move rework by ChthonVII -- we need an action so we can go through the full click-to-mission logic properly -- bolting on stuff causes bugs (subtle and otherwise) to crop up all over 
 
 	ACTION_COUNT
 } ActionType;
@@ -2441,7 +2439,6 @@ typedef enum RadioMessageType : unsigned char {
 	RADIO_ALL_DONE,			// "I have completed the task."
 	RADIO_NEED_REPAIR,		// "Are you in need of service depot work?"
 	RADIO_ON_DEPOT,			// "Are you sitting on a service depot?"
-	RADIO_CANCEL,			// "Scratch that"
 
 	RADIO_COUNT
 } RadioMessageType;
@@ -2523,8 +2520,6 @@ typedef enum FormationType : unsigned char {
 	FORMATION_FIRST=0
 } FormationType;
 
-// Chthon CFE Note: use as constant as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/b9dd91283bd6e43f85c047a36a49dc2e007f01a1
-#define INVALID_FORMATION 0x80000000
 
 /****************************************************************************
 **	Selected units have a special selected unit box around them. These are the
@@ -3344,12 +3339,6 @@ typedef enum VocType : short {
 	VOC_BEACON,
 
 #endif
-    
-    VOC_PROMOTED, //Chthon CFE Note: add a sound for veterancy promotions
-    VOC_WIND_GUST, //Chthon CFE Note: add a sound for infantry stealth (mechanical sound sounds weird)
-    VOC_CONSTRUCTION_CLONE, //Chthon CFE Note: clone so we can muck with xml in our own file
-    VOC_CASHTURN_CLONE, //Chthon CFE Note: clone so we can muck with xml in our own file
-    
 	VOC_COUNT,
 	VOC_FIRST=0
 } VocType;
@@ -3480,8 +3469,6 @@ typedef enum VoxType : char {
 	VOX_SAVE1,
 	VOX_LOAD1,
 
-    VOX_BUILDING_CAPTURE, //Chthon CFE Note: add the generic "building captured" voice that has a sound file but WW never finished adding to the game
-    
 	VOX_COUNT,
 	VOX_FIRST=0
 } VoxType;
@@ -3652,12 +3639,5 @@ typedef struct {
 
 // Maximum number of teams
 #define MAX_TEAMS						10
-
-// Chthon CFE: Added some defines for per-type armor penetration (used by some rank 3 veteran unit bonuses)
-typedef enum ArmorPenType : unsigned char {
-    ARMORPEN_NONE,
-    ARMORPEN_PSEUDO_AP, // SA that does slightly more damage vs wood and a lot more vs steel 
-    ARMORPEN_PSEUDO_HE // AP that does more damage vs no-armor and concrete
-} ArmorPenType;
 
 #endif

@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/FOOT.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -308,7 +308,7 @@ class FootClass :	public TechnoClass
 		**	Combat related.
 		*/
 		virtual void Stun(void);
-		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false, TARGET indirectsource = TARGET_NONE, ArmorPenType specialarmorpen = ARMORPEN_NONE); // Chthon CFE Note: Added indirectsource so minelayers can get XP
+		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false);
 		virtual void Death_Announcement(TechnoClass const * source=0) const;
 
 		/*
@@ -347,7 +347,7 @@ class FootClass :	public TechnoClass
 		virtual void Fixup_Path(PathType *) {};
 		virtual void Set_Speed(int speed);
 		virtual MoveType Can_Enter_Cell(CELL cell, FacingType from=FACING_NONE) const;
-		int Optimize_Moves(PathType *path, MoveType threshhold) const;
+		int Optimize_Moves(PathType *path, MoveType threshhold);
 		virtual void Override_Mission(MissionType mission, TARGET tarcom, TARGET navcom);
 		virtual bool Restore_Mission(void);
 		CELL Adjust_Dest(CELL cell) const;
@@ -361,28 +361,16 @@ class FootClass :	public TechnoClass
 		CELL Safety_Point(CELL src, CELL dst, int start, int max);
 		int Rescue_Mission(TARGET tarcom);
 
-		virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly) const override;
-
-		// Chthon CFE Note: make  public so harvester optimizations and queue jumping can use it
-		int Find_Path_AStar(PathType* const resultPath, const CELL source, CELL dest, const int maxLen, const MoveType threshhold, const int threat) const;
-        
-        // Chthon CFE Note: make this public too
-		int Passable_Cell(CELL cell, FacingType face, int threat, MoveType threshhold) const;
-        
-        // Chthon CFE Note: Memorize and recall nav list (presently only used by aircraft)
-        void Memorize_Navigation_List();
-        void Recall_Navigation_List();
-        void Clear_Memorized_Navigation_List();
-        
 	private:
+		int Passable_Cell(CELL cell, FacingType face, int threat, MoveType threshhold);
 		PathType * Find_Path(CELL dest, FacingType *final_moves, int maxlen, MoveType threshhold);
-		//int Find_Path_AStar(PathType* const resultPath, const CELL source, CELL dest, const int maxLen, const MoveType threshhold, const int threat) const;
-		CELL Find_Passable_Position_Near(const CELL target, const int maxRadius, const MoveType threshhold, const int threat) const;
 		void Debug_Draw_Map(char const * txt, CELL start, CELL dest, bool pause);
-		void Debug_Draw_Path(PathType *path) const;
+		void Debug_Draw_Path(PathType *path);
 		bool Follow_Edge(CELL start, CELL target, PathType *path, FacingType search, FacingType olddir, int threat, int threat_stage, int max_cells, MoveType threshhold);
 		bool Register_Cell(PathType *path, CELL cell, FacingType dir, int cost, MoveType threshhold);
 		bool Unravel_Loop(PathType *path, CELL &cell, FacingType &dir, int sx, int sy, int dx, int dy, MoveType threshhold);
+		CELL Find_Passable_Position_Near(const CELL target, const int maxRadius, const MoveType threshhold, const int threat);
+		bool Find_Path_AStar(PathType& resultPath, const CELL source, CELL dest, const int maxLen, const MoveType threshhold, const int threat);
 
 		/*
 		**	This is the coordinate that the unit is heading to
@@ -393,34 +381,10 @@ class FootClass :	public TechnoClass
 		*/
 		COORDINATE HeadToCoord;
 
-    // Chthon CFE Note: Additional variables for mod
-    public:
-        TARGET NavQueueOriginalHead;
-        
-        // Stuff for memorizing nav list
-        // This won't fit in the available padding, so we're just going to have to break savegame compatibility
-        TARGET MemorizedNavQueue[10];
-        mutable TARGET UnmodifiedNavCom;
-        union{
-			mutable unsigned char CFEPatchNavQFlags;
-			struct{
-				mutable unsigned int SkipNavQueueUpdate : 1;
-                mutable unsigned int HasMemorizedNavQueue : 1;
-                mutable unsigned int JustModifiedNavCom : 1;
-				mutable unsigned int CFEPatchNavQFlagsPadding : 5; //round out to 1 byte, we can use this space later.
-			};
-        };
-        
-    private:
-        
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
-        // Chthon CFE Note: original padding was 16 bytes
-        // NavQueueOriginalHead ate 4 bytes
-        //  SkipNavQueueUpdate ate 1 byte
-        // RESET PADDING in v1.8 b/c we're breaking save compatibility anyway
-        unsigned char SaveLoadPadding[16]; 
+		unsigned char SaveLoadPadding[16];
 };
 
 #endif

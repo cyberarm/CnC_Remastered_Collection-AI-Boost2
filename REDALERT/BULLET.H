@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/BULLET.H 2     3/06/97 1:46p Joe_bostic $ */
@@ -110,11 +110,6 @@ class BulletClass :	public ObjectClass,
 		virtual void Code_Pointers(void);
 		virtual void Decode_Pointers(void);
 
-        // Chthon CFE Note: version that detaches only the incoming bullets
-        // for use with chronoshift
-        void MinimalDetach(TARGET target);
-        
-        
 		/*
 		**	If this bullet is forced to be inaccurate because of some outside means. A tank
 		**	firing while moving is a good example.
@@ -146,20 +141,9 @@ class BulletClass :	public ObjectClass,
 		*/
 		WarheadType Warhead;
 
-    // Chthon CFE Note: Cannot initialize variables here! RA's savegame loading copies the data then calls new. WTF?!
-    // Do it in the constructor instead.
-        
-    // Chthon CFE Note: Added member to store special per-type armor penetration (used by some rank 3 veteran unit bonuses)
-    public:
-        ArmorPenType SpecialArmorPen;
-    private:
-        
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
-        // Chthon CFE Note: original padding was 32 bytes
-        // SpecialArmorPen ate 1 byte
-        // RESET PADDING in v1.8 b/c we're breaking save compatibility anyway
 		unsigned char SaveLoadPadding[32];
 };
 

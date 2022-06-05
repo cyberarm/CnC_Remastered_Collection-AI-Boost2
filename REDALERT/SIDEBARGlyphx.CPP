@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header:   F:\projects\c&c\vcs\code\sidebar.cpv   2.13   02 Aug 1995 17:03:22   JOE_BOSTIC  $ */
@@ -358,8 +358,7 @@ void SidebarGlyphxClass::StripClass::Init_Clear(void)
  *=============================================================================================*/
 bool SidebarGlyphxClass::StripClass::Add(RTTIType type, int id, bool via_capture)
 {
-	// Chthon CFE Note: bugfix as per https://github.com/electronicarts/CnC_Remastered_Collection/issues/105
-    if (BuildableCount < MAX_BUILDABLES) {
+	if (BuildableCount <= MAX_BUILDABLES) {
 		for (int index = 0; index < BuildableCount; index++) {
 			if (Buildables[index].BuildableType == type && Buildables[index].BuildableID == id) {
 				return(false);

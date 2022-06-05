@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/TYPE.H 1     3/03/97 10:26a Joe_bostic $ */
@@ -76,8 +76,7 @@ class AbstractTypeClass
 
 		AbstractTypeClass(RTTIType rtti, int id, int name, char const * ini);
 		AbstractTypeClass(NoInitClass const & ) {};
-        // Chthon CFE Note: destructor should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
-		virtual ~AbstractTypeClass(void) {};
+		~AbstractTypeClass(void) {};
 
 		RTTIType What_Am_I(void) const {return(RTTI);};
 		TARGET As_Target(void) const {return(Build_Target(RTTI, ID));};
@@ -284,10 +283,6 @@ class ObjectTypeClass : public AbstractTypeClass
 								int fullname,
 								char const * name
 								);
-        
-         // Chthon CFE Note: needs destructor and it should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
-        // actually NOT in that commit, but the parallel destructor was added to TD
-        virtual ~ObjectTypeClass(){}
 
 		static void One_Time(void);
 
@@ -568,10 +563,6 @@ class TechnoTypeClass : public ObjectTypeClass
 				SpeedType speed,
 				int horizontaloffset=0
 				);
-        
-        // Chthon CFE Note: needs destructor and it should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
-        // actually NOT in that commit, but the parallel destructor was added to TD
-        virtual ~TechnoTypeClass(){}
 
 		bool Is_Two_Shooter(void) const;
 		int Legal_Placement(CELL pos) const;
@@ -821,7 +812,12 @@ class BuildingTypeClass : public TechnoTypeClass {
 		*/
 		static void const * WarFactoryOverlay;
 
-		OverlayType Overlay_Type() const;
+		/*
+		** pchote - "Modern Wall Building" mod.
+		** Rampastring - made it non-virtual
+		*/
+		OverlayType Overlay_Type(void) const;
+
 	private:
 
 		/*

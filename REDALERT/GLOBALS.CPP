@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /counterstrike/GLOBALS.CPP 2     3/10/97 6:22p Steve_tall $ */
@@ -58,8 +58,6 @@ bool Debug_Trap_Check_Heap = false;	// true = check the Heap
 bool Debug_Modem_Dump = false;		// true = print the Modem Stuff
 bool Debug_Print_Events = false;		// true = print event & packet processing
 bool Debug_Force_Crash = false;
-
-//CFEPatchConfig ActiveCFEPatchConfig;
 
 TFixedIHeapClass<AircraftClass>		Aircraft;
 TFixedIHeapClass<AnimClass>			Anims;
@@ -178,14 +176,6 @@ fixed EngineerDamage=0x55;			// Amount of damage an engineer does
 fixed EngineerCaptureLevel=0x40;	// Building damage level before engineer can capture
 #endif
 #endif
-
-// Chthon CFE Note: Timequakes are buggy in that there can only be 1 per frame,
-// even though multiple MAD tanks and a global timequake (once I fix that) could all fire on the same frame
-// so we need a separate variable for a global timequake and a vector to store an arbitrary number of MAD tank locations
-// Quandary: Since none of the timequake variables get into the save file, is there a way to bypass one by saving and reloading in between the frame where they get set and the frame where they get processed?
-bool GlobalTimeQuake = false;
-bool PendingGlobalTimeQuake = false;
-DynamicVectorClass<TARGET> MADTimeQuakeCenterList;
 
 #ifdef WIN32
 unsigned short			Hard_Error_Occured = 0;
@@ -419,7 +409,6 @@ MFCD * GeneralMix = 0;
 MFCD * ScoreMix = 0;
 MFCD * MainMix = 0;
 MFCD * ConquerMix = 0;
-MFCD * RAModMix = 0; // Chthon CFE Note: Apparently RA handles mix files differently. Hope this works...
 
 
 /***************************************************************************

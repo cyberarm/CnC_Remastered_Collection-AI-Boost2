@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/BUILDING.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -208,24 +208,12 @@ class BuildingClass : public TechnoClass
 		*/
 		CDTimerClass<FrameTimerClass> PlacementDelay;
 
-        // Chthon CFE Note: Cannot initialize variables here! RA's savegame loading copies the data then calls new. WTF?!
-        // Do it in the constructor instead.
-        
+		// Taken from cfehunter's CFE Patch, original comment follows
 		//cfehunter 7th June 2020. Took a lot of digging into the allocation
 		//but it looks like memory is initialised to zeros when allocated from the object pools.
 		//So even though this CELL doesn't exist in older saves, it should be zero initialised.
 		//NOTE: /!\ Stole 2 bytes from the save game padding /!\/
-        //Chthon CFE Note: The TARGET type changed to 4 bytes in RA (see DEFINES.H), so you need to steal 4 bytes of padding, not just 2.
 		TARGET RallyPoint;
-        
-        // Chthon CFE Note: Who created a landmine
-        TARGET WhoLaidMe;
-
-        // Chthon CFE Note: Should I be used as the base to draw inverse wall prview markers? 
-        mutable unsigned char ShowInverseWallPreviewMarkers;
-        
-		TARGET Target_For_Rally_Point(const SpeedType speed = SPEED_TRACK) const;
-
 
 		/*---------------------------------------------------------------------
 		**	Constructors, Destructors, and overloaded operators.
@@ -317,7 +305,7 @@ class BuildingClass : public TechnoClass
 		virtual void Death_Announcement(TechnoClass const * source=0) const;
 		virtual FireErrorType Can_Fire(TARGET, int which) const;
 		virtual TARGET Greatest_Threat(ThreatType threat) const;
-		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false, TARGET indirectsource = TARGET_NONE, ArmorPenType specialarmorpen = ARMORPEN_NONE); // Chthon CFE Note: Added indirectsource so minelayers can get XP
+		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false);
 		virtual bool Captured(HouseClass * newowner);
 		void Update_Radar_Spied(void);
 
@@ -366,27 +354,16 @@ class BuildingClass : public TechnoClass
 		bool Save(Pipe & file) const;
 
 		virtual unsigned Spied_By() const;
+		bool Can_Have_Rally_Point() const;
+		virtual void Set_Unselected_By_Player(HouseClass* player) override;
 
-		bool Can_Have_Rally_Point(void) const;
-		virtual void Set_Unselected_By_Player(HouseClass* player = nullptr) override;
-
-		bool Rally_Unit(TechnoClass& unit);
 	private:
 		void Drop_Debris(TARGET source = TARGET_NONE);
-		void Player_Set_Rally_Point(TARGET target);
-
-		bool Unlimbo_Wall(COORDINATE coord);
-		bool Create_Overlay_At(const OverlayTypeClass& oclass, const CELL cell);
+		TARGET Target_For_Rally_Point() const;
 
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
-        //Chthon CFE Note:
-        // original padding was 32 bytes
-        // Rally Point eats 4  bytes -- The TARGET type changed to 4 bytes in RA (see DEFINES.H), so you need to steal 4 bytes of padding, not just 2. (original padding was 32)
-        // WhoLaidMe eats 4 bytes
-        // Inverse wall preview markers eat 1 byte
-        // RESET PADDING in v1.8 b/c we're breaking save compatibility anyway
 		unsigned char SaveLoadPadding[32];
 
 		static COORDINATE const CenterOffset[BSIZE_COUNT];

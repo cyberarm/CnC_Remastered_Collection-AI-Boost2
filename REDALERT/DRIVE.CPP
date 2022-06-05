@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/DRIVE.CPP 1     3/03/97 10:24a Joe_bostic $ */
@@ -57,8 +57,6 @@
 
 #include	"function.h"
 
-// we need this playing sounds for one speciifc player
-extern void On_Sound_Effect(const HouseClass* player_ptr, int sound_effect_index, const char* extension, int variation, COORDINATE coord);
 
 #ifdef NEVER
 void test(void)
@@ -198,7 +196,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding)
 	**	Certain missions prevent scattering regardless of whether it would be
 	**	a good idea or not.
 	*/
-	if ((Mission != MISSION_NONE) && MissionControl[Mission].IsParalyzed) return;
+	if (MissionControl[Mission].IsParalyzed) return;
 
 	if ((What_Am_I() != RTTI_UNIT || !((UnitClass *)this)->IsDumping) && (!Target_Legal(NavCom) || (nokidding && !IsRotating))) {
 		if (!Target_Legal(TarCom) || forced || Random_Pick(1, 4) == 1) {
@@ -383,7 +381,7 @@ bool DriveClass::Teleport_To(CELL cell)
 	/*
 	**	All cargo gets destroyed.
 	*/
-	if (Rule.IsChronoKill && !(What_Am_I() == RTTI_UNIT && (*((UnitClass*)this) == UNIT_APC) && (VeterancyRank == 3))) {
+	if (Rule.IsChronoKill) {
 		Kill_Cargo(NULL);
 	}
 
@@ -391,10 +389,6 @@ bool DriveClass::Teleport_To(CELL cell)
 	Force_Track(-1, 0);
 	PrimaryFacing.Set_Current(PrimaryFacing.Desired());
 	Transmit_Message(RADIO_OVER_OUT);
-    // chronotanks in Q-attack-move mode should skip this
-    if (!SkipNavQueueUpdate){
-        ResetAttackMove(); // Chthon CFE Note: don't want things driving off to prior destination after porting
-    }
 	Assign_Destination(TARGET_NONE);
 	Assign_Target(TARGET_NONE);
 	Assign_Mission(MISSION_NONE);
@@ -766,9 +760,7 @@ bool DriveClass::While_Moving(void)
 								if (!IsActive) return(false);
 								if (Start_Driver(c)) {
 									Set_Speed(oldspeed);
-                                    // Chthon CFE Note: replace memcopy with memmove when source and destination may overlap, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/pull/608
-									//memcpy((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX-1);
-                                    memmove((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX-1);
+									memcpy((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX-1);
 									Path[CONQUER_PATH_MAX-1] = FACING_NONE;
 								} else {
 									Path[0] = FACING_NONE;
@@ -998,10 +990,8 @@ bool DriveClass::Start_Of_Move(void)
 				} else {
 					Assign_Destination(TARGET_NONE);
 					if (!IsActive) return(false);
-                    // Chthon CFE Note: fixed for MP
-					//if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
-					if (IsNewNavCom && House->IsHuman) On_Sound_Effect(House, (int)VOC_SCOLD, "", 1, Coord);
-                    IsNewNavCom = false;
+					if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
+					IsNewNavCom = false;
 				}
 			}
 
@@ -1071,7 +1061,7 @@ bool DriveClass::Start_Of_Move(void)
 	**	means starting a rotation track if necessary.
 	*/
 	facediff = PrimaryFacing.Difference(dir);
-	if (facediff) {       
+	if (facediff) {
 
 		/*
 		**	Request a change of facing.
@@ -1098,7 +1088,7 @@ bool DriveClass::Start_Of_Move(void)
 				Assign_Destination(TARGET_NONE);
 				if (!IsActive) return(false);//BG
 			}
-			
+
 			/*
 			**	If a temporary friendly object is blocking the path, then cause it to
 			**	get out of the way.
@@ -1134,9 +1124,7 @@ bool DriveClass::Start_Of_Move(void)
 					}
 				}
 			} else {
-				// Chthon CFE Note: foixed for MP
-                //if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
-                if (IsNewNavCom && House->IsHuman) On_Sound_Effect(House, (int)VOC_SCOLD, "", 1, Coord);
+				if (IsNewNavCom) Sound_Effect(VOC_SCOLD);
 			}
 			IsNewNavCom = false;
 			TrackNumber = -1;
@@ -1251,16 +1239,12 @@ bool DriveClass::Start_Of_Move(void)
 							return(true);
 						}
 					} else {
-                        // Chthon CFE Note: replace memcopy with memmove when source and destination may overlap, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/pull/608
-						//memcpy((char*)&Path[0], (char*)&Path[2], CONQUER_PATH_MAX-2);
-                        memmove((char*)&Path[0], (char*)&Path[2], CONQUER_PATH_MAX-2);
+						memcpy((char*)&Path[0], (char*)&Path[2], CONQUER_PATH_MAX-2);
 						Path[CONQUER_PATH_MAX-2] = FACING_NONE;
 						IsPlanningToLook = true;
 					}
 				} else {
-                    // Chthon CFE Note: replace memcopy with memmove when source and destination may overlap, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/pull/608
-					//memcpy((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX-1);
-                    memmove((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX-1);
+					memcpy((char*)&Path[0], (char*)&Path[1], CONQUER_PATH_MAX-1);
 				}
 				Path[CONQUER_PATH_MAX-1] = FACING_NONE;
 			}
@@ -1319,17 +1303,8 @@ void DriveClass::AI(void)
 #endif
 		if (MoebiusCountDown == 0) {
 			IsMoebius = false;
-            if (Rule.EnableSmarterChrono){
-                Sound_Effect(VOC_CHRONO, Coord); // play sound at both ends
-            }
 			Teleport_To(MoebiusCell);
 			MoebiusCell = 0;
-            // Chthon CFE Note: Make a chronotank sound effect and unselect and remove from targeting lists
-            if (Rule.EnableSmarterChrono){
-                Sound_Effect(VOC_CHRONO, Coord);
-                Unselect_All_Players();
-                Minimal_Detach_This_From_All(As_Target(), true);
-            }
 		}
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	 }

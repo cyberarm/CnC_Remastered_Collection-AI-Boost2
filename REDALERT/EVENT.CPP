@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/EVENT.CPP 1     3/03/97 10:24a Joe_bostic $ */
@@ -747,55 +747,9 @@ void EventClass::Execute(void)
 				**	special queued move mission and there is already a valid navigation
 				**	target for this unit.
 				*/
-				//bool q = (Data.MegaMission.Mission == MISSION_QMOVE);
-				bool q = ((Data.MegaMission.Mission == MISSION_QMOVE) || (Data.MegaMission.Mission == MISSION_QATTACKMOVE));
+				bool q = (Data.MegaMission.Mission == MISSION_QMOVE);
 
-                // Attack Move rework by ChthonVII -- now that we are on the back side of the multiplayer communications, swap MISSION_ATTACKMOVE back to MISSION_MOVE and set flag and target
-				//if (ActiveCFEPatchConfig.EnableAttackMove){
-                if (Rule.AttackMoveCommandAllowed){
-                    if ((Data.MegaMission.Mission == MISSION_ATTACKMOVE) || (Data.MegaMission.Mission == MISSION_QATTACKMOVE)){
-                        techno->Assign_Mission(MISSION_MOVE);
-                        techno->AttackMove = 1;
-                        // if this is regular attack move, set the RememberedNavCom
-                        if (Data.MegaMission.Mission == MISSION_ATTACKMOVE){
-                            techno->RememberedNavCom = Data.MegaMission.Destination.As_TARGET();
-                        }
-                        // if this is queue attack move, don't set RememberedNavCom if it's already set
-                        else if (!Target_Legal(techno->RememberedNavCom)){
-                            // if we're already moving towards a destination, make that our RememberedNavCom (this command must be adding to an existing queue)
-                            if (techno->Is_Foot() && Target_Legal(((FootClass*)techno)->NavCom)){
-                                techno->RememberedNavCom = ((FootClass*)techno)->NavCom;
-                            }
-                            // otherwise, this must be the first destination, so make it our RememberedNavCom
-                            else {
-                                techno->RememberedNavCom = Data.MegaMission.Destination.As_TARGET();
-                            }
-                        }
-                        if ((techno->What_Am_I() == RTTI_UNIT) && (*((UnitClass*)techno) == UNIT_MINELAYER)){
-                            ((UnitClass*)techno)->MLoriginalposition = ::As_Target(Coord_Cell(techno->Coord));
-                            ((UnitClass*)techno)->MLattackmovemode = 0;
-                            // ignore the order if no ammo and can't regen it yet
-                            if (!techno->Ammo && (techno->VeterancyRank < 3)){
-                                techno->ResetAttackMove(0);
-                                ((UnitClass*)techno)->MinelayerGoHome();
-                            }
-                        }
-                    }
-                    // if we assigned any other mission, terminate attack-move
-                    else {
-                        // if we're in the middle of an attack phase of q-attack-move and get a regular q-move order, set the reset the current destination before terminating attack move
-                        if (techno->AttackMove && (techno->Mission == MISSION_ATTACK) && techno->Is_Foot() && Target_Legal(((FootClass*)techno)->NavCom) && (Data.MegaMission.Mission == MISSION_QMOVE) && Target_Legal(techno->RememberedNavCom)){
-                            techno->Assign_Destination(techno->RememberedNavCom);
-                        }
-                            
-                        techno->Assign_Mission(Data.MegaMission.Mission);
-                        techno->ResetAttackMove(0);
-                    }
-                }
-                // original code
-                else {
-                    techno->Assign_Mission(Data.MegaMission.Mission);
-                }
+				techno->Assign_Mission(Data.MegaMission.Mission);
 
 				if (techno->Is_Foot()) {
 					((FootClass*)techno)->SuspendedNavCom = TARGET_NONE;
@@ -828,11 +782,6 @@ void EventClass::Execute(void)
 						techno->Assign_Destination(Data.MegaMission.Destination.As_TARGET());
 					}
 				}
-				
-				// always clear the memorized nav list when receiving a new order from the player
-				if (techno->Is_Foot()) {
-                    ((FootClass *)techno)->Clear_Memorized_Navigation_List();
-                }
 
 				//
 				// Special case for ship repairing: If the assigned mission is to
@@ -881,35 +830,15 @@ void EventClass::Execute(void)
 		*/
 		case IDLE:
 			techno = Data.Target.Whom.As_Techno();
-			// Attack Move rework by ChthonVII -- exit attack-move because we got a new order
-            if (techno && techno->IsActive && !techno->IsInLimbo){
-				//if (ActiveCFEPatchConfig.EnableAttackMove){
-                if (Rule.AttackMoveCommandAllowed){
-                    techno->ResetAttackMove(2);
-                }
-                if (!techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
-                    techno->Transmit_Message(RADIO_OVER_OUT);
-                    techno->Assign_Destination(TARGET_NONE);
-                    techno->Assign_Target(TARGET_NONE);
-                    // Chthon CFE Note: vanilla bugfix -- clear the nav queue BEFORE entering idle mode so the unit stops right away
-					//if (ActiveCFEPatchConfig.EnableQMoveLoops){
-                    if (Rule.QmoveLoopsAllowed){
-                        if (techno->Is_Foot()) {
-                            ((FootClass *)techno)->Clear_Navigation_List();
-                        }
-                        techno->Enter_Idle_Mode();
-                    }
-                    else {
-                        techno->Enter_Idle_Mode();
-                        if (techno->Is_Foot()) {
-                            ((FootClass *)techno)->Clear_Navigation_List();
-                        }
-                    }
-                }
-                else if (CFE_Patch_Can_Have_Rally_Point(*techno)) {
-                    techno->Assign_Target(TARGET_NONE);
-                }
-            }
+			if (techno != NULL && techno->IsActive && !techno->IsInLimbo && !techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
+				techno->Transmit_Message(RADIO_OVER_OUT);
+				techno->Assign_Destination(TARGET_NONE);
+				techno->Assign_Target(TARGET_NONE);
+				techno->Enter_Idle_Mode();
+				if (techno->Is_Foot()) {
+					((FootClass *)techno)->Clear_Navigation_List();
+				}
+			}
 			break;
 
 		/*
@@ -920,11 +849,6 @@ void EventClass::Execute(void)
 			if (techno != NULL && techno->Is_Foot() && techno->IsActive && !techno->IsInLimbo && !techno->IsTethered) {
 				((FootClass *)techno)->IsScattering = true;
 				techno->Scatter(0, true, false);
-                // Attack Move rework by ChthonVII -- exit attack-move because we got a new order
-                // On second thought, scatter probably shouldn't end attack-move
-                //if (ActiveCFEPatchConfig.EnableAttackMove){
-                //    techno->ResetAttackMove();
-                //}
 			}
 			break;
 
@@ -1135,23 +1059,6 @@ void EventClass::Execute(void)
 			Sound_Effect( VOC_INCOMING_MESSAGE );
 			break;
 #endif
-
-		//CFE Patch events
-		case SET_RALLY:
-			if (BuildingClass* const building = Data.NavCom.Whom.As_Building())
-			{
-				TARGET newTarget = Data.NavCom.Where.As_Target();
-				if (building->RallyPoint != newTarget)
-				{
-					if (building->As_Target() != newTarget)
-						building->RallyPoint = newTarget;
-					else
-						building->RallyPoint = TARGET_NONE;
-
-					Map.Flag_To_Redraw(true);
-				}
-			}
-			break;
 
 		/*
 		**	Default: do nothing.

@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/TEAM.CPP 1     3/03/97 10:25a Joe_bostic $ */
@@ -2495,11 +2495,8 @@ int TeamClass::TMission_Formation(void)
 		case FORMATION_NONE:
 			while (member != NULL) {
 				member->Group = 0xFF;
-                // Chthon CFE Note: use as constant as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/b9dd91283bd6e43f85c047a36a49dc2e007f01a1
-				//member->XFormOffset = 0x80000000;
-				//member->YFormOffset = 0x80000000;
-                member->XFormOffset = INVALID_FORMATION;
-				member->YFormOffset = INVALID_FORMATION;
+				member->XFormOffset = 0x80000000;
+				member->YFormOffset = 0x80000000;
 				member->IsFormationMove = false;
 				member = member->Member;
 			}
@@ -2893,13 +2890,8 @@ int TeamClass::TMission_Invulnerable(void)
 {
 	FootClass * foot = Member;
 	while (foot != NULL) {
-        if (Rule.EnableQuickSupers){
-            foot->IronCurtainCountDown = 20 * TICKS_PER_SECOND;
-        }
-        else {
-            foot->IronCurtainCountDown = Rule.IronCurtainDuration * TICKS_PER_MINUTE;
-        }
-        foot->Mark(MARK_CHANGE);
+		foot->IronCurtainCountDown = Rule.IronCurtainDuration * TICKS_PER_MINUTE;
+		foot->Mark(MARK_CHANGE);
 		foot = foot->Member;
 	}
 	IsNextMission = true;

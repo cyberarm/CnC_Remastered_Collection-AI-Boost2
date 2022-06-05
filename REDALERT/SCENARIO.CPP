@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 //Mono_Printf("%d %s\n",__LINE__,__FILE__);
@@ -765,10 +765,6 @@ void Post_Load_Game(int load_multi)
 void Clear_Scenario(void)
 {
 // TCTCTC -- possibly just use in-place new of scenario object?
-    
-    // Chthon CFE Note: stop chronal vortex so active state isn't inherited by next game, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/acda5f67587b9053b7d49f122cef571304bc3b3a
-    // Probably not applicable to Remaster (suspect dll memory is entirely freed between games), but better safe than sorry 
-    ChronalVortex.Stop();
 
 	Scen.MissionTimer = 0;
 	Scen.MissionTimer.Stop();
@@ -2671,22 +2667,6 @@ bool Read_Scenario_INI(char * fname, bool )
 		}
 	}
 
-	        
-    // Chthon CFE Note: Since we bugfixed fixed-wing two-shooters with odd max ammo getting an extra shot,
-    // but people are accustomed to MIG getting that extra shot,
-    // add an option to formalize the bugged behavior by increasing max ammo by 1
-    if (Rule.EnableMIGAmmoFudge){
-        AircraftTypeClass& miggy = AircraftTypeClass::As_Reference(AIRCRAFT_MIG);
-        if ((miggy.MaxAmmo % 2 != 0) && miggy.Is_Two_Shooter()){
-            miggy.MaxAmmo++;
-        }
-        AircraftTypeClass& yakky = AircraftTypeClass::As_Reference(AIRCRAFT_YAK);
-        if ((yakky.MaxAmmo % 2 != 0) && yakky.Is_Two_Shooter()){
-            yakky.MaxAmmo++;
-        }
-    }
-	
-	
 	Call_Back();
 
 	/*
@@ -3177,7 +3157,7 @@ static void Create_Units(bool official)
 
 	bool taken[MAX_STORED_WAYPOINTS];
 	CELL waypts[MAX_STORED_WAYPOINTS];
-	assert(Rule.MaxPlayers <= ARRAY_SIZE(waypts));
+	assert(Rule.MaxPlayers < ARRAY_SIZE(waypts));
 	int num_waypts = 0;
 
 	/*

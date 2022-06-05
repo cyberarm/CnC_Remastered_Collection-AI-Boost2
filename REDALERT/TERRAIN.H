@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/TERRAIN.H 1     3/03/97 10:25a Joe_bostic $ */
@@ -109,7 +109,7 @@ class TerrainClass : public ObjectClass, public StageClass
 		*/
 		virtual void Fire_Out(void);
 		virtual bool Catch_Fire(void);
-		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source, bool forced=false, TARGET indirectsource = TARGET_NONE, ArmorPenType specialarmorpen = ARMORPEN_NONE); // Chthon CFE Note: Added indirectsource so minelayers can get XP
+		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source, bool forced=false);
 
 		/*
 		**	AI.

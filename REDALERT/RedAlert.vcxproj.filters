@@ -123,12 +123,6 @@
     <ClCompile Include="CELL.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CFEPATCHQUERY.CPP">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CFEUTIL.CPP">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CHECKBOX.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -992,9 +986,6 @@
     <ClInclude Include="CELL.H">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="CFEDEBUG.H">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="CHECKBOX.H">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -1777,9 +1768,6 @@
     </ClInclude>
     <ClInclude Include="DLLInterfaceVersion.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RANGEWRAPPER.H">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

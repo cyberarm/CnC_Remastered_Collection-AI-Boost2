@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/HELP.H 1     3/03/97 10:24a Joe_bostic $ */
@@ -44,8 +44,6 @@ class HelpClass: public TabClass
 	public:
 		HelpClass(void);
 		HelpClass(NoInitClass const & x) : TabClass(x) {};
-        // Chthon CFE Note: needs destructor and it should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
-        virtual ~HelpClass(){}
 
 		/*
 		** Initialization

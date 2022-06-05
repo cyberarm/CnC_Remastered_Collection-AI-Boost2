@@ -7,10 +7,10 @@
 // either version 3 of the License, or (at your option) any later version.
 
 // TiberianDawn.DLL and RedAlert.dll and corresponding source code is distributed 
-// in the hope that it will be useful, but with permitted supplemental terms 
+// in the hope that it will be useful, but with permitted additional restrictions 
 // under Section 7 of the GPL. See the GNU General Public License in LICENSE.TXT 
 // distributed with this program. You should have received a copy of the 
-// GNU General Public License along with permitted supplemental terms 
+// GNU General Public License along with permitted additional restrictions 
 // with this program. If not, see https://github.com/electronicarts/CnC_Remastered_Collection
 
 /* $Header: /CounterStrike/MAP.H 1     3/03/97 10:25a Joe_bostic $ */
@@ -42,15 +42,8 @@ class MapClass: public GScreenClass
 {
 	public:
 
-		//MapClass(void) {};
-        // mod stuff needs to be initialized in constructor
-        MapClass(void) {
-            timelinedamage = 0;
-            permanenttimelinedamage = 0;
-        };
+		MapClass(void) {};
 		MapClass(NoInitClass const & x) : GScreenClass(x), Array(x) {};
-        // Chthon CFE Note: needs destructor and it should be virtual, as per https://github.com/TheAssemblyArmada/Vanilla-Conquer/commit/9210c42e5eaca6cd1bd321451fa6c95e925b3887
-        virtual ~MapClass(){}
 
 		/*
 		** Initialization
@@ -96,7 +89,6 @@ class MapClass: public GScreenClass
 		long Overpass(void);
 
 		virtual void Logic(void);
-        virtual void CFELogic(void); // Chthon CFE Note: Alternative logic for better tiberium growth.
 		virtual void Set_Map_Dimensions(int x, int y, int w, int h);
 
 		/*
@@ -109,9 +101,6 @@ class MapClass: public GScreenClass
 		** Debug routine
 		*/
 		int Validate(void);
-
-        // Chthon CFE Note -- changed this to enable searching for only walls that belong to a given house
-        int Scan_For_Overlay(const CELL origin, const FacingType dir, const OverlayType overlay, const int maxLength, const bool limittohouse = false, const HousesType whichhouse = HOUSE_NONE) const;
 
 		/*
 		**	This is the dimensions and position of the sub section of the global map.
@@ -184,21 +173,9 @@ class MapClass: public GScreenClass
 
 		enum MapEnum {SCAN_AMOUNT=MAP_CELL_TOTAL};
 
-    // Chthon CFE Note: Cannot initialize variables here! RA's savegame loading copies the data then calls new. WTF?!
-    // Do it in the constructor instead.
-        
-    // Chthon CFE Note: new variable to track cumulative timeline damage from chronoshifts
-    public:
-        int timelinedamage;
-        int permanenttimelinedamage;
-        
-        
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
-        // Chthon CFE Note: original padding was 1024
-        // timelinedamage ate 8 bytes
-        // RESET PADDING in v1.8 b/c we're breaking save compatibility anyway
 		unsigned char SaveLoadPadding[1024];
 
 };
