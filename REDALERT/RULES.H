@@ -97,10 +97,9 @@ class RulesClass {
 		int AIAttackMinimaldefenseSendUnitsSwitchLow2High = 4;
 		int AIAttackMinimaldefenseSendUnitsSwitchHigh2All = 8;
 		//bool AIAllowBaseGrowByDeployedMCV = true;
-		fixed AIHarvesterMultiplier;
+		fixed AIHarvesterMultiplyer;
 		int AIHarvesterMemoryValue = 10;
 		int AIHarvesterMaxLimit = 10;
-		int AIHarvesterHuntMadness = 5;
 		int AIBuildingsMultiplier = 2;
 		//int AIUnitMultiplier = 3;
 		int AIMaxEngineers = 20;
