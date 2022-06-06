@@ -426,6 +426,16 @@ class HouseClass {
 		long Capacity;
 
 		//By Bast75
+		unsigned int current = 0;
+		int prio = 0; //Used to calculate prio.
+		int TempCalculation = 0;
+		int HumanBuildingCount = 0;
+		HouseClass const * enemy = NULL;
+
+		//check air-threat
+		bool airthreat = false;
+		int airthreat_quantity = 0;
+
 		int AIDogKennelLimit = 1;
 		int AIBarracksLimit = 1;
 		int AIWarFactoryLimit = 1;
@@ -439,7 +449,7 @@ class HouseClass {
 		int AITurretGunLimit = 1;
 		int AIFlameTurretLimit = 1;
 		int AITeslaGunLimit = 1;
-		int AIRefineryMinimal = 1;
+		int AIRefineryLimit = 1;
 		int AINukeLimit = 1;
 		int AIRepairBayLimit = 1;
 		bool AIDetectedNavalWar = false;
@@ -458,16 +468,18 @@ class HouseClass {
 		//bool AIAttackMode = true;
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
+		bool DoAntiHarvesterRun = false;
 
 		//For Dynamic AI
 		int IsHumanFriend = 0;
 		int DynamicBoost = 0;
 		int TotalBoost = 0;
-		int CountEnemiesForThisAI = 0;
+		int CountEnemiesForThisAI = 1; //We always start with a enemy
 		int CountFriendliesForThisAI = 0;
-		int CountHousesStillAlive = 0;
-
-
+		int CountHousesStillAlive = 2; //We always start with minimal 2 houses
+		int EnemyVessels = 0;
+		int AverageEnemyVessels = 0;
+		int NrOfHumanTanks = 0;
 
 		bool HouseHasFlag = false;
 
@@ -820,6 +832,9 @@ class HouseClass {
 		static void One_Time(void);
 		static HouseClass * As_Pointer(HousesType house);
 		static void Recalc_Attributes(void);
+
+		//By Bast75
+		void AI_CalcDynamics(void);
 
 		/*
 		** New default win mode to avoid griefing. ST - 1/31/2020 3:33PM

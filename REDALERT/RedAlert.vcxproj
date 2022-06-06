@@ -75,7 +75,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\WorkshopContent\AIBoost\Data</OutDir>
+    <OutDir>..\WorkshopContent\AIBoost\Data\</OutDir>
     <IntDir>$(PlatformName)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
