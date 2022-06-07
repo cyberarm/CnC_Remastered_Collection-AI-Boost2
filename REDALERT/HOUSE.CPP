@@ -691,6 +691,7 @@ HouseClass::HouseClass(HousesType house) :
 	Attack = TICKS_PER_MINUTE * Rule.AIAttackFirstTime;
 
 	Init_Unit_Trackers();
+	AI_CalcDynamics();
 }
 
 
@@ -6478,19 +6479,6 @@ int HouseClass::AI_Building(void)
 				}
 			}
 		}
-
-		//Construction Yard
-		/***
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs && 1==0) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_CONST);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CONST] < 2 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-		***/
 
 		//radar
 		if (BQuantity[STRUCT_RADAR] < 1) {
