@@ -5555,7 +5555,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 
 	// Tank units
 
-	//int AICurrentChronotanksNr = 0;
 	int FarthestEnemyBuildingDist = -1;
 	if (Rule.AIAllowChronotanksGroupShifting) {
 		//Calculate chronoshift target for all Chronotanks (group jump):
@@ -5574,14 +5573,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 				break; // we have a own building, so don't do a new calculation again.
 			}
 		}
-
-		//count Chronotanks
-		//for (index = 0; index < Units.Count(); index++) {
-		//	UnitClass * u = Units.Ptr(index);
-		//	if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0 && *u == UNIT_CHRONOTANK) {
-		//		AICurrentChronotanksNr++;
-		//	}
-		//}
 	}
 
 	//Do the tanks
@@ -5603,7 +5594,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
 					if (*u == UNIT_CHRONOTANK) {
 						// Weird enough this must been set before the jump, otherways they run home after jumping.
-						//if (Rule.AIAllowChronotanksGroupShifting && AICurrentChronotanksNr >= Rule.AIMaxChronotanks) {
 						if (Rule.AIAllowChronotanksGroupShifting && UQuantity[UNIT_CHRONOTANK] >= Rule.AIMaxChronotanks) {
 							//We are allowed to jump in groups, so do all to the same calculated building. (FarthestEnemyBuildingDist)
 							u->Assign_Mission(MISSION_HUNT); // Set to attack the closest object.
@@ -6525,7 +6515,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//helipad allied
-		if ((BQuantity[STRUCT_CAMOPILLBOX] + BQuantity[STRUCT_CAMOPILLBOX]) > 0) {
+		if ((BQuantity[STRUCT_CAMOPILLBOX] + BQuantity[STRUCT_PILLBOX]) > 0) {
 			if (BQuantity[STRUCT_HELIPAD] < AIHelipadAlliedLimit || (Rule.AIAllowDynamicBaseGrow && BQuantity[STRUCT_HELIPAD] < airthreat_quantity)) {
 				prio = 2;
 				if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
@@ -6723,7 +6713,7 @@ int HouseClass::AI_Unit(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
-	if (BQuantity[STRUCT_WEAP] == 0) return(TICKS_PER_SECOND);
+	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
 	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
 
 	//AI Max units
@@ -7028,6 +7018,25 @@ int HouseClass::AI_Vessel(void)
 
 	if (IsBaseBuilding) {
 		//Added by Bast75, this was empy, result no naval units in skirmish. We want them!!!
+
+		//New detection method to prevent overproducing vessels for the AI, he count according to the enemies average:
+		if (!IsHuman) {
+			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+				HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
+				if (CurrentHouse != NULL && !Is_Ally(h)) {
+					EnemyVessels += Vessels.Count();
+				}
+			}
+			if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
+				AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
+			}
+			else {
+				AverageEnemyVessels = 0;
+			}
+			if ((int)CurVessels > AverageEnemyVessels) {
+				return(TICKS_PER_SECOND);
+			}
+		}
 
 		//allies, x change of first unit, otherwise x change of second unit, else make the 3rth one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_PT), ActLike) && Percent_Chance(Rule.AIAlliesVesselPTPercentage))
@@ -9111,7 +9120,7 @@ void HouseClass::AI_CalcDynamics(void)
 	assert(Houses.ID(this) == ID);
 
 	if (!IsHuman) {
-		//Dynamic boost calculations:
+		//Dynamic calculations:
 
 		//Recalculate all enemies and friends stuff:
 		IsHumanFriend = 0;
@@ -9147,6 +9156,7 @@ void HouseClass::AI_CalcDynamics(void)
 			AverageEnemyVessels = 0;
 		}
 
+		//Dynamic boost calculations:
 		TotalBoost = 0;
 		DynamicBoost = 0;
 		if (CountEnemiesForThisAI - (CountFriendliesForThisAI + 1) < 0) { DynamicBoost = -1; }

@@ -274,8 +274,7 @@ RulesClass::RulesClass(void) :
 	MinHarvesterQueueJumpDistance(7),
 	MaxWallExtensionDistance(4),
 	WallSellPriceDivisor(3),
-	AutoRepairFacilityKickOut(true),
-	AISurrenderObjectCountThreshold(8)
+	AutoRepairFacilityKickOut(true)
 {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 	NewUnitsEnabled = SecretUnitsEnabled = 0;
@@ -534,8 +533,7 @@ bool RulesClass::General(CCINIClass & ini)
 		MaxWallExtensionDistance = ini.Get_Int(MOREQOL, "MaxWallExtensionDistance", MaxWallExtensionDistance);
 		WallSellPriceDivisor = ini.Get_Int(MOREQOL, "WallSellPriceDivisor", WallSellPriceDivisor);
 		AutoRepairFacilityKickOut = ini.Get_Bool(MOREQOL, "AutoRepairFacilityKickOut", AutoRepairFacilityKickOut);
-		AISurrenderObjectCountThreshold = ini.Get_Int(MOREQOL, "AISurrenderObjectCountThreshold", AISurrenderObjectCountThreshold);
-
+		
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);

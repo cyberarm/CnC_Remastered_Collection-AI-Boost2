@@ -1070,13 +1070,6 @@ class RulesClass {
 		*/
 		bool AutoRepairFacilityKickOut;
 
-		/*
-		**	The AI completely surrenders if it has already entered fire-sale
-		**	mode and has fewer objects left than this.
-		*/
-		int AISurrenderObjectCountThreshold;
-
-
 		// Some additional space for save game compatibility.
 		unsigned char SaveLoadPadding[43];
 };
