@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 3 June 2022
+Last update at: 7 June 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -12,12 +12,16 @@ Please follow the steps below to update and reactivate the mod:
 --- 
 
 Latest changes:
-- Bugfix for AI not building Chronotanks in Ground War only
-- More Zoom Levels added
+- Revert back to last 16th may version. We only keep Veterancy mod, vanilla/multiplayer/performance fix from CFE
 - Prio for Tesla & Power buildings improved
+- Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
+- Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
+- Several AI-tweaks for Naval War and Mixed War
+- Several AI-tweaks for Air and Anti-Air production
+- Fixed some performance issues
 
 Included mod's:
-- CFE Patch Redux for RA v1.8 (Veterancy default disabled, vanilla fixes, etc.)
+- Veterancy mod(default disabled), vanilla/multiplayer/performance fix from CFE Patch Redux 1.8
 - The Rampastring Quality of Live mod
 - Engineer instant capture
 - Additional Zoom Levels+++
@@ -51,7 +55,7 @@ AI changes:
 - AI Engineers no longer walk in groups. They choose their own targets
 - AI Medics and Mechanics now only repair friendly units, not enemy units
 - AI doesn't wait for the player to let his base grow and/or tech up to the highest level (Radar, Air units, etc.)
-- AI build MCV's and deploys them, AI limitations for buildings, etc. are increased on such a deploy
+- AI build MCV's and deploys them, AI limitations for buildings, etc
 - AI have a limit of construction yard/war factory/vessel carrier according to fast build on/off. It's more realist against a human even with a massive base
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 - AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
