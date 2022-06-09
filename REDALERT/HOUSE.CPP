@@ -7007,25 +7007,6 @@ int HouseClass::AI_Vessel(void)
 	if (IsBaseBuilding) {
 		//Added by Bast75, this was empy, result no naval units in skirmish. We want them!!!
 
-		//New detection method to prevent overproducing vessels for the AI, he count according to the enemies average:
-		if (!IsHuman) {
-			for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-				HouseClass * CurrentHouse = HouseClass::As_Pointer(h);
-				if (CurrentHouse != NULL && !Is_Ally(h)) {
-					EnemyVessels += Vessels.Count();
-				}
-			}
-			if (EnemyVessels > 0 && CountEnemiesForThisAI > 0) {
-				AverageEnemyVessels = (int)((EnemyVessels / CountEnemiesForThisAI));
-			}
-			else {
-				AverageEnemyVessels = 0;
-			}
-			if ((int)CurVessels > AverageEnemyVessels) {
-				return(TICKS_PER_SECOND);
-			}
-		}
-
 		//allies, x change of first unit, otherwise x change of second unit, else make the 3rth one.
 		if (Can_Build(&VesselTypeClass::As_Reference(VESSEL_PT), ActLike) && Percent_Chance(Rule.AIAlliesVesselPTPercentage))
 		{
