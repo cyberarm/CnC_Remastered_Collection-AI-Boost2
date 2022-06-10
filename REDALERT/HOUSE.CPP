@@ -9408,7 +9408,5 @@ void HouseClass::AI_CalcDynamics(void)
 			AIDetectHumanGroundWar = true;
 			AIDetectedNavalWar = true;
 		}
-
-
 	}
 }
