@@ -5740,6 +5740,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 			fprintf(fp, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
 			fprintf(fp, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
 			fprintf(fp, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
+			fprintf(fp, "Game: Aftermath Fast Build: %d\n", Rule.AIAftermathfastbuild); // %d for decimal
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
 			if (Buildings.Count() == 0) {
@@ -9208,6 +9209,19 @@ void HouseClass::AI_CalcDynamics(void)
 			AIDetectHumanGroundWar = true;
 		}
 
+		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
+		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
+			if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
+				AIWarFactoryLimit += 2;
+			}
+			if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
+				AIMaxConYardsAndMCVs += 2;
+			}
+			if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
+				AINavalLimit += 2;
+			}
+		}
+
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
 			AIMaxConYardsAndMCVs = Rule.AIMaxMCVsBasic;
@@ -9368,19 +9382,6 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 		if (BQuantity[STRUCT_REFINERY] < 2) {
 			AIPowerPlus = 5;
-		}
-
-		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
-		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
-			if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
-				AIWarFactoryLimit += 2;
-			}
-			if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
-				AIMaxConYardsAndMCVs += 2;
-			}
-			if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
-				AINavalLimit += 2;
-			}
 		}
 
 		if (Rule.AISpeedRush == 1) {
