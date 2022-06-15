@@ -59,6 +59,8 @@ bool Debug_Modem_Dump = false;		// true = print the Modem Stuff
 bool Debug_Print_Events = false;		// true = print event & packet processing
 bool Debug_Force_Crash = false;
 
+//CFEPatchConfig ActiveCFEPatchConfig;
+
 TFixedIHeapClass<AircraftClass>		Aircraft;
 TFixedIHeapClass<AnimClass>			Anims;
 TFixedIHeapClass<BuildingClass>		Buildings;
@@ -176,6 +178,14 @@ fixed EngineerDamage=0x55;			// Amount of damage an engineer does
 fixed EngineerCaptureLevel=0x40;	// Building damage level before engineer can capture
 #endif
 #endif
+
+// Chthon CFE Note: Timequakes are buggy in that there can only be 1 per frame,
+// even though multiple MAD tanks and a global timequake (once I fix that) could all fire on the same frame
+// so we need a separate variable for a global timequake and a vector to store an arbitrary number of MAD tank locations
+// Quandary: Since none of the timequake variables get into the save file, is there a way to bypass one by saving and reloading in between the frame where they get set and the frame where they get processed?
+bool GlobalTimeQuake = false;
+bool PendingGlobalTimeQuake = false;
+DynamicVectorClass<TARGET> MADTimeQuakeCenterList;
 
 #ifdef WIN32
 unsigned short			Hard_Error_Occured = 0;
@@ -409,6 +419,7 @@ MFCD * GeneralMix = 0;
 MFCD * ScoreMix = 0;
 MFCD * MainMix = 0;
 MFCD * ConquerMix = 0;
+MFCD * RAModMix = 0; // Chthon CFE Note: Apparently RA handles mix files differently. Hope this works...
 
 
 /***************************************************************************

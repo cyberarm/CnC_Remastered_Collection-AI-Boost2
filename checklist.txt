@@ -1,0 +1,23 @@
+Checks to do before launching the game on Steam:
+
+-Harvester run away bug, still fixed?
+-Harvester memory enabled/disabled works and is different?
+-Pathfinding for naval units still oke?
+-pathfinding for normal units still oke?
+-Attack move works on infantry?
+-Queue move works on infantry?
+-Queue Attack move works on infantry?
+-Queue move works on tanks?
+-Attack move works on tanks?
+-Queue Attack move works on tanks?
+-Queue move works on air units?
+-Attack move works on air units?
+-Queue Attack move works on air units?
+-Queue move works on vessels?
+-Attack move works on vessels?
+-Queue Attack move works on vessels?
+-Aftermath Fast Build works?
+-Speed rush works?
+-Instant capture works?
+-Chronosphere doesnt kill cargo?
+-Groundwar/Navalwar and mixed war still correct detection?

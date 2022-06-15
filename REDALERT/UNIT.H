@@ -112,21 +112,31 @@ class UnitClass :	public DriveClass
 		FacingClass SecondaryFacing;
 
 		/*
-		**	The coodinate of the last docking bay for this unit.
-		**	The unit should prefer docking with it or a nearby
-		**	docking bay when seeking for a building to dock with.
+		**	This is the refinery a harvester is interested in unloading at.
 		*/
-		COORDINATE LastDockingBayCoord;
+		mutable TARGET TiberiumUnloadRefinery;
 
-		/*
-		**	Determines whether the unit should start harvesting
-		**	once it has finished moving to its rally point.
-		*/
-		bool InitHarvest;
-
+        // Chthon CFE Note: Cannot initialize variables here! RA's savegame loading copies the data then calls new. WTF?!
+        // Do it in the constructor instead.
+        
+        // Chthon CFE Note: recharge timer for built-in iron curtain for rank3 veteran mammoth tanks
+        unsigned short int PersonalIronCurtainCooldown;
+        // Chthon CFE Note: countdown for rank3 veteran minelayer recharge
+        unsigned short int MinelayerRecharge;
+        // Chthon CFE Note: some stuff for minelayers' special attack-move mode
+        TARGET MLoriginalposition;
+        unsigned char MLattackmovemode;
+        
+       
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
+        // Chthon CFE Note:
+        // Original padding was 28 bytes
+        // 
+        // PersonalIronCurtainCooldown ate 2 bytes
+        // minelayer stuff eats 5 bytes
+        // RESET PADDING in v1.8 b/c we're breaking save compatibility anyway
 		unsigned char SaveLoadPadding[28];
 
 		/*---------------------------------------------------------------------
@@ -174,7 +184,11 @@ class UnitClass :	public DriveClass
 		virtual bool Ok_To_Move(DirType facing) const;
 		virtual FireErrorType Can_Fire(TARGET target, int which) const;
 		virtual fixed Tiberium_Load(void) const;
+        virtual BuildingClass* Tiberium_Unload_Refinery(void) const;
+		virtual BuildingClass* Find_Best_Refinery(void) const;
 
+        void ReconsiderRefinery(void);
+        
 		/*
 		**	Coordinate inquiry functions. These are used for both display and
 		**	combat purposes.
@@ -206,7 +220,7 @@ class UnitClass :	public DriveClass
 		/*
 		**	Combat related.
 		*/
-		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false);
+		virtual ResultType Take_Damage(int & damage, int distance, WarheadType warhead, TechnoClass * source=0, bool forced=false, TARGET indirectsource = TARGET_NONE, ArmorPenType specialarmorpen = ARMORPEN_NONE); // Chthon CFE Note: Added indirectsource so minelayers can get XP
 		virtual BulletClass * Fire_At(TARGET target, int which=0);
 
 		/*
@@ -230,7 +244,6 @@ class UnitClass :	public DriveClass
 		virtual int Mission_Repair(void);
 		virtual int Mission_Move(void);
 		virtual int Mission_Enter(void);
-
 		void Rotation_AI(void);
 		void Firing_AI(void);
 		void Reload_AI(void);
@@ -264,6 +277,13 @@ class UnitClass :	public DriveClass
 		static char *INI_Name(void) {return "UNITS";};
 		bool Load(Straw & file);
 		bool Save(Pipe & file) const;
+        
+        // Chthon CFE Note: functions for minelayer attack-move AI
+        bool MinelayerPoopTime();
+        bool MinelayerGoHome();
+        bool MinelayerFindSpot();
+        // for getting things to consistently exit the repair bay instead of twitching stupidly sometimes 
+        bool DoSmarterRunAway();
 };
 
 #endif
