@@ -670,9 +670,15 @@ bool RulesClass::General(CCINIClass & ini)
 		IQAircraft = 5;
 		IQHarvester = 5;
 		IQSellBack = 5;
-		ChronoTechLevel = 5;
 		
+		//This is a distance value on which a unit tries to find a alternate route.
+		//If blocked area is closer then he tries to go around it.
+		//If if bocked areda is further and its an unit that blocks it, we expect its gone when we are there.
 		AStarImpassableCloseEnough = ini.Get_Int(MOREQOL, "AStarImpassableCloseEnough", 3);
+		if (AStarImpassableCloseEnough < 1) { AStarImpassableCloseEnough = 1; }
+		else if (AStarImpassableCloseEnough > 100) { AStarImpassableCloseEnough = 100; }
+		else { AStarImpassableCloseEnough = 3; }
+
 		//CFE stuff:
 		AstarPathFindingEnabled = ini.Get_Int(MOREQOL, "AstarPathFindingEnabled", 1); // should not be in the .ini, pathfinding should not be disabled
 		OOM_REPAIR = ini.Get_Int(MOREQOL, "OOM_REPAIR", 1);
