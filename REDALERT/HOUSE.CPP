@@ -689,7 +689,7 @@ HouseClass::HouseClass(HousesType house) :
 	*/
 	//Attack = Rule.AttackDelay * Random_Pick(TICKS_PER_MINUTE/2, TICKS_PER_MINUTE*2);
 	//Delay First Attack, by Bast75
-	Attack = TICKS_PER_MINUTE * Rule.AIAttackFirstTime;
+	Attack = Rule.AIAttackFirstTime * Random_Pick(TICKS_PER_MINUTE / 2, TICKS_PER_MINUTE * 2);
 
 	Init_Unit_Trackers();
 
@@ -764,6 +764,7 @@ void HouseClass::SetStolenTech() {
 		}
 		if (IsHuman) {
 			//How do we reset the sidebar? Now the Human has to redeploy Contruction Yard to MCV and back to update the sidebar.
+			IsRecalcNeeded = true; //this should start a recalculation of the buildable objects.
 		}
 	}
 }
@@ -1630,6 +1631,13 @@ void HouseClass::Super_Weapon_Handler(void)
 				IsRecalcNeeded = true;
 			}
 		}
+		else {
+			//AI use Chronosphere - Mini Franki
+			if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !IsHuman) {
+				Special_Weapon_AI(SPC_CHRONOSPHERE);
+				Special_Weapon_AI(SPC_CHRONO2);
+			}
+		}
 	} else {
 		/*
 		**	If there is no chronosphere present, but there is a chronosphere
@@ -1638,7 +1646,7 @@ void HouseClass::Super_Weapon_Handler(void)
 		if ((ActiveBScan & STRUCTF_CHRONOSPHERE) &&
 //			(ActLike == HOUSE_GOOD || Session.Type != GAME_NORMAL) &&
 			(unsigned)Control.TechLevel >= BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
-//			Control.TechLevel >= Rule.ChronoTechLevel &&
+			Control.TechLevel >= Rule.ChronoTechLevel &&
 			(IsHuman || IQ >= Rule.IQSuperWeapons)) {
 
 			SuperWeapon[SPC_CHRONOSPHERE].Enable(false, this == PlayerPtr, Power_Fraction() < 1);
@@ -1680,6 +1688,12 @@ void HouseClass::Super_Weapon_Handler(void)
 					Map.Column[1].Flag_To_Redraw();
 				}
 				IsRecalcNeeded = true;
+			}
+		}
+		else {
+			//AI use Iron Curtain - Mini Franki
+			if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && !IsHuman) {
+				Special_Weapon_AI(SPC_IRON_CURTAIN);
 			}
 		}
 	} else {
@@ -1965,8 +1979,14 @@ void HouseClass::Harvested(unsigned tiberium)
 				UnitClass * u = Units.Ptr(index);
 				if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
 					if (*u == UNIT_MCV) {
+						//Reserve the last MCV to expend the base - Mini Franki
+						if (UQuantity[UNIT_MCV] == 1 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) {
+							u->Assign_Mission(MISSION_HUNT);
+						}
+						else {
 						// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
-						u->Assign_Mission(MISSION_HUNT);
+							u->Assign_Mission(MISSION_HUNT);
+						}
 					}
 				}
 			}
@@ -2758,31 +2778,153 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 {
 	assert(Houses.ID(this) == ID);
 
-	/*
-	** Loop through all of the building objects on the map
-	** and see which ones are available.
- 	*/
-	BuildingClass * bestptr = NULL;
-	int best = -1;
+	//AI processing to be able to use Chronosphere and Iron Curtain - Mini Franki
+	//Chronosphere - need rework
+	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
+		//Select an unit to teleport
+		if (Map.IsTargettingMode == SPC_CHRONOSPHERE) {
+			UnitClass * unittoteleport = NULL;
 
-	for (int index = 0; index < Buildings.Count(); index++) {
-		BuildingClass * b = Buildings.Ptr(index);
+			for (int index = 0; index < Units.Count(); index++) {
+				UnitClass * u = Units.Ptr(index);
 
-		/*
-		** If the building is valid, not in limbo, not in the process of
-		** being destroyed and not our ally, then we can consider it.
-		*/
-		if (b != NULL && !b->IsInLimbo && b->Strength && !Is_Ally(b)) {
-			if (Percent_Chance(90) && (b->Value() > best || best == -1)) {
-				best = b->Value();
-				bestptr = b;
+				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
+					//If not passable, reserve and shift the last MCV to expend the base
+					if (*u == UNIT_MCV && UQuantity[UNIT_MCV] == 1 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) {
+						unittoteleport = u;
+					}
+					else if (*u == UNIT_DEMOTRUCK) {
+						unittoteleport = u;
+					}
+				}
+			}
+
+			if (unittoteleport) {
+				CELL cell = Coord_Cell(unittoteleport->Center_Coord());
+				Place_Special_Blast(id, cell);
 			}
 		}
-	}
 
-	if (bestptr) {
-		CELL cell = Coord_Cell(bestptr->Center_Coord());
-		Place_Special_Blast(id, cell);
+		//Select a new destination for the unit - test 
+		else if (Map.IsTargettingMode == SPC_CHRONO2) {
+			int FarthestEnemyBuildingDist = -1;
+			for (int index = 0; index < Buildings.Count(); index++) {
+				BuildingClass * Ownbuilding = Buildings.Ptr(index);
+				if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+					for (int index = 0; index < Buildings.Count(); index++) {
+						BuildingClass * building = Buildings.Ptr(index);
+						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+							if (FarthestEnemyBuildingDist == -1 && (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(25))) {
+								//Note: We added the 25 change option, otherwise it always takes the furtherest building. Now it's more random.
+								FarthestEnemyBuildingDist = index;
+								break; // we have selected a building, so don't do a new calculation again.
+							}
+						}
+					}
+				}
+				if (FarthestEnemyBuildingDist > -1) {
+					break; // we have selected a building, so don't do a new calculation again.
+				}
+			}
+			COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
+			CELL TargetCell = Coord_Cell(TargetCoord);
+			CELL cell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false);
+			Place_Special_Blast(id, cell);
+		}
+	}
+	//Iron Curtain
+	else if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
+		//Select an unit to protect
+		UnitClass * unittoprotect = NULL;
+
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+
+			if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
+				//If harvester and MCV is attacked, worth to protect it
+				if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
+					unittoprotect = u;
+				}
+				//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
+				else if (*u == UNIT_MAD) {
+					int ClosestOwnBuilding = -1;
+					for (int index = 0; index < Buildings.Count(); index++) {
+						BuildingClass * building = Buildings.Ptr(index);
+						if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
+							if (ClosestOwnBuilding == -1 || u->Distance(building) < ClosestOwnBuilding) {
+								ClosestOwnBuilding = u->Distance(building);
+							}
+						}
+					}
+					int ClosestEnemyBuildingDist = -1;
+					for (int index = 0; index < Buildings.Count(); index++) {
+						BuildingClass * building = Buildings.Ptr(index);
+						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+							if (ClosestEnemyBuildingDist == -1 || u->Distance(building) < ClosestEnemyBuildingDist) {
+								ClosestEnemyBuildingDist = u->Distance(building);
+							}
+						}
+					}
+					ClosestOwnBuilding = ClosestOwnBuilding / 265;
+					ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
+					if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
+						unittoprotect = u;
+					}
+				}
+			}
+		}
+
+		if (unittoprotect) {
+			CELL cell = Coord_Cell(unittoprotect->Center_Coord());
+			Place_Special_Blast(id, cell);
+		}
+
+		//Select a building to protect
+		BuildingClass * buildingtoprotect = NULL;
+
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * b = Buildings.Ptr(index);
+
+			if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+				//If a yard/ref or weap is attacked, worth to protect it
+				if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+					buildingtoprotect = b;
+				}
+			}
+		}
+
+		if (buildingtoprotect) {
+			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
+			Place_Special_Blast(id, cell);
+		}
+	}
+	else {
+		/*
+		** Loop through all of the building objects on the map
+		** and see which ones are available.
+		*/
+		BuildingClass * bestptr = NULL;
+		int best = -1;
+
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * b = Buildings.Ptr(index);
+
+			/*
+			** If the building is valid, not in limbo, not in the process of
+			** being destroyed and not our ally, then we can consider it.
+			*/
+			if (b != NULL && !b->IsInLimbo && b->Strength && !Is_Ally(b)) {
+				if (Percent_Chance(90) && (b->Value() > best || best == -1)) {
+					best = b->Value();
+					bestptr = b;
+				}
+			}
+		}
+
+		if (bestptr) {
+			CELL cell = Coord_Cell(bestptr->Center_Coord());
+			Place_Special_Blast(id, cell);
+		}
 	}
 }
 
@@ -5874,9 +6016,16 @@ bool HouseClass::AI_Attack(UrgencyType)
 				}
 			}
 			else if (*u == UNIT_MCV) {
-				// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
-				u->Scatter(false, true, true);
-				u->Assign_Mission(MISSION_HUNT);
+				//Reserve the last MCV to expend the base - Mini Franki
+				if (UQuantity[UNIT_MCV] == 1 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) {
+					u->Scatter(false, true, true);
+					u->Assign_Mission(MISSION_HUNT);
+				}
+				else {
+					// By Bast75, AI MCV didn't deploy after coming out of the war-factory, lets try again.
+					u->Scatter(false, true, true);
+					u->Assign_Mission(MISSION_HUNT);
+				}
 			}
 			else {
 				u->Scatter(false, true, true);
@@ -6494,6 +6643,13 @@ int HouseClass::AI_Building(void)
 	}
 
 	if (IsBaseBuilding) {
+		if (!IsHuman && (int)HumanBuildingCount > 0) {
+			// AI goes over minimal allowed, now check if not too much:
+			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
+				return(TICKS_PER_SECOND);
+			}
+		}
+
 		BuildChoice.Free_All();
 		BuildChoiceClass * choiceptr;
 		StructType stype = STRUCT_NONE;
@@ -6513,8 +6669,6 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Lets do the build stuff:
-
-
 		//Power
 		if (Power <= Drain + AIPowerPlus) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_POWER);
@@ -6889,6 +7043,28 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
+		//iron curtain
+		if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
+		//chronosphere
+		if (BQuantity[STRUCT_CHRONOSPHERE] < 1) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
 		//gap
 		if (BQuantity[STRUCT_GAP] < AIGapLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
@@ -6901,31 +7077,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//Iron curtain and Chronosphere are both default disabled.
-		//It doesn't work in LAN/Skirmish or online games....
-
-		//iron curtain
-		//if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
-		//	b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
-		//	if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-		//		choiceptr = BuildChoice.Alloc();
-		//		if (choiceptr != NULL) {
-		//			*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-		//		}
-		//	}
-		//}
-
-		//chronosphere
-		//if (BQuantity[STRUCT_CHRONOSPHERE] < 1) {
-		//	b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
-		//	if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-		//		choiceptr = BuildChoice.Alloc();
-		//		if (choiceptr != NULL) {
-		//			*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-		//		}
-		//	}
-		//}
-
 		//Build Silo if storage above x %
 		if (Tiberium > Capacity * 0.99) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_STORAGE);
@@ -6937,13 +7088,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-
-		if (!IsHuman && (int)HumanBuildingCount > 0) {
-			// AI goes over minimal allowed, now check if not too much:
-			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
-				return(TICKS_PER_SECOND);
-			}
-		}
 
 		//All done. Lets pick one to build:
 		/*
@@ -6999,10 +7143,10 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Test by Bast75: (Let the AI make Extreme of this to test if this unit is using his new options the way it should be)
-	if (!IsHuman && 1==0) {
-		BuildUnit = UNIT_CHRONOTANK; // UNIT_MCV;
-		return(TICKS_PER_SECOND);
-	}
+	//if (!IsHuman) {
+	//	BuildUnit = UNIT_MCV;
+	//	return(TICKS_PER_SECOND);
+	//}
 
 	// Make extra harvesters
 	if (!IsHuman) {
@@ -9692,3 +9836,5 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 	}
 }
+
+

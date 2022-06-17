@@ -836,6 +836,7 @@ class HouseClass {
 		//By Bast75
 		void AI_CalcDynamics(void);
 
+
 		/*
 		** New default win mode to avoid griefing. ST - 1/31/2020 3:33PM
 		*/
