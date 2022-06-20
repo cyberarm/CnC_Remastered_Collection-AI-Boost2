@@ -547,6 +547,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMoreStartingCash = ini.Get_Int(MOREQOL, "AIMoreStartingCash", 0);
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
 		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
+		AIStrategyMode = ini.Get_Int(MOREQOL, "AIStrategyMode", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 5);
 		AIAttackFirstTime = ini.Get_Int(MOREQOL, "AIAttackFirstTime", 5);

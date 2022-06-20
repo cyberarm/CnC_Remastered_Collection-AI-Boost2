@@ -481,7 +481,11 @@ class HouseClass {
 		int AverageEnemyVessels = 0;
 		int NrOfHumanTanks = 0;
 
-		bool HouseHasFlag = false;
+		bool HouseHasFlag = false; //Not used yet, we need to improve capture the flag for AI in the future....
+
+		void AI_CalcDynamics(void);
+		bool firstrundone = false;
+		int AIPersonalStrategyMode = 0;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.
@@ -832,10 +836,6 @@ class HouseClass {
 		static void One_Time(void);
 		static HouseClass * As_Pointer(HousesType house);
 		static void Recalc_Attributes(void);
-
-		//By Bast75
-		void AI_CalcDynamics(void);
-
 
 		/*
 		** New default win mode to avoid griefing. ST - 1/31/2020 3:33PM

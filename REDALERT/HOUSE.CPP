@@ -6642,12 +6642,36 @@ int HouseClass::AI_Building(void)
 		}
 	}
 
+	if (firstrundone == false) {
+		//We do this only 1 time at start of the game
+		firstrundone = true;
+		AI_CalcDynamics();
+	}
+
 	if (IsBaseBuilding) {
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not too much:
 			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
 				return(TICKS_PER_SECOND);
 			}
+		}
+
+		if ((Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0) || (AIDetectedNavalWar && AIPersonalStrategyMode > 3)) {
+			/*
+			This allowes the AI to select a random strategy to use for a house.
+			Enter a number so set the AI to a desired strategy.
+			0: Not set, the AI is allowed to select a random one
+			1: Default game like we always have
+			2: Naval war rush. Build naval, no barracks/tents, warfactories or air stuff.
+			3: Air rush. Helipads/airfields only
+			4: Infantry rush, no tech stuff, just barracks/tents
+			5: Tank rush, warfactories only
+			6: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
+			*/
+			AIPersonalStrategyMode = Random_Pick(1, 6);
+		}
+		else if (Rule.AIStrategyMode > 0) {
+			AIPersonalStrategyMode = Rule.AIStrategyMode; //In the .ini we have other value, so use this one
 		}
 
 		BuildChoice.Free_All();
