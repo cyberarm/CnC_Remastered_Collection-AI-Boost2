@@ -6656,15 +6656,17 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		if ((Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0) || (AIDetectedNavalWar && AIPersonalStrategyMode > 3)) {
+		if ((Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0)
+			|| (AIDetectedNavalWar && AIPersonalStrategyMode > 3) 
+			|| (!AIDetectedNavalWar && AIPersonalStrategyMode == 2)
+			) {
 			/*
 			This allowes the AI to select a random strategy to use for a house.
-			Enter a number so set the AI to a desired strategy.
 			0: Not set, the AI is allowed to select a random one
-			1: Default game like we always have
-			2: Naval war rush. Build naval, no barracks/tents, warfactories or air stuff.
+			1: Default dynamic strategy like we always have/had
+			2: Naval rush. Build naval, no barracks/tents, warfactories or air stuff.
 			3: Air rush. Helipads/airfields only
-			4: Infantry rush, no tech stuff, just barracks/tents
+			4: Infantry rush, just barracks/tents
 			5: Tank rush, warfactories only
 			6: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
 			*/
@@ -9832,6 +9834,150 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 		if (BQuantity[STRUCT_REFINERY] < 2) {
 			AIPowerPlus = 5;
+		}
+
+		/***
+		0: Not set, the AI is allowed to select a random one
+		1 : Default dynamic game like we always have/had
+		2 : Naval rush. Build naval, no barracks / tents, warfactories or air stuff.
+		3 : Air rush.Helipads / airfields only
+		4 : Infantry rush, no tech stuff, just barracks / tents
+		5 : Tank rush, warfactories only
+		6 : Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
+		AIPersonalStrategyMode = Random_Pick(1, 6);
+		***/
+		//We overwrite the limits depending on the strategy the house has:
+
+		//Default dynamic game like we always have/had
+		if (AIPersonalStrategyMode == 1) {
+			// no changes
+		}
+
+		//Naval rush
+		if (AIPersonalStrategyMode == 2) {
+			//AIMaxConYardsAndMCVs = 1;
+			AIDogKennelLimit = 0;
+			AIRefineryLimit = 5;
+			AIBarracksLimit = 0;
+			AIWarFactoryLimit = 0;
+			AINavalLimit = 5;
+			AIHelipadAlliedLimit = 0;
+			AIHelipadSovietLimit = 0;
+			AIAirdefenseLimit = 0;
+			AIPillBoxLimit = 0;
+			AITurretGunLimit = 0;
+			AIFlameTurretLimit = 0;
+			AITeslaGunLimit = 0;
+			AIGapLimit = 0;
+			AINukeLimit = 0;
+			AIRepairBayLimit = 0;
+			AIMaxBuildings = 20; // constr yard, some refs and power and the required building
+			AIMaxTanksNr = 0;
+			AIMaxNavalNr = 200;
+			AIMaxInfantryNr = 0;
+			AIMaxAirNr = 0;
+		}
+
+		//Air rush
+		if (AIPersonalStrategyMode == 3) {
+			//AIMaxConYardsAndMCVs = 1;
+			AIDogKennelLimit = 0;
+			AIRefineryLimit = 5;
+			AIBarracksLimit = 0;
+			AIWarFactoryLimit = 0;
+			AINavalLimit = 0;
+			AIHelipadAlliedLimit = 16;
+			AIHelipadSovietLimit = 16;
+			AIAirdefenseLimit = 0;
+			AIPillBoxLimit = 0;
+			AITurretGunLimit = 0;
+			AIFlameTurretLimit = 0;
+			AITeslaGunLimit = 0;
+			AIGapLimit = 0;
+			AINukeLimit = 0;
+			AIRepairBayLimit = 0;
+			AIMaxBuildings = 40; // constr yard, some refs and power and the required building
+			AIMaxTanksNr = 0;
+			AIMaxNavalNr = 0;
+			AIMaxInfantryNr = 0;
+			AIMaxAirNr = 200;
+		}
+
+		//Infantry rush
+		if (AIPersonalStrategyMode == 4) {
+			//AIMaxConYardsAndMCVs = 1;
+			AIDogKennelLimit = 2;
+			AIRefineryLimit = 5;
+			AIBarracksLimit = 5;
+			AIWarFactoryLimit = 0;
+			AINavalLimit = 0;
+			AIHelipadAlliedLimit = 0;
+			AIHelipadSovietLimit = 0;
+			AIAirdefenseLimit = 0;
+			AIPillBoxLimit = 0;
+			AITurretGunLimit = 0;
+			AIFlameTurretLimit = 0;
+			AITeslaGunLimit = 0;
+			AIGapLimit = 0;
+			AINukeLimit = 0;
+			AIRepairBayLimit = 1;
+			AIMaxBuildings = 20; // constr yard, some refs and power and the required building
+			AIMaxTanksNr = 0;
+			AIMaxNavalNr = 0;
+			AIMaxInfantryNr = 200;
+			AIMaxAirNr = 0;
+			Rule.InfantryReserve = 100; //Build unlimited infantry if more cash than this
+			Rule.InfantryBaseMult = 5000; // nr of infantry * nr of buildings
+		}
+
+		//Tank rush
+		if (AIPersonalStrategyMode == 4) {
+			//AIMaxConYardsAndMCVs = 1;
+			AIDogKennelLimit = 0;
+			AIRefineryLimit = 5;
+			AIBarracksLimit = 0;
+			AIWarFactoryLimit = 5;
+			AINavalLimit = 0;
+			AIHelipadAlliedLimit = 0;
+			AIHelipadSovietLimit = 0;
+			AIAirdefenseLimit = 0;
+			AIPillBoxLimit = 0;
+			AITurretGunLimit = 0;
+			AIFlameTurretLimit = 0;
+			AITeslaGunLimit = 0;
+			AIGapLimit = 0;
+			AINukeLimit = 0;
+			AIRepairBayLimit = 1;
+			AIMaxBuildings = 20; // constr yard, some refs and power and the required building
+			AIMaxTanksNr = 200;
+			AIMaxNavalNr = 0;
+			AIMaxInfantryNr = 0;
+			AIMaxAirNr = 0;
+		}
+
+		//Defender
+		if (AIPersonalStrategyMode == 6) {
+			AIMaxConYardsAndMCVs = 2;
+			AIDogKennelLimit = 1;
+			AIRefineryLimit = 5;
+			AIBarracksLimit = 1;
+			AIWarFactoryLimit = 1;
+			AINavalLimit = 1;
+			AIHelipadAlliedLimit = 1;
+			AIHelipadSovietLimit = 1;
+			AIAirdefenseLimit = 50;
+			AIPillBoxLimit = 50;
+			AITurretGunLimit = 50;
+			AIFlameTurretLimit = 100;
+			AITeslaGunLimit = 50;
+			AIGapLimit = 5;
+			AINukeLimit = 1;
+			AIRepairBayLimit = 1;
+			AIMaxBuildings = 500; // constr yard, some refs and power and the required building
+			AIMaxTanksNr = 50;
+			AIMaxNavalNr = 10;
+			AIMaxInfantryNr = 20;
+			AIMaxAirNr = 10;
 		}
 
 		if (Rule.AISpeedRush == 1) {
