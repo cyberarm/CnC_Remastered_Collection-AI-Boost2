@@ -597,6 +597,35 @@ void UnitClass::AI(void)
 		Shroud_Regen();
 	}
 	
+
+	//By Bast75
+	//Check if close enough to enemy building and far enough of own houses, then deploy MAD-tank.
+	if (*this == UNIT_MAD && !House->IsHuman) {
+		//Lets find the closest building from ourself. (allied buildings included)
+		int ClosestOwnBuilding = -1;
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * building = Buildings.Ptr(index);
+			if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
+				if (ClosestOwnBuilding == -1 || (Distance(building) / 265) < ClosestOwnBuilding) {
+					ClosestOwnBuilding = (Distance(building) / 265);
+				}
+			}
+		}
+		int ClosestEnemyBuilding = -1;
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * building = Buildings.Ptr(index);
+			if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+				if (ClosestEnemyBuilding == -1 || (Distance(building) / 265) < ClosestEnemyBuilding) {
+					ClosestEnemyBuilding = (Distance(building) / 265);
+				}
+			}
+		}
+
+		//We are far enough from our base. Lets unload our Mad Tank.
+		if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
+			Assign_Mission(MISSION_UNLOAD);
+		}
+	}
 }
 
 
@@ -1349,35 +1378,6 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		*/
 		if (*this == UNIT_HARVESTER && !House->IsHuman && source) {
 			Base_Is_Attacked(source);
-		}
-
-		//By Bast75
-		//If AI and MAD Tank and got damage? Then deploy
-		if (*this == UNIT_MAD && !House->IsHuman) {
-			//Lets find the closest building from ourself. (allied buildings included)
-			int ClosestOwnBuilding = -1;
-			for (int index = 0; index < Buildings.Count(); index++) {
-				BuildingClass * building = Buildings.Ptr(index);
-				if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
-					if (ClosestOwnBuilding == -1 || (Distance(building) / 265) < ClosestOwnBuilding) {
-						ClosestOwnBuilding = (Distance(building) / 265);
-					}
-				}
-			}
-			int ClosestEnemyBuilding = -1;
-			for (int index = 0; index < Buildings.Count(); index++) {
-				BuildingClass * building = Buildings.Ptr(index);
-				if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-					if (ClosestEnemyBuilding == -1 || (Distance(building) / 265) < ClosestEnemyBuilding) {
-						ClosestEnemyBuilding = (Distance(building) / 265);
-					}
-				}
-			}
-
-			//We are far enough from our base. Lets unload our Mad Tank.
-			if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
-				Assign_Mission(MISSION_UNLOAD);
-			}
 		}
 	}
 	return(res);
