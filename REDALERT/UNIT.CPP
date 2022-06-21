@@ -3445,10 +3445,16 @@ int UnitClass::Mission_Hunt(void)
 						}
 						else {
 							//Moving to waypoint, deploy when close enough
-							int CurDist = ::Distance(this->Center_Coord(), Cell_Coord(Scen.Waypoint[MCVSelectedWaypointNR]));
+							//int CurDist = ::Distance(this->Center_Coord(), Cell_Coord(Scen.Waypoint[MCVSelectedWaypointNR]));
+							int CurDist = this->Distance(Cell_Coord(Scen.Waypoint[MCVSelectedWaypointNR]));
 							CurDist = CurDist / 265;
 							if (CurDist < 50) {
 								Status = FIND_SPOT;
+							}
+							else
+							{
+								Assign_Destination(::As_Target(Scen.Waypoint[MCVSelectedWaypointNR]));
+								Assign_Mission(MISSION_MOVE);
 							}
 						}
 					}
