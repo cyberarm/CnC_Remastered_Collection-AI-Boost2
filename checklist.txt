@@ -21,3 +21,7 @@ Checks to do before launching the game on Steam:
 -Instant capture works?
 -Chronosphere doesnt kill cargo?
 -Groundwar/Navalwar and mixed war still correct detection?
+-airpad and airstrip code to check
+-tweak selling for power/cash list
+-plane crash overbuy?
+

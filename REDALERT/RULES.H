@@ -109,6 +109,7 @@ class RulesClass {
 		bool AllowTechStealing = true;
 		int AIMaxChronotanks = 5;
 		bool AIAllowChronotanksGroupShifting = true;
+		bool AIAllowLastMCVToDoSecondBase = false;
 
 		int AIMadTankSaveToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;

@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 7 June 2022
+Last update at: 20 June 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -12,13 +12,14 @@ Please follow the steps below to update and reactivate the mod:
 --- 
 
 Latest changes:
-- Revert back to last 16th may version. We only keep Veterancy mod, vanilla/multiplayer/performance fix from CFE
 - Prio for Tesla & Power buildings improved
 - Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 - Several AI-tweaks for Naval War and Mixed War
 - Several AI-tweaks for Air and Anti-Air production
 - Fixed some performance issues
+- Added an option to allow the AI to make a second base(will use chronoshift or vessel transport for map with islands)
+- AI know how to use Chronosphere and Iron Curtain
 
 Included mod's:
 - Veterancy mod(default disabled), vanilla/multiplayer/performance fix from CFE Patch Redux 1.8

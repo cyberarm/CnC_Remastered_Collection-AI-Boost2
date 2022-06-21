@@ -534,6 +534,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AINoShroud = ini.Get_Bool(MOREQOL, "AINoShroud", false);
 		AIMaxChronotanks = ini.Get_Int(MOREQOL, "AIMaxChronotanks", 5);
 		AIAllowChronotanksGroupShifting = ini.Get_Bool(MOREQOL, "AIAllowChronotanksGroupShifting", true);
+		AIAllowLastMCVToDoSecondBase = ini.Get_Bool(MOREQOL, "AIAllowLastMCVToDoAnOtherBase", false);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
 		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 10);
