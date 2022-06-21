@@ -487,9 +487,6 @@ class HouseClass {
 		bool firstrundone = false;
 		int AIPersonalStrategyMode = 0;
 
-		//Mini Franki
-		void AI_AdvMCVMissionHunt(void);
-
 		/*
 		** Stuff to keep track of the total number of units built by this house.
 		*/

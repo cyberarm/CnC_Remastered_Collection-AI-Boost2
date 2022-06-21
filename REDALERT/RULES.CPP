@@ -531,7 +531,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIBuildingsMultiplier = ini.Get_Fixed(MOREQOL, "AIBuildingsMultiplier", 3);
 		AIAftermathfastbuild = ini.Get_Bool(MOREQOL, "AIAftermathfastbuild", true);
 		AIMaxEngineers = ini.Get_Int(MOREQOL, "AIMaxEngineers", 20);
-		AINoShroud = ini.Get_Bool(MOREQOL, "AINoShroud", false);
+		NoShroud = ini.Get_Bool(MOREQOL, "NoShroud", false);
 		AIMaxChronotanks = ini.Get_Int(MOREQOL, "AIMaxChronotanks", 5);
 		AIAllowChronotanksGroupShifting = ini.Get_Bool(MOREQOL, "AIAllowChronotanksGroupShifting", true);
 		AIAllowLastMCVToDoSecondBase = ini.Get_Bool(MOREQOL, "AIAllowLastMCVToDoAnOtherBase", false);

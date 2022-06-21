@@ -91,7 +91,7 @@ class RulesClass {
 		int AIAttackFirstTime = 5;
 		int AISpeedRush = 0;
 		bool AIAftermathfastbuild = true;
-		bool AINoShroud = false;
+		bool NoShroud = false;
 		bool AIAllowDynamicBaseGrow = true;
 		int AIAttackMinimaldefenseSendUnitsPrecentageLow = 80;
 		int AIAttackMinimaldefenseSendUnitsPrecentageHigh = 95;

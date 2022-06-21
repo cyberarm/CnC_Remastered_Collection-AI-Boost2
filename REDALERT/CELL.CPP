@@ -2212,7 +2212,7 @@ bool CellClass::Goodie_Check(FootClass * object)
 	assert((unsigned)Cell_Number() <= MAP_CELL_TOTAL);
 
 	//No shroud On/Off - Mini Franki
-	if (Rule.AINoShroud == 1) {
+	if (Rule.NoShroud == 1) {
 		if (object->House->IsHuman) {
 			for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
 				Map.Map_Cell(cell, object->House);

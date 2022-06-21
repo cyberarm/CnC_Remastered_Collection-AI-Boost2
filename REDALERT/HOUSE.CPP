@@ -1349,10 +1349,6 @@ void HouseClass::AI(void)
 	AI_Infantry();
 	AI_Aircraft();
 
-	//Check if MCV is present for 2nd base mission - Mini Franki
-	AI_AdvMCVMissionHunt();
-
-
 	/*
 	**	If the production possibilities need to be recalculated, then do so now. This must
 	**	occur after the scan bits have been properly updated.
@@ -5995,6 +5991,9 @@ bool HouseClass::AI_Attack(UrgencyType)
 					u->Scatter(false, true, true);
 				}
 			}
+			else if (*u == UNIT_MCV) {
+				u->Assign_Mission(MISSION_HUNT);
+			}
 			else {
 				u->Scatter(false, true, true);
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
@@ -7020,10 +7019,10 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Test by Bast75: (Let the AI make Extreme of this to test if this unit is using his new options the way it should be)
-	//if (!IsHuman) {
-	//	BuildUnit = UNIT_MCV;
-	//	return(TICKS_PER_SECOND);
-	//}
+	if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+		BuildUnit = UNIT_MCV;
+		return(TICKS_PER_SECOND);
+	}
 
 	// Make extra harvesters
 	if (!IsHuman) {

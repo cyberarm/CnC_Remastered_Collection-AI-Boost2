@@ -251,6 +251,7 @@ class UnitClass :	public DriveClass
 
 		//By Bast75
 		bool MCVGoesSecondBase = false;
+		int MCVSelectedWaypointNR = -1;
 
 		/*
 		**	Scenario and debug support.
