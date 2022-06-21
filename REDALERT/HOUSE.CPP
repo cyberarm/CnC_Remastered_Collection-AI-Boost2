@@ -1349,6 +1349,9 @@ void HouseClass::AI(void)
 	AI_Infantry();
 	AI_Aircraft();
 
+	//Check if MCV is present for 2nd base mission - Mini Franki
+	AI_AdvMCVMissionHunt();
+
 
 	/*
 	**	If the production possibilities need to be recalculated, then do so now. This must
@@ -1388,8 +1391,8 @@ void HouseClass::AI(void)
 		Map.All_To_Look(PlayerPtr);
 	}
 
-	// Detect if the game is FFA, by Bast75
-	if (!IsHuman) {
+	// Detect if the game is FFA (Do this check only 1 time), by Bast75
+	if (!IsHuman && FFAgame==2) {
 		FFAgame = 1; // We assume its an FFA game.
 		//Check if there is an Ally, then it's not FFA.
 		for (HousesType AllHouses = HOUSE_MULTI1; AllHouses < HOUSE_COUNT; AllHouses++) {
@@ -7044,9 +7047,6 @@ int HouseClass::AI_Unit(void)
 		}
 	}
 
-	//Give the order after the MCV is built - Mini Franki
-	AI_AdvMCVMissionHunt();
-
 	//Naval war and no ground war? Don't make too much of this, focus more on naval.
 	if (AIDetectedNavalWar && !AIDetectHumanGroundWar && !IsHuman) {
 		if (BQuantity[STRUCT_ADVANCED_TECH] > 0 && Percent_Chance(33) && (int)UQuantity[UNIT_CHRONOTANK] < Rule.AIMaxChronotanks) {
@@ -9876,6 +9876,36 @@ void HouseClass::AI_CalcDynamics(void)
 			fprintf(fp, "Game: Aftermath Fast Build: %d\n", Rule.AIAftermathfastbuild); // %d for decimal
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(fp, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
+			if (!IsHuman) {
+				switch (AIPersonalStrategyMode)
+				{
+				case 0:
+					fprintf(fp, "Player: Strategy mode: Not set\n");
+					break;
+				case 1:
+					fprintf(fp, "Player: Strategy mode: Dynamic strategy\n");
+					break;
+				case 2:
+					fprintf(fp, "Player: Strategy mode: Naval rush\n");
+					break;
+				case 3:
+					fprintf(fp, "Player: Strategy mode: Air rush\n");
+					break;
+				case 4:
+					fprintf(fp, "Player: Strategy mode: Infantry rush\n");
+					break;
+				case 5:
+					fprintf(fp, "Player: Strategy mode: Tank rush\n");
+					break;
+				case 6:
+					fprintf(fp, "Player: Strategy mode: Defender\n");
+					break;
+				}
+			}
+			else {
+				fprintf(fp, "Player: Strategy mode: Human\n");
+			}
+
 			if (Buildings.Count() == 0) {
 				fprintf(fp, "Is defeated: 1\n"); // %s for strings 
 			}
