@@ -626,6 +626,61 @@ void UnitClass::AI(void)
 			Assign_Mission(MISSION_UNLOAD);
 		}
 	}
+
+	//MCV goes to waypoint for 2nd base. By Mini Franki
+	if (*this == UNIT_MCV && !House->IsHuman && Rule.AIAllowLastMCVToDoSecondBase && !MCVGoesSecondBase) {
+		//Count own MCV's:
+		int MCVCount = 0;
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+			if (u != NULL && !u->IsInLimbo && u->House == House && u->Strength > 0) {
+				if (*u == UNIT_MCV) {
+					MCVCount++;
+				}
+			}
+		}
+		//Count own Construction Yards:
+		int ConYardCount = 0;
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * building = Buildings.Ptr(index);
+			if (building != NULL && !building->IsInLimbo && building->House == House && building->Strength > 0) {
+				if (*building == STRUCT_CONST) {
+					ConYardCount++;
+				}
+			}
+		}
+
+		//Reserve the last MCV to expend the base
+		if (MCVCount == 1 && ((MCVCount + ConYardCount) == House->AIMaxConYardsAndMCVs)) {
+			for (int i = 0; i < WAYPT_COUNT; i++) {
+				if (Scen.Waypoint[i] != -1) {
+					int BuildingCloseWaypoint = -1;
+					for (int index = 0; index < Buildings.Count(); index++) {
+						BuildingClass * building = Buildings.Ptr(index);
+						if (building) {
+							int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Scen.Waypoint[i]));
+							if (BuildingCloseWaypoint == -1 || centdist < BuildingCloseWaypoint) {
+								BuildingCloseWaypoint = centdist;
+							}
+						}
+					}
+					//If a building is too close of the waypoint, try another one
+					BuildingCloseWaypoint = BuildingCloseWaypoint / 265;
+					if (BuildingCloseWaypoint > 50) {
+						//No building close, go to this waypoint
+						MCVGoesSecondBase = true;
+						Assign_Destination(::As_Target(Scen.Waypoint[i]));
+						Assign_Mission(MISSION_MOVE);
+						break;
+					}
+				}
+			}
+			Assign_Mission(MISSION_HUNT);
+		}
+	}
+
+
+
 }
 
 

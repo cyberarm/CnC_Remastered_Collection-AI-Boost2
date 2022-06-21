@@ -249,6 +249,9 @@ class UnitClass :	public DriveClass
 		void Reload_AI(void);
 		bool Edge_Of_World_AI(void);
 
+		//By Bast75
+		bool MCVGoesSecondBase = false;
+
 		/*
 		**	Scenario and debug support.
 		*/

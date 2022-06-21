@@ -10004,48 +10004,4 @@ void HouseClass::AI_CalcDynamics(void)
 	// End of debugging stuff.
 }
 
-//New advanced mission hunt for MCV - Mini Franki
-void HouseClass::AI_AdvMCVMissionHunt(void)
-{
-	assert(Houses.ID(this) == ID);
-
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-				if (*u == UNIT_MCV) {
-					//Reserve the last MCV to expend the base
-					if (UQuantity[UNIT_MCV] == 1 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && Rule.AIAllowLastMCVToDoSecondBase == 1) {
-						for (int i = 0; i < WAYPT_COUNT; i++) {
-							if (Scen.Waypoint[i] != -1) {
-								int BuildingCloseWaypoint = -1;
-								for (int index = 0; index < Buildings.Count(); index++) {
-									BuildingClass * building = Buildings.Ptr(index);
-									if (building) {
-										int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Scen.Waypoint[i]));
-										if (BuildingCloseWaypoint == -1 || centdist < BuildingCloseWaypoint) {
-											BuildingCloseWaypoint = centdist;
-										}
-									}
-								}
-								//If a building is too close of the waypoint, try another one
-								BuildingCloseWaypoint = BuildingCloseWaypoint / 265;
-								if (BuildingCloseWaypoint > 50) {
-									//No building close, go to this waypoint
-									u->Assign_Destination(::As_Target(Scen.Waypoint[i]));
-									u->Assign_Mission(MISSION_MOVE);
-									break;
-								}
-							}
-						}
-						u->Assign_Mission(MISSION_HUNT);
-					}
-					else {
-						u->Assign_Mission(MISSION_HUNT);
-					}
-				}
-			}
-		}
-	}
-}
 
