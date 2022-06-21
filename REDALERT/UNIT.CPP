@@ -598,7 +598,7 @@ void UnitClass::AI(void)
 	}
 	
 
-	//By Bast75
+	//MAD-tank deploy code. By Bast75
 	//Check if close enough to enemy building and far enough of own houses, then deploy MAD-tank.
 	if (*this == UNIT_MAD && !House->IsHuman) {
 		//Lets find the closest building from ourself. (allied buildings included)
