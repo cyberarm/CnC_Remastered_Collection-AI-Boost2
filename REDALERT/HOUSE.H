@@ -487,6 +487,10 @@ class HouseClass {
 		bool firstrundone = false;
 		int AIPersonalStrategyMode = 0;
 
+		//Used for MCV base expansion:
+		int CountMCVs = 0;
+		int CountChronoSpheres = 0;
+
 		/*
 		** Stuff to keep track of the total number of units built by this house.
 		*/

@@ -6506,7 +6506,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		if ((Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0)
-			|| (AIDetectedNavalWar && AIPersonalStrategyMode > 3) 
+			|| (AIDetectedNavalWar && AIPersonalStrategyMode > 3)
 			|| (!AIDetectedNavalWar && AIPersonalStrategyMode == 2)
 			) {
 			/*
@@ -6531,6 +6531,7 @@ int HouseClass::AI_Building(void)
 		int money = Available_Money();
 		int level = Control.TechLevel;
 		bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort && UQuantity[UNIT_HARVESTER] > 0);
+		CountChronoSpheres = BQuantity[STRUCT_CHRONOSPHERE];
 		BuildingTypeClass const * b = NULL;
 		if (Enemy != HOUSE_NONE) {
 			enemy = HouseClass::As_Pointer(Enemy);
@@ -6907,17 +6908,6 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//nuke
-		if (BQuantity[STRUCT_MSLO] < AINukeLimit) {
-			b = &BuildingTypeClass::As_Reference(STRUCT_MSLO);
-			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-				choiceptr = BuildChoice.Alloc();
-				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_MSLO] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
 		//iron curtain
 		if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
@@ -6936,6 +6926,17 @@ int HouseClass::AI_Building(void)
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
 					*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+				}
+			}
+		}
+
+		//nuke
+		if (BQuantity[STRUCT_MSLO] < AINukeLimit) {
+			b = &BuildingTypeClass::As_Reference(STRUCT_MSLO);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_MSLO] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -7018,21 +7019,10 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Test by Bast75: (Let the AI make Extreme of this to test if this unit is using his new options the way it should be)
-	if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+	bool DoTest = false;
+	if (!IsHuman && DoTest) {
 		BuildUnit = UNIT_MCV;
 		return(TICKS_PER_SECOND);
-	}
-
-	//Give order to MCV to hunt after he is built and refresh the code on every build loop
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-				if (*u == UNIT_MCV) {
-					u->Assign_Mission(MISSION_HUNT);
-				}
-			}
-		}
 	}
 
 	// Make extra harvesters
@@ -7050,10 +7040,23 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV by Bast75, if no conyard directly, otherwise 33% change of expanding
-	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+	CountMCVs = UQuantity[UNIT_MCV]; //This line is also used in UNIT.CPP for the MCV second base option.
+	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (CountMCVs + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 		if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) && (Percent_Chance(33) || BQuantity[STRUCT_CONST] == 0)) {
 			BuildUnit = UNIT_MCV;
 			return(TICKS_PER_SECOND);
+		}
+	}
+
+	//Give order to MCV to hunt after he is built and refresh the code on every build loop
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+				if (*u == UNIT_MCV) {
+					u->Assign_Mission(MISSION_HUNT);
+				}
+			}
 		}
 	}
 

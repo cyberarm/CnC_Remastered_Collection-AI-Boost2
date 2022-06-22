@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 20 June 2022
+Last update at: 22 June 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -19,7 +19,8 @@ Latest changes:
 - Several AI-tweaks for Air and Anti-Air production
 - Fixed some performance issues
 - Added an option to allow the AI to make a second base(will use chronoshift or vessel transport for map with islands)
-- AI know how to use Chronosphere and Iron Curtain
+- AI knows how to use Chronosphere and Iron Curtain
+- AI knows how to send a MCV to an other area to start an extra base
 
 Included mod's:
 - Veterancy mod(default disabled), vanilla/multiplayer/performance fix from CFE Patch Redux 1.8
