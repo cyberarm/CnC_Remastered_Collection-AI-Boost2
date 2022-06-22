@@ -5961,7 +5961,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 	}
 
 	// Tank units
-
 	int FarthestEnemyBuildingDist = -1;
 	if (Rule.AIAllowChronotanksGroupShifting) {
 		//Calculate chronoshift target for all Chronotanks (group jump):

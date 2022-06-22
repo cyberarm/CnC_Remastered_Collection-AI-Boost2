@@ -3367,7 +3367,7 @@ int UnitClass::Mission_Hunt(void)
 
 	if (*this == UNIT_MCV) {
 		enum {
-			GO_Wayoint,
+			GO_Waypoint,
 			FIND_SPOT,
 			WAITING
 		};
@@ -3397,66 +3397,50 @@ int UnitClass::Mission_Hunt(void)
 				}
 			break;
 
-			//GO_Waypoint
-			case GO_Wayoint:
-				if (!MCVGoesSecondBase) {
-					if (!Rule.AIAllowLastMCVToDoSecondBase) {
+			//Find a waypoint for the last MCV
+			case GO_Waypoint:
+				if (!Rule.AIAllowLastMCVToDoSecondBase) {
+						Status = FIND_SPOT;
+				}
+				else {
+					//Count own Construction Yards:
+					int ConYardCount = 0;
+					for (int index = 0; index < Buildings.Count(); index++) {
+						BuildingClass * building = Buildings.Ptr(index);
+						if (building != NULL && !building->IsInLimbo && building->House == House && building->Strength > 0) {
+							if (*building == STRUCT_CONST) {
+								ConYardCount++;
+							}
+						}
+					}
+					//Use the last MCV to expend the base
+					if ((ConYardCount + 1) == House->AIMaxConYardsAndMCVs) {
+						for (int i = 0; i < WAYPT_COUNT; i++) {
+							if (Scen.Waypoint[i] != -1) {
+								int BuildingCloseWaypoint = -1;
+								for (int index = 0; index < Buildings.Count(); index++) {
+									BuildingClass * building = Buildings.Ptr(index);
+									if (building) {
+										int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Scen.Waypoint[i]));
+										if (BuildingCloseWaypoint == -1 || centdist < BuildingCloseWaypoint) {
+											BuildingCloseWaypoint = centdist;
+										}
+									}
+								}
+								//If a building is too close of the waypoint, try another one
+								BuildingCloseWaypoint = BuildingCloseWaypoint / 265;
+								if (BuildingCloseWaypoint > 50) {
+									//No building close, go to this waypoint
+									Assign_Destination(::As_Target(Scen.Waypoint[i]));
+									Assign_Mission(MISSION_MOVE);
+									break; //Exit the for waypoint loop, we have selected a waypoint
+								}
+							}
+						}
 						Status = FIND_SPOT;
 					}
 					else {
-						if (MCVSelectedWaypointNR == -1) {
-							//Count own Construction Yards:
-							int ConYardCount = 0;
-							for (int index = 0; index < Buildings.Count(); index++) {
-								BuildingClass * building = Buildings.Ptr(index);
-								if (building != NULL && !building->IsInLimbo && building->House == House && building->Strength > 0) {
-									if (*building == STRUCT_CONST) {
-										ConYardCount++;
-									}
-								}
-							}
-							//Use the last MCV to expend the base
-							if ((ConYardCount - 1) == House->AIMaxConYardsAndMCVs) {
-								for (int i = 0; i < WAYPT_COUNT; i++) {
-									if (Scen.Waypoint[i] != -1) {
-										int BuildingCloseWaypoint = -1;
-										for (int index = 0; index < Buildings.Count(); index++) {
-											BuildingClass * building = Buildings.Ptr(index);
-											if (building) {
-												int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Scen.Waypoint[i]));
-												if (BuildingCloseWaypoint == -1 || centdist < BuildingCloseWaypoint) {
-													BuildingCloseWaypoint = centdist;
-												}
-											}
-										}
-										//If a building is too close of the waypoint, try another one
-										BuildingCloseWaypoint = BuildingCloseWaypoint / 265;
-										if (BuildingCloseWaypoint > 30) {
-											//No building close, go to this waypoint
-											MCVGoesSecondBase = true;
-											MCVSelectedWaypointNR = i;
-											Assign_Destination(::As_Target(Scen.Waypoint[i]));
-											Assign_Mission(MISSION_MOVE);
-											break; //Exit the for waypoint loop, we have selected a waypoint
-										}
-									}
-								}
-							}							
-						}
-						else {
-							//Moving to waypoint, deploy when close enough
-							//int CurDist = ::Distance(this->Center_Coord(), Cell_Coord(Scen.Waypoint[MCVSelectedWaypointNR]));
-							int CurDist = this->Distance(Cell_Coord(Scen.Waypoint[MCVSelectedWaypointNR]));
-							CurDist = CurDist / 265;
-							if (CurDist < 50) {
-								Status = FIND_SPOT;
-							}
-							else
-							{
-								Assign_Destination(::As_Target(Scen.Waypoint[MCVSelectedWaypointNR]));
-								Assign_Mission(MISSION_MOVE);
-							}
-						}
+						Status = FIND_SPOT;
 					}
 				}
 			break;
