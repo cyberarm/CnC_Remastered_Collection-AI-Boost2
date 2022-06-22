@@ -7023,6 +7023,18 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
+	//Give order to MCV to hunt after he is built and refresh the code on every build loop
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+				if (*u == UNIT_MCV) {
+					u->Assign_Mission(MISSION_HUNT);
+				}
+			}
+		}
+	}
+
 	// Make extra harvesters
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
