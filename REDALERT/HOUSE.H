@@ -490,6 +490,9 @@ class HouseClass {
 		//Used for MCV base expansion:
 		int CountMCVs = 0;
 		int CountChronoSpheres = 0;
+		void AI_Calc2ndBaseLocations(void);
+		int AI_Interesting_Waypoints[WAYPT_COUNT];
+		bool SellSomeStuffWasDone = false;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.

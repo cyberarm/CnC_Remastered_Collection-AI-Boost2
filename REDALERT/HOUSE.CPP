@@ -746,8 +746,7 @@ HouseStaticClass::HouseStaticClass(void) :
 {
 }
 
-//By Bast75
-//Change house to Stolen Tech House
+//By Bast75, Change house to Stolen Tech House
 void HouseClass::SetStolenTech() {
 	if (Rule.AllowTechStealing) {
 		HasStolenTech = 1;
@@ -6495,9 +6494,25 @@ int HouseClass::AI_Building(void)
 		//We do this only 1 time at start of the game
 		firstrundone = true;
 		AI_CalcDynamics();
+		AI_Calc2ndBaseLocations();
 	}
 
+
+
 	if (IsBaseBuilding) {
+		// Check if MCV is sleeping:
+		CountMCVs = UQuantity[UNIT_MCV]; //This line is also used in UNIT.CPP for the MCV second base option.
+		CountChronoSpheres = BQuantity[STRUCT_CHRONOSPHERE]; //This line is also used in UNIT.CPP for the MCV second base option.
+		if (!IsHuman && CountMCVs > 0) {
+			for (int index = 0; index < Units.Count(); index++) {
+				UnitClass * u = Units.Ptr(index);
+				if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+					if (*u == UNIT_MCV) {
+						u->Assign_Mission(MISSION_HUNT);
+					}
+				}
+			}
+		}
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not too much:
 			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
@@ -6531,7 +6546,6 @@ int HouseClass::AI_Building(void)
 		int money = Available_Money();
 		int level = Control.TechLevel;
 		bool hasincome = (BQuantity[STRUCT_REFINERY] > 0 && !IsTiberiumShort && UQuantity[UNIT_HARVESTER] > 0);
-		CountChronoSpheres = BQuantity[STRUCT_CHRONOSPHERE];
 		BuildingTypeClass const * b = NULL;
 		if (Enemy != HOUSE_NONE) {
 			enemy = HouseClass::As_Pointer(Enemy);
@@ -7040,23 +7054,11 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV by Bast75, if no conyard directly, otherwise 33% change of expanding
-	CountMCVs = UQuantity[UNIT_MCV]; //This line is also used in UNIT.CPP for the MCV second base option.
-	if (!IsHuman && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (CountMCVs + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+	if (!IsHuman && IsBaseBuilding && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && BQuantity[STRUCT_WEAP] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 		if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) && (Percent_Chance(33) || BQuantity[STRUCT_CONST] == 0)) {
 			BuildUnit = UNIT_MCV;
+			AI_Calc2ndBaseLocations(); //MCV in production, recalculate all waypoints so see what can be used for an extra base :-)
 			return(TICKS_PER_SECOND);
-		}
-	}
-
-	//Give order to MCV to hunt after he is built and refresh the code on every build loop
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-				if (*u == UNIT_MCV) {
-					u->Assign_Mission(MISSION_HUNT);
-				}
-			}
 		}
 	}
 
@@ -10017,4 +10019,75 @@ void HouseClass::AI_CalcDynamics(void)
 	// End of debugging stuff.
 }
 
+
+void HouseClass::AI_Calc2ndBaseLocations(void)
+{
+	assert(Houses.ID(this) == ID);
+
+	if (!IsHuman) {
+		for (int i = 0; i < WAYPT_COUNT; i++) {
+			AI_Interesting_Waypoints[i] = -1; // we flush all scanned waypoints, the situation can be different now
+		}
+		int PersonalCounter = 0;
+		for (int i = 0; i < WAYPT_COUNT; i++) {
+			if (Scen.Waypoint[i] != -1) {
+				int DistanceFromClosestBuildingToWaypoint = -1;
+				for (int index = 0; index < Buildings.Count(); index++) {
+					BuildingClass * building = Buildings.Ptr(index);
+					if (building) {
+						int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Scen.Waypoint[i]));
+						if (DistanceFromClosestBuildingToWaypoint == -1 || centdist < DistanceFromClosestBuildingToWaypoint) {
+							DistanceFromClosestBuildingToWaypoint = centdist;
+						}
+					}
+				}
+				//We have found the closest building to the selected Waypoint...
+
+				//Check if there are buildings to close to this waypoint. If not then we can send the MCV here.
+				if (DistanceFromClosestBuildingToWaypoint > 50) {
+					//No building close, we can use this waypoint
+					AI_Interesting_Waypoints[PersonalCounter] = i;
+					PersonalCounter++;
+				}
+				else {
+					//We found a building to close, we try new random....
+				}
+			}
+		}
+	}
+
+
+	if (!SellSomeStuffWasDone) {
+		//The AI should have enough to prevent him to become in trouble....
+		if (BQuantity[STRUCT_WEAP] > 2 && BQuantity[STRUCT_REFINERY] > 5) {
+			//The AI sells all of this:
+			static struct {
+				StructType Structure;
+				UrgencyType Urgency;
+			} _types[] = {
+				{STRUCT_KENNEL, URGENCY_LOW},
+				{STRUCT_PILLBOX, URGENCY_LOW},
+				{STRUCT_CAMOPILLBOX, URGENCY_LOW},
+				{STRUCT_TURRET, URGENCY_LOW},
+				{STRUCT_FLAME_TURRET, URGENCY_LOW},
+				{STRUCT_TESLA, URGENCY_LOW},
+				{STRUCT_SAM, URGENCY_LOW},
+				{STRUCT_AAGUN, URGENCY_LOW},
+				{STRUCT_BARRACKS, URGENCY_LOW},
+				{STRUCT_TENT, URGENCY_LOW},
+				{STRUCT_REFINERY, URGENCY_LOW},
+				{STRUCT_REFINERY, URGENCY_LOW},
+				{STRUCT_WEAP, URGENCY_LOW},
+				{STRUCT_REFINERY, URGENCY_LOW}
+			};
+			for (int i = 0; i < ARRAY_SIZE(_types); i++) {
+				BuildingClass * b = Find_Building(_types[i].Structure);
+				if (b != NULL) {
+					b->Sell_Back(1);
+				}
+			}
+			SellSomeStuffWasDone = true;
+		}
+	}
+}
 

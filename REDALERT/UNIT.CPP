@@ -1318,7 +1318,8 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		*/
 		delete this;
 
-	} else {
+	}
+	else {
 
 		/*
 		**	When damaged and below half strength, start smoking if
@@ -1380,6 +1381,13 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		if (*this == UNIT_HARVESTER && !House->IsHuman && source) {
 			Base_Is_Attacked(source);
 		}
+
+		//By Bast75: Try to deploy MCV if under attack and call for help.
+		if (*this == UNIT_MCV && !House->IsHuman && source) {
+			Try_To_Deploy();
+			Base_Is_Attacked(source);
+		}	
+
 	}
 	return(res);
 }
@@ -1665,21 +1673,6 @@ bool UnitClass::Goto_Clear_Spot(void)
 		}
 
 		//Check we can use this MCV to expand to a 2nd base:
-		//Count own Construction Yards:
-		//int ConYardCount = 0;
-		//if (!this->House->IsHuman) {
-		//	for (int index = 0; index < Buildings.Count(); index++) {
-		//		BuildingClass * building = Buildings.Ptr(index);
-		//		if (building != NULL && !building->IsInLimbo && building->House == this->House && building->Strength > 0) {
-		//			if (*building == STRUCT_CONST) {
-		//				ConYardCount++;
-		//			}
-		//			else if (*building == STRUCT_CHRONOSPHERE) {
-		//				//HaveChronoSpehere = true; //currently disabled, need to add code for this below.
-		//			}
-		//		}
-		//	}
-		//}
 		bool ThisIsTheLastMCV = ((this->House->BuildingFactories + this->House->CountMCVs) == this->House->AIMaxConYardsAndMCVs);
 		//if (!this->House->IsHuman && Rule.AIAllowLastMCVToDoSecondBase && (ConYardCount > 0 || SendBaseTesting)) {
 		if (Rule.AIAllowLastMCVToDoSecondBase && (ThisIsTheLastMCV || Rule.AIAllMCVsDoNewBase)) {
@@ -1688,48 +1681,29 @@ bool UnitClass::Goto_Clear_Spot(void)
 			//Loop through waypoints:
 			int RandomWaypoint = 0;
 			bool HaveFoundOne = false;
-			for (int i = 0; i < 16; i++) { // Try max 16 times
-				RandomWaypoint = Random_Pick(0, WAYPT_COUNT - 1); //random pick a waypoint, doesn't work at the moment
-				if (Scen.Waypoint[RandomWaypoint] != -1) {
-					int BuildingCloseWaypoint = -1;
-					for (int index = 0; index < Buildings.Count(); index++) {
-						BuildingClass * building = Buildings.Ptr(index);
-						if (building) {
-							int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Scen.Waypoint[RandomWaypoint]));
-							if (BuildingCloseWaypoint == -1 || centdist < BuildingCloseWaypoint) {
-								BuildingCloseWaypoint = centdist;
+			for (int i = 0; i < 16; i++) { // Select an interesting waypoint, try max 16 times
+				RandomWaypoint = Random_Pick(0, WAYPT_COUNT - 1); //random pick a waypoint
+				if (this->House->AI_Interesting_Waypoints[RandomWaypoint] != -1) {
+					HaveFoundOne = true;
+					int * ptr;
+					ptr = &_offsets[0];
+					while (*ptr) {
+						CELL	cell = Scen.Waypoint[this->House->AI_Interesting_Waypoints[RandomWaypoint]] + *ptr++;
+						CELL	check_cell = Adjacent_Cell(cell, FACING_NW);
+						if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(check_cell)) {
+							if (this->House->CountChronoSpheres > 0 && this->House->SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()){
+								Assign_Destination(::As_Target(cell));
+								this->Teleport_To(cell);
+								Sound_Effect(VOC_CHRONO, this->Coord);
 							}
+							else {
+								//Drive to it
+								Assign_Destination(::As_Target(cell));
+							}
+							break; //We can build a construction yard at a scanned location, so stop scanning with the offset
 						}
 					}
-					//We have found the closest building to the selected Waypoint...
-
-					//Check if there are buildings to close to this waypoint. If not then we can send the MCV here.
-					if (BuildingCloseWaypoint > 100) {
-						//No building close, select this waypoint
-						HaveFoundOne = true;
-						int * ptr;
-						ptr = &_offsets[0];
-						while (*ptr) {
-							CELL	cell = Scen.Waypoint[i] + *ptr++;
-							CELL	check_cell = Adjacent_Cell(cell, FACING_NW);
-							if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(check_cell)) {
-								if (this->House->CountChronoSpheres > 0 && this->House->SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()){
-									Assign_Destination(::As_Target(cell));
-									this->Teleport_To(cell);
-									Sound_Effect(VOC_CHRONO, this->Coord);
-								}
-								else {
-									//Drive to it
-									Assign_Destination(::As_Target(cell));
-								}
-								break; //We can build a construction yard at a scanned location, so stop scanning with the offset
-							}
-						}
-						break; //Exit the for waypoint loop, we have selected a waypoint
-					}
-					else {
-						//We found a building to close, we try new random....
-					}
+					break; //Exit the for waypoint loop, we have selected a waypoint
 				}
 			}
 			if (!HaveFoundOne) {
