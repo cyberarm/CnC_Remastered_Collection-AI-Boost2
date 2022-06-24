@@ -1,5 +1,5 @@
-Checks to do before launching the game on Steam:
 
+Checks to do before launching the game on Steam:
 -Harvester run away bug, still fixed?
 -Harvester memory enabled/disabled works and is different?
 -Pathfinding for naval units still oke?
@@ -21,7 +21,50 @@ Checks to do before launching the game on Steam:
 -Instant capture works?
 -Chronosphere doesnt kill cargo?
 -Groundwar/Navalwar and mixed war still correct detection?
--airpad and airstrip code to check
--tweak selling for power/cash list
--plane crash overbuy?
+-AI extra base on waypoint still works?
+-AI protects MCV's going to waypoints?
+-AI MAD-tanks still deploy?
+-Chrono tanks group/ungroup jumping still correct?
+-AI new missions work? (Attack factories, Power, defense, etc.)
+
+
+To do: (All)
+-Check all options in the .ini file (some are obsolete, some are missing)
+-Check the README.md 
+-Scan the map to find the number of Tiberium left to harvester (this so we can determin if extra refs, etc. are usefull or that we are in end-fase of the game)
+-Scan the map for water fields, if more than x, its automatically enables naval war.
+-Scan the map for rocks and other blockades to know the AI must boosted extra to compensate space problems.
+-Split house building prio's in seperate VOIDs for better strategies/buildlimits for rush tactics etc.
+
+
+To do for Bast75:
+-AI MCV should not deploy premature when damage is not red
+-AI uses team to protect MCV that's heading for extra base (Attack launch should not overide it too fast)
+-Harvester memory option correction
+-Prio for base defense set to half, if chronosphere, iron curtain, nuke ready, then defense limits to max? (This so those buildings will be built sooner)
+-New mission: Gather at enemy base (out of range), wait a minute and then attack.
+-New mission: Attack Factories
+-New mission: Attack Power Plants
+-New mission: Attack defense (with Artillery units)
+-Create new image for new Steam release: AI-Boost 3.0
+
+
+To do for Mini Franki:
+-MCV deploy should increase the limits. What limits exactly? Editable in .ini?
+-Chronoshift MCV should use the Chronosphere with timer, etc.
+-Iron curtain tweaks
+-Find way to load the MCV on a transport, then we can send it to a waypoint to unload.
+-Find way to load other units on a transport, then we can send it to a waypoint (gather at enemy?) to unload and attack/capture enemy stuff.
+
+
+Idea's for the future:
+-AI should break/start an friendship on certain events.
+-Add a map in the mod thats shows all AI potentials? Naval, 2nd base, Chronosphere MCV, etc.
+
+
+
+Done (Need to be added to README.md if important enough):
+-AI uses startpositions/waypoints to start extra base(s)
+-
+
 
