@@ -97,7 +97,6 @@ class RulesClass {
 		int AIAttackMinimaldefenseSendUnitsPrecentageHigh = 95;
 		int AIAttackMinimaldefenseSendUnitsSwitchLow2High = 4;
 		int AIAttackMinimaldefenseSendUnitsSwitchHigh2All = 8;
-		//bool AIAllowBaseGrowByDeployedMCV = true;
 		fixed AIHarvesterMultiplier;
 		int AIHarvesterMemoryValue = 10;
 		int AIHarvesterMaxLimit = 10;
@@ -111,6 +110,7 @@ class RulesClass {
 		bool AIAllowChronotanksGroupShifting = true;
 		bool AIAllowLastMCVToDoSecondBase = true;
 		bool AIAllMCVsDoNewBase = false;
+		int AIMCVWaypointFreeRadius = 20;
 
 		int AIMadTankSaveToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;

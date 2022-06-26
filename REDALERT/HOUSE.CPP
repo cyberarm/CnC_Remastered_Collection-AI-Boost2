@@ -1441,6 +1441,17 @@ void HouseClass::AI(void)
 		}
 	}
 
+
+	// By Bas75, keep al AI MCV's hunting.
+	if (!IsHuman) {
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * unit = Units.Ptr(index);
+			if (unit->House == this && !unit->IsInLimbo && *unit == UNIT_MCV) {
+				unit->Assign_Mission(MISSION_HUNT);
+			}
+		}
+	}
+
 }
 
 /***********************************************************************************************
@@ -7032,9 +7043,9 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
-	//Test by Bast75: (Let the AI make Extreme of this to test if this unit is using his new options the way it should be)
-	bool DoTest = false;
-	if (!IsHuman && DoTest) {
+	//Test by Bast75: (Let the AI make extreme of this to test if this unit is using the MCV options the way it should be)
+	bool AIDoMCVTest = false;
+	if (!IsHuman && AIDoMCVTest) {
 		BuildUnit = UNIT_MCV;
 		return(TICKS_PER_SECOND);
 	}
@@ -10042,9 +10053,11 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 					}
 				}
 				//We have found the closest building to the selected Waypoint...
+				//Make the distance more readable:
+				DistanceFromClosestBuildingToWaypoint = (int)(DistanceFromClosestBuildingToWaypoint / 265);
 
 				//Check if there are buildings to close to this waypoint. If not then we can send the MCV here.
-				if (DistanceFromClosestBuildingToWaypoint > 50) {
+				if (DistanceFromClosestBuildingToWaypoint > Rule.AIMCVWaypointFreeRadius) {
 					//No building close, we can use this waypoint
 					AI_Interesting_Waypoints[PersonalCounter] = i;
 					PersonalCounter++;

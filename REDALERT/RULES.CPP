@@ -536,6 +536,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIAllowChronotanksGroupShifting = ini.Get_Bool(MOREQOL, "AIAllowChronotanksGroupShifting", true);
 		AIAllowLastMCVToDoSecondBase = ini.Get_Bool(MOREQOL, "AIAllowLastMCVToDoAnOtherBase", true);
 		AIAllMCVsDoNewBase = ini.Get_Bool(MOREQOL, "AIAllMCVsDoNewBase", false);
+		AIMCVWaypointFreeRadius = ini.Get_Int(MOREQOL, "AIMCVWaypointFreeRadius", 20);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
 		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 10);
@@ -557,7 +558,6 @@ bool RulesClass::General(CCINIClass & ini)
 		AIAttackMinimaldefenseSendUnitsPrecentageHigh = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsPrecentageHigh", 95);
 		AIAttackMinimaldefenseSendUnitsSwitchLow2High = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsSwitchLow2High", 4);
 		AIAttackMinimaldefenseSendUnitsSwitchHigh2All = ini.Get_Int(MOREQOL, "AIAttackMinimaldefenseSendUnitsSwitchHigh2All", 8);
-		//AIAllowBaseGrowByDeployedMCV = ini.Get_Bool(MOREQOL, "AIAllowBaseGrowByDeployedMCV", true);
 		AIMadTankSaveToDeployDistance = ini.Get_Int(MOREQOL, "AIMadTankSaveToDeployDistance", 22);
 		AIMadTankCloseEnoughToEnemyDistance = ini.Get_Int(MOREQOL, "AIMadTankCloseEnoughToEnemyDistance", 18);
 		AIMadTankWriteDebugInfoToFile = ini.Get_Bool(MOREQOL, "AIMadTankWriteDebugInfoToFile", false);

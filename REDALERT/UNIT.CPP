@@ -1673,7 +1673,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 		}
 
 		//Check we can use this MCV to expand to a 2nd base:
-		bool ThisIsTheLastMCV = ((this->House->BuildingFactories + this->House->CountMCVs) == this->House->AIMaxConYardsAndMCVs);
+		bool ThisIsTheLastMCV = ((this->House->BuildingFactories + 1) == this->House->AIMaxConYardsAndMCVs);
 		//if (!this->House->IsHuman && Rule.AIAllowLastMCVToDoSecondBase && (ConYardCount > 0 || SendBaseTesting)) {
 		if (Rule.AIAllowLastMCVToDoSecondBase && (ThisIsTheLastMCV || Rule.AIAllMCVsDoNewBase)) {
 			//Ok, this is not the first MCV, use this one to start extra base:
@@ -1691,15 +1691,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 						CELL	cell = Scen.Waypoint[this->House->AI_Interesting_Waypoints[RandomWaypoint]] + *ptr++;
 						CELL	check_cell = Adjacent_Cell(cell, FACING_NW);
 						if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(check_cell)) {
-							if (this->House->CountChronoSpheres > 0 && this->House->SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()){
-								Assign_Destination(::As_Target(cell));
-								this->Teleport_To(cell);
-								Sound_Effect(VOC_CHRONO, this->Coord);
-							}
-							else {
-								//Drive to it
-								Assign_Destination(::As_Target(cell));
-							}
+							Assign_Destination(::As_Target(cell)); //Drive to it
 							break; //We can build a construction yard at a scanned location, so stop scanning with the offset
 						}
 					}
@@ -3430,6 +3422,11 @@ int UnitClass::Mission_Hunt(void)
 				if (Goto_Clear_Spot()) {
 					if (Try_To_Deploy()) {
 						Status = WAITING;
+					}
+				}
+				else {
+					if (!House->IsHuman) {
+						Assign_Mission(MISSION_HUNT); // AI MCV should not fall asleep, give new try
 					}
 				}
 			break;
