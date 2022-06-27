@@ -539,7 +539,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMCVWaypointFreeRadius = ini.Get_Int(MOREQOL, "AIMCVWaypointFreeRadius", 20);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
-		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 10);
+		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 50);
 
 		InfantryGroupSize = ini.Get_Int(MOREQOL, "InfantryGroupSize", 5);
 		AIBoostIQLevel = ini.Get_Int(MOREQOL, "AIBoostIQLevel", 3);

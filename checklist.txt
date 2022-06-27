@@ -38,10 +38,8 @@ To do: (All)
 
 
 To do for Bast75:
--AI MCV should not deploy premature when damage is not red
--AI uses team to protect MCV that's heading for extra base (Attack launch should not overide it too fast)
--Harvester memory option correction
--Prio for base defense set to half, if chronosphere, iron curtain, nuke ready, then defense limits to max? (This so those buildings will be built sooner)
+-Center of base must be set to all bases to make sure AI builds on all of them
+-Prio for base defense set to half, if chronosphere, iron curtain, nuke ready, then defense limits to max? (This so those buildings will be produced faster)
 -New mission: Gather at enemy base (out of range), wait a minute and then attack.
 -New mission: Attack Factories
 -New mission: Attack Power Plants
@@ -65,6 +63,8 @@ Idea's for the future:
 
 Done (Need to be added to README.md if important enough):
 -AI uses startpositions/waypoints to start extra base(s)
+-AI MCV should not deploy premature when damage is not red -> no deploy, calls for help
+-Harvester memory option back in code
 -
 
 

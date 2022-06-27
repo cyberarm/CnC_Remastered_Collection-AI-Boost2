@@ -1443,7 +1443,7 @@ void HouseClass::AI(void)
 
 
 	// By Bas75, keep al AI MCV's hunting.
-	if (!IsHuman) {
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
 		for (int index = 0; index < Units.Count(); index++) {
 			UnitClass * unit = Units.Ptr(index);
 			if (unit->House == this && !unit->IsInLimbo && *unit == UNIT_MCV) {
@@ -1451,6 +1451,10 @@ void HouseClass::AI(void)
 			}
 		}
 	}
+
+	//During the game the AI's REFs etc are away from Tiberium because of a part is harvested
+	//This tells the AI so sell some buildings 1 time, after this he rebuilds them and hopefully at a better location.
+	AI_SellingLoop();
 
 }
 
@@ -7043,13 +7047,6 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
-	//Test by Bast75: (Let the AI make extreme of this to test if this unit is using the MCV options the way it should be)
-	bool AIDoMCVTest = false;
-	if (!IsHuman && AIDoMCVTest) {
-		BuildUnit = UNIT_MCV;
-		return(TICKS_PER_SECOND);
-	}
-
 	// Make extra harvesters
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
@@ -10068,38 +10065,45 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 	}
+}
 
+	
+void HouseClass::AI_SellingLoop(void)
+{
+	assert(Houses.ID(this) == ID);
 
-	if (!SellSomeStuffWasDone) {
-		//The AI should have enough to prevent him to become in trouble....
-		if (BQuantity[STRUCT_WEAP] > 2 && BQuantity[STRUCT_REFINERY] > 5) {
-			//The AI sells all of this:
-			static struct {
-				StructType Structure;
-				UrgencyType Urgency;
-			} _types[] = {
-				{STRUCT_KENNEL, URGENCY_LOW},
-				{STRUCT_PILLBOX, URGENCY_LOW},
-				{STRUCT_CAMOPILLBOX, URGENCY_LOW},
-				{STRUCT_TURRET, URGENCY_LOW},
-				{STRUCT_FLAME_TURRET, URGENCY_LOW},
-				{STRUCT_TESLA, URGENCY_LOW},
-				{STRUCT_SAM, URGENCY_LOW},
-				{STRUCT_AAGUN, URGENCY_LOW},
-				{STRUCT_BARRACKS, URGENCY_LOW},
-				{STRUCT_TENT, URGENCY_LOW},
-				{STRUCT_REFINERY, URGENCY_LOW},
-				{STRUCT_REFINERY, URGENCY_LOW},
-				{STRUCT_WEAP, URGENCY_LOW},
-				{STRUCT_REFINERY, URGENCY_LOW}
-			};
-			for (int i = 0; i < ARRAY_SIZE(_types); i++) {
-				BuildingClass * b = Find_Building(_types[i].Structure);
-				if (b != NULL) {
-					b->Sell_Back(1);
+	if (!IsHuman) {
+		if (!SellSomeStuffWasDone) {
+			//The AI should have enough to prevent him to become in trouble....
+			if (BQuantity[STRUCT_WEAP] > 2 && BQuantity[STRUCT_REFINERY] > 5) {
+				//The AI sells all of this:
+				static struct {
+					StructType Structure;
+					UrgencyType Urgency;
+				} _types[] = {
+					{STRUCT_KENNEL, URGENCY_LOW},
+					{STRUCT_PILLBOX, URGENCY_LOW},
+					{STRUCT_CAMOPILLBOX, URGENCY_LOW},
+					{STRUCT_TURRET, URGENCY_LOW},
+					{STRUCT_FLAME_TURRET, URGENCY_LOW},
+					{STRUCT_TESLA, URGENCY_LOW},
+					{STRUCT_SAM, URGENCY_LOW},
+					{STRUCT_AAGUN, URGENCY_LOW},
+					{STRUCT_BARRACKS, URGENCY_LOW},
+					{STRUCT_TENT, URGENCY_LOW},
+					{STRUCT_REFINERY, URGENCY_LOW},
+					{STRUCT_REFINERY, URGENCY_LOW},
+					{STRUCT_WEAP, URGENCY_LOW},
+					{STRUCT_REFINERY, URGENCY_LOW}
+				};
+				for (int i = 0; i < ARRAY_SIZE(_types); i++) {
+					BuildingClass * b = Find_Building(_types[i].Structure);
+					if (b != NULL) {
+						b->Sell_Back(1);
+					}
 				}
+				SellSomeStuffWasDone = true;
 			}
-			SellSomeStuffWasDone = true;
 		}
 	}
 }

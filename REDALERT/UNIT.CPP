@@ -1382,10 +1382,9 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 			Base_Is_Attacked(source);
 		}
 
-		//By Bast75: Try to deploy MCV if under attack and call for help.
+		//By Bast75: Call for help if under attack.
 		if (*this == UNIT_MCV && !House->IsHuman && source) {
-			Try_To_Deploy();
-			Base_Is_Attacked(source);
+			Base_Is_Attacked(source); // call for help
 		}	
 
 	}
@@ -3213,6 +3212,15 @@ int UnitClass::Mission_Harvest(void)
 			if (Rule.HarvesterOptimizeEnabled || Rule.HarvesterLoadBalancing){
 				TiberiumUnloadRefinery = TARGET_NONE;
 			}
+
+			// By Bast75, added a memory chance:
+			// Default this was always remember. This results in harvesters going further and further while closer Tiberium could be available.
+			// Do not remember last location and scan for closest tiberium from unload area
+			// Or do remember and start here again with harvesting.
+			if (!Percent_Chance(Rule.AIHarvesterMemoryValue)) {
+				ArchiveTarget = TARGET_NONE;
+			}
+
 			if (Target_Legal(ArchiveTarget)) {
 				Assign_Destination(ArchiveTarget);
 				ArchiveTarget = 0;
