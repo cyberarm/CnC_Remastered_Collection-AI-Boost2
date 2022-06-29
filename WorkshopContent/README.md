@@ -14,7 +14,7 @@ Please follow the steps below to update and reactivate the mod:
 Latest changes:
 New:
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
-- Added an option to allow the AI to make a extra base(s) (Will use chronoshift or vessel transport for map with islands)
+- Added an option to allow the AI to make extra base(s) (Will use chronoshift or vessel transport for map with islands)
 - AI knows how to use Chronosphere and Iron Curtain
 - Harvester memory option re-added and made editable by .ini file
 
@@ -24,11 +24,12 @@ Fixed/Changed/Improved:
 - Several AI-tweaks for Naval War and Mixed War
 - Several AI-tweaks for Air and Anti-Air production
 - Fixed some performance issues
+- Good pathfinding is back
 
 ---
 
 Included mod's:
-- Veterancy mod(default disabled), vanilla/multiplayer/performance fix from CFE Patch Redux 1.8
+- CFE Patch Redux 1.8 mod(Veterancy mod(default disabled), vanilla/multiplayer/performance fix)
 - The Rampastring Quality of Live mod
 - Engineer instant capture
 - Additional Zoom Levels+++
