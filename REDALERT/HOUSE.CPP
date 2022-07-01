@@ -9546,25 +9546,32 @@ void HouseClass::AI_CalcDynamics(void)
 			AIDetectHumanGroundWar = true;
 		}
 
+		//Check if its the last yard to increase limit by x2
+		bool ThisIsTheLastYard = (BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs);
+		int IncreaseLimit = 1;
+		if (ThisIsTheLastYard) {
+			IncreaseLimit = 2;
+		}
+
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
 			AIMaxConYardsAndMCVs = Rule.AIMaxMCVsBasic;
-			AIDogKennelLimit = (Rule.AIDogHouseLimitBasic * BQuantity[STRUCT_CONST]);
-			AIBarracksLimit = (Rule.AIBarracksLimitBasic * BQuantity[STRUCT_CONST]);
-			AIWarFactoryLimit = (Rule.AIWarFactoryLimitBasic * BQuantity[STRUCT_CONST]);
-			AINavalLimit = (Rule.AINavalLimitBasic * BQuantity[STRUCT_CONST]);
-			AIHelipadAlliedLimit = (Rule.AIHelipadAlliedLimitBasic * BQuantity[STRUCT_CONST]);
-			AIHelipadSovietLimit = (Rule.AIHelipadSovietLimitBasic * BQuantity[STRUCT_CONST]);
-			AIAirstripLimit = (Rule.AIAirstripLimitBasic * BQuantity[STRUCT_CONST]);
-			AIAirdefenseLimit = (Rule.AIAirdefenseLimitBasic * BQuantity[STRUCT_CONST]);
-			AIPillBoxLimit = (Rule.AIPillBoxLimitBasic * BQuantity[STRUCT_CONST]);
-			AICamoPillBoxLimit = (Rule.AICamoPillBoxLimitBasic * BQuantity[STRUCT_CONST]);
-			AIFlameTurretLimit = (Rule.AIFlameTurretLimitBasic * BQuantity[STRUCT_CONST]);
-			AITurretGunLimit = (Rule.AITurretGunLimitBasic * BQuantity[STRUCT_CONST]);
-			AITeslaGunLimit = (Rule.AITeslaLimitBasic * BQuantity[STRUCT_CONST]);
-			AIGapLimit = (Rule.AIGapLimitBasic * BQuantity[STRUCT_CONST]);
-			AINukeLimit = (Rule.AINukeLimitBasic * BQuantity[STRUCT_CONST]);
-			AIRepairBayLimit = (Rule.AIRepairBayLimitBasic * BQuantity[STRUCT_CONST]);
+			AIDogKennelLimit = (Rule.AIDogHouseLimitBasic * IncreaseLimit);
+			AIBarracksLimit = (Rule.AIBarracksLimitBasic * IncreaseLimit);
+			AIWarFactoryLimit = (Rule.AIWarFactoryLimitBasic * IncreaseLimit);
+			AINavalLimit = (Rule.AINavalLimitBasic * IncreaseLimit);
+			AIHelipadAlliedLimit = (Rule.AIHelipadAlliedLimitBasic * IncreaseLimit);
+			AIHelipadSovietLimit = (Rule.AIHelipadSovietLimitBasic * IncreaseLimit);
+			AIAirstripLimit = (Rule.AIAirstripLimitBasic * IncreaseLimit);
+			AIAirdefenseLimit = (Rule.AIAirdefenseLimitBasic * IncreaseLimit);
+			AIPillBoxLimit = (Rule.AIPillBoxLimitBasic * IncreaseLimit);
+			AICamoPillBoxLimit = (Rule.AICamoPillBoxLimitBasic * IncreaseLimit);
+			AIFlameTurretLimit = (Rule.AIFlameTurretLimitBasic * IncreaseLimit);
+			AITurretGunLimit = (Rule.AITurretGunLimitBasic * IncreaseLimit);
+			AITeslaGunLimit = (Rule.AITeslaLimitBasic * IncreaseLimit);
+			AIGapLimit = (Rule.AIGapLimitBasic * IncreaseLimit);
+			AINukeLimit = (Rule.AINukeLimitBasic * IncreaseLimit);
+			AIRepairBayLimit = (Rule.AIRepairBayLimitBasic * IncreaseLimit);
 			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
 			AIMaxTanksNr = Rule.AIMaxTanksBasic;
 			AIMaxNavalNr = Rule.AIMaxNavalBasic;
@@ -9576,20 +9583,20 @@ void HouseClass::AI_CalcDynamics(void)
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
 				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsMix;
-				AIDogKennelLimit = (Rule.AIDogHouseLimitMix * BQuantity[STRUCT_CONST]);
-				AIBarracksLimit = (Rule.AIBarracksLimitMix * BQuantity[STRUCT_CONST]);
-				AIWarFactoryLimit = (Rule.AIWarFactoryLimitMix * BQuantity[STRUCT_CONST]);
-				AINavalLimit = (Rule.AINavalLimitMix * BQuantity[STRUCT_CONST]);
-				AIHelipadAlliedLimit = (Rule.AIHelipadAlliedLimitMix * BQuantity[STRUCT_CONST]);
-				AIHelipadSovietLimit = (Rule.AIHelipadSovietLimitMix * BQuantity[STRUCT_CONST]);
-				AIAirdefenseLimit = (Rule.AIAirdefenseLimitMix * BQuantity[STRUCT_CONST]);
-				AIPillBoxLimit = (Rule.AIPillBoxLimitMix * BQuantity[STRUCT_CONST]);
-				AITurretGunLimit = (Rule.AITurretGunLimitMix * BQuantity[STRUCT_CONST]);
-				AIFlameTurretLimit = (Rule.AIFlameTurretLimitMix * BQuantity[STRUCT_CONST]);
-				AITeslaGunLimit = (Rule.AITeslaLimitMix * BQuantity[STRUCT_CONST]);
-				AIGapLimit = (Rule.AIGapLimitMix * BQuantity[STRUCT_CONST]);
-				AINukeLimit = (Rule.AINukeLimitMix * BQuantity[STRUCT_CONST]);
-				AIRepairBayLimit = (Rule.AIRepairBayLimitMix * BQuantity[STRUCT_CONST]);
+				AIDogKennelLimit = (Rule.AIDogHouseLimitMix * IncreaseLimit);
+				AIBarracksLimit = (Rule.AIBarracksLimitMix * IncreaseLimit);
+				AIWarFactoryLimit = (Rule.AIWarFactoryLimitMix * IncreaseLimit);
+				AINavalLimit = (Rule.AINavalLimitMix * IncreaseLimit);
+				AIHelipadAlliedLimit = (Rule.AIHelipadAlliedLimitMix * IncreaseLimit);
+				AIHelipadSovietLimit = (Rule.AIHelipadSovietLimitMix * IncreaseLimit);
+				AIAirdefenseLimit = (Rule.AIAirdefenseLimitMix * IncreaseLimit);
+				AIPillBoxLimit = (Rule.AIPillBoxLimitMix * IncreaseLimit);
+				AITurretGunLimit = (Rule.AITurretGunLimitMix * IncreaseLimit);
+				AIFlameTurretLimit = (Rule.AIFlameTurretLimitMix * IncreaseLimit);
+				AITeslaGunLimit = (Rule.AITeslaLimitMix * IncreaseLimit);
+				AIGapLimit = (Rule.AIGapLimitMix * IncreaseLimit);
+				AINukeLimit = (Rule.AINukeLimitMix * IncreaseLimit);
+				AIRepairBayLimit = (Rule.AIRepairBayLimitMix * IncreaseLimit);
 				AIMaxBuildings = Rule.AIMaxBuildingsMix;
 				//AIMaxMCVs = Rule.AIMaxMCVsMix;
 				AIMaxTanksNr = Rule.AIMaxTanksMix;
@@ -9600,20 +9607,20 @@ void HouseClass::AI_CalcDynamics(void)
 			else {
 				//naval war but no ground war, focus on naval and air only
 				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsNaval;
-				AIDogKennelLimit = (Rule.AIDogHouseLimitNaval * BQuantity[STRUCT_CONST]);
-				AIBarracksLimit = (Rule.AIBarracksLimitNaval * BQuantity[STRUCT_CONST]);
-				AIWarFactoryLimit = (Rule.AIWarFactoryLimitNaval * BQuantity[STRUCT_CONST]);
-				AINavalLimit = (Rule.AINavalLimitNaval * BQuantity[STRUCT_CONST]);
-				AIHelipadAlliedLimit = (Rule.AIHelipadAlliedLimitNaval * BQuantity[STRUCT_CONST]);
-				AIHelipadSovietLimit = (Rule.AIHelipadSovietLimitNaval * BQuantity[STRUCT_CONST]);
-				AIAirdefenseLimit = (Rule.AIAirdefenseLimitNaval * BQuantity[STRUCT_CONST]);
-				AIPillBoxLimit = (Rule.AIPillBoxLimitNaval * BQuantity[STRUCT_CONST]);
-				AITurretGunLimit = (Rule.AITurretGunLimitNaval * BQuantity[STRUCT_CONST]);
-				AIFlameTurretLimit = (Rule.AIFlameTurretLimitNaval * BQuantity[STRUCT_CONST]);
-				AITeslaGunLimit = (Rule.AITeslaLimitNaval * BQuantity[STRUCT_CONST]);
-				AIGapLimit = (Rule.AIGapLimitNaval * BQuantity[STRUCT_CONST]);
-				AINukeLimit = (Rule.AINukeLimitNaval * BQuantity[STRUCT_CONST]);
-				AIRepairBayLimit = (Rule.AIRepairBayLimitNaval * BQuantity[STRUCT_CONST]);
+				AIDogKennelLimit = (Rule.AIDogHouseLimitNaval * IncreaseLimit);
+				AIBarracksLimit = (Rule.AIBarracksLimitNaval * IncreaseLimit);
+				AIWarFactoryLimit = (Rule.AIWarFactoryLimitNaval * IncreaseLimit);
+				AINavalLimit = (Rule.AINavalLimitNaval * IncreaseLimit);
+				AIHelipadAlliedLimit = (Rule.AIHelipadAlliedLimitNaval * IncreaseLimit);
+				AIHelipadSovietLimit = (Rule.AIHelipadSovietLimitNaval * IncreaseLimit);
+				AIAirdefenseLimit = (Rule.AIAirdefenseLimitNaval * IncreaseLimit);
+				AIPillBoxLimit = (Rule.AIPillBoxLimitNaval * IncreaseLimit);
+				AITurretGunLimit = (Rule.AITurretGunLimitNaval * IncreaseLimit);
+				AIFlameTurretLimit = (Rule.AIFlameTurretLimitNaval * IncreaseLimit);
+				AITeslaGunLimit = (Rule.AITeslaLimitNaval * IncreaseLimit);
+				AIGapLimit = (Rule.AIGapLimitNaval * IncreaseLimit);
+				AINukeLimit = (Rule.AINukeLimitNaval * IncreaseLimit);
+				AIRepairBayLimit = (Rule.AIRepairBayLimitNaval * IncreaseLimit);
 				AIMaxBuildings = Rule.AIMaxBuildingsNaval;
 				AIMaxTanksNr = Rule.AIMaxTanksNaval;
 				AIMaxNavalNr = Rule.AIMaxNavalNaval;

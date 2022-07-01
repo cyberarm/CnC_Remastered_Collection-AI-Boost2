@@ -109,7 +109,6 @@ class RulesClass {
 		int AIMaxChronotanks = 5;
 		bool AIAllowChronotanksGroupShifting = true;
 		bool AIAllowLastMCVToDoSecondBase = true;
-		bool AIAllMCVsDoNewBase = false;
 		int AIMCVWaypointFreeRadius = 20;
 
 		int AIMadTankSaveToDeployDistance = 22;

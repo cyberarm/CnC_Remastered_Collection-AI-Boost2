@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 27 June 2022
+Last update at: 1st July 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -17,6 +17,7 @@ New:
 - Added an option to allow the AI to make extra base(s) (Will use chronoshift or vessel transport for map with islands)
 - AI knows how to use Chronosphere and Iron Curtain
 - Harvester memory option re-added and made editable by .ini file
+- Added new slowdown production for the AI to compensate the multiple production hack. That allow to increase war factory/vessel carrier limit
 
 Fixed/Changed/Improved:
 - Prio for Tesla & Power buildings improved
@@ -25,6 +26,7 @@ Fixed/Changed/Improved:
 - Several AI-tweaks for Air and Anti-Air production
 - Fixed some performance issues
 - Good pathfinding is back
+- Building limit increase by x2 when last construction yard is built or captured
 
 ---
 

@@ -1671,10 +1671,10 @@ bool UnitClass::Goto_Clear_Spot(void)
 			Loopy++;
 		}
 
-		//Check we can use this MCV to expand to a 2nd base:
+		//Check if its the last MCV to expand to a 2nd base:
 		bool ThisIsTheLastMCV = ((this->House->BuildingFactories + 1) == this->House->AIMaxConYardsAndMCVs);
-		//if (!this->House->IsHuman && Rule.AIAllowLastMCVToDoSecondBase && (ConYardCount > 0 || SendBaseTesting)) {
-		if (Rule.AIAllowLastMCVToDoSecondBase && (ThisIsTheLastMCV || Rule.AIAllMCVsDoNewBase)) {
+
+		if (Rule.AIAllowLastMCVToDoSecondBase && ThisIsTheLastMCV) {
 			//Ok, this is not the first MCV, use this one to start extra base:
 
 			//Loop through waypoints:

@@ -535,7 +535,6 @@ bool RulesClass::General(CCINIClass & ini)
 		AIMaxChronotanks = ini.Get_Int(MOREQOL, "AIMaxChronotanks", 5);
 		AIAllowChronotanksGroupShifting = ini.Get_Bool(MOREQOL, "AIAllowChronotanksGroupShifting", true);
 		AIAllowLastMCVToDoSecondBase = ini.Get_Bool(MOREQOL, "AIAllowLastMCVToDoAnOtherBase", true);
-		AIAllMCVsDoNewBase = ini.Get_Bool(MOREQOL, "AIAllMCVsDoNewBase", false);
 		AIMCVWaypointFreeRadius = ini.Get_Int(MOREQOL, "AIMCVWaypointFreeRadius", 20);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);

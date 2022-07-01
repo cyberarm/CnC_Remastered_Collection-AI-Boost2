@@ -7305,16 +7305,48 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 	time *= scale;
 
 	int divisor = hptr->Factory_Count(What_Am_I());
+	int slowdownlow = 0;
+	int slowdownhigh = 0;
 	if (divisor != 0) {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		// Hack: allow the multiple-factory bonus, but only up to two factories if
 		//			this is an AM<->AM game.
 		// Enable fast build with Aftermath units - Mini Franki
 		if (NewUnitsEnabled && Rule.AIAftermathfastbuild == 0) {
-			time /= min(divisor, 2);
+			if (hptr->IsHuman) {
+				time /= min(divisor, 2);
+			}
+			// Slowdown AI production for fast build OFF
+			else {
+				slowdownlow = divisor + 0.5;
+				slowdownhigh = divisor + 0.25;
+				if (divisor > 0 && divisor <= 3) {
+					time *= divisor;
+					time /= slowdownlow;
+			}
+				if (divisor > 3) {
+					time *= divisor;
+					time /= slowdownhigh;
+				}
 		}
+	}
 		else {
-			time /= divisor;
+			if (hptr->IsHuman) {
+				time /= divisor;
+			}
+			// Slowdown AI production for fast build ON
+			else {
+				slowdownlow = divisor + 2;
+				slowdownhigh = divisor + 1;
+				if (divisor > 0 && divisor <= 6) {
+					time *= divisor;
+					time /= slowdownlow;
+				}
+				if (divisor > 6) {
+					time *= divisor;
+					time /= slowdownhigh;
+				}
+			}
 		}
 #else
 		time /= divisor;
