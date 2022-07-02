@@ -36,12 +36,10 @@ To do: (All)
 -Scan the map for rocks and other blockades to know the AI must boosted extra to compensate space problems.
 -Split house building prio's in seperate VOIDs for better strategies/buildlimits for rush tactics etc.
 -Chronosphere code need rework
--Selling/power list tweak -> ask me for info
--Airstrip/airpad code to check -> ask me for info
 
 
 To do for Bast75:
--Center of base must be set to all bases to make sure AI builds on all of them
+-Center of base must be set to all bases to make sure AI builds on all of them. If not possible, recalculate on new base only
 -Prio for base defense set to half, if chronosphere, iron curtain, nuke ready, then defense limits to max? (This so those buildings will be produced faster)
 -New mission: Gather at enemy base (out of range), wait a minute and then attack.
 -New mission: Attack Factories
@@ -51,7 +49,6 @@ To do for Bast75:
 
 
 To do for Mini Franki:
--MCV deploy should increase the limits. What limits exactly? Editable in .ini?
 -Chronoshift MCV should use the Chronosphere with timer, etc.
 -Find way to load the MCV on a transport, then we can send it to a waypoint to unload.
 -Find way to load other units on a transport, then we can send it to a waypoint (gather at enemy?) to unload and attack/capture enemy stuff.
@@ -69,5 +66,8 @@ Done (Need to be added to README.md if important enough):
 -AI MCV should not deploy premature when damage is not red -> no deploy, calls for help
 -Harvester memory option back in code
 -Iron curtain tweaks -> already ready. Iron Curtain recharge is high, so we only want to protect important things when its ready
+-MCV deploy should increase the limits. What limits exactly? Editable in .ini?
+-Airstrip/airpad code to check
+-Selling/power list tweak
 
 

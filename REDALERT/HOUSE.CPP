@@ -6500,7 +6500,6 @@ int HouseClass::AI_Building(void)
 	}
 
 	if (firstrundone == false) {
-		//We do this if we have less than 3 buildings, this because of multiplier of current construction yards, etc.
 		firstrundone = true;
 		AI_CalcDynamics();
 	}
