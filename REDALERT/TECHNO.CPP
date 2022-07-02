@@ -7318,34 +7318,15 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 			}
 			// Slowdown AI production for fast build OFF
 			else {
-				slowdownlow = divisor + 0.5;
-				slowdownhigh = divisor + 0.25;
-				if (divisor > 0 && divisor <= 3) {
+				if (divisor > 2) {
 					time *= divisor;
-					time /= slowdownlow;
-			}
-				if (divisor > 3) {
-					time *= divisor;
-					time /= slowdownhigh;
+					time /= 2;
 				}
+			}
 		}
-	}
 		else {
 			if (hptr->IsHuman) {
 				time /= divisor;
-			}
-			// Slowdown AI production for fast build ON
-			else {
-				slowdownlow = divisor + 2;
-				slowdownhigh = divisor + 1;
-				if (divisor > 0 && divisor <= 6) {
-					time *= divisor;
-					time /= slowdownlow;
-				}
-				if (divisor > 6) {
-					time *= divisor;
-					time /= slowdownhigh;
-				}
 			}
 		}
 #else

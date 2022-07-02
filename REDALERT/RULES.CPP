@@ -570,9 +570,9 @@ bool RulesClass::General(CCINIClass & ini)
 		AIPowerPlusMinimal = ini.Get_Int(MOREQOL, "AIPowerPlusMinimal", 50);
 		AIPowerPlusExtra = ini.Get_Int(MOREQOL, "AIPowerPlusExtra", 150);
 		AIPowerPlusSellValue = ini.Get_Int(MOREQOL, "AIPowerPlusSellValue", 500);
-		AIMaxMCVsBasic = ini.Get_Int(MOREQOL, "AIMaxMCVsBasic", 2);
-		AIMaxMCVsMix = ini.Get_Int(MOREQOL, "AIMaxMCVsMix", 2);
-		AIMaxMCVsNaval = ini.Get_Int(MOREQOL, "AIMaxMCVsNaval", 2);
+		AIMaxConYardsAndMCVsBasic = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsBasic", 2);
+		AIMaxConYardsAndMCVsMix = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsMix", 2);
+		AIMaxConYardsAndMCVsNaval = ini.Get_Int(MOREQOL, "AIMaxConYardsAndMCVsNaval", 2);
 		AIDogHouseLimitBasic = ini.Get_Int(MOREQOL, "AIDogHouseLimitBasic", 2);
 		AIDogHouseLimitMix = ini.Get_Int(MOREQOL, "AIDogHouseLimitMix", 2);
 		AIDogHouseLimitNaval = ini.Get_Int(MOREQOL, "AIDogHouseLimitNaval", 2);

@@ -6852,45 +6852,45 @@ int HouseClass::AI_Building(void)
 
 		//airstrip
 		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripLimit) {
+			prio = 2;
+			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
+				prio = AIAirstripLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
+			}
 			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
 		//helipad allied
-		if ((BQuantity[STRUCT_CAMOPILLBOX] + BQuantity[STRUCT_PILLBOX]) > 0) {
-			if (BQuantity[STRUCT_HELIPAD] < AIHelipadAlliedLimit || (Rule.AIAllowDynamicBaseGrow && BQuantity[STRUCT_HELIPAD] < airthreat_quantity)) {
-				prio = 2;
-				if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
-					prio = AIHelipadAlliedLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
-				}
-				b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-					choiceptr = BuildChoice.Alloc();
-					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-					}
+		if ((BQuantity[STRUCT_CAMOPILLBOX] + BQuantity[STRUCT_PILLBOX]) > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadAlliedLimit) {
+			prio = 2;
+			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
+				prio = AIHelipadAlliedLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
+			}
+			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
 		//helipad soviet
-		if (BQuantity[STRUCT_FLAME_TURRET] > 0) {
-			if (BQuantity[STRUCT_HELIPAD] < AIHelipadSovietLimit || (Rule.AIAllowDynamicBaseGrow && BQuantity[STRUCT_HELIPAD] < airthreat_quantity)) {
-				prio = 2;
-				if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
-					prio = AIHelipadSovietLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
-				}
-				b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-					choiceptr = BuildChoice.Alloc();
-					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-					}
+		if (BQuantity[STRUCT_FLAME_TURRET] > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadSovietLimit) {
+			prio = 2;
+			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
+				prio = AIHelipadSovietLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
+			}
+			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
+			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+				choiceptr = BuildChoice.Alloc();
+				if (choiceptr != NULL) {
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -9555,7 +9555,7 @@ void HouseClass::AI_CalcDynamics(void)
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
-			AIMaxConYardsAndMCVs = Rule.AIMaxMCVsBasic;
+			AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsBasic;
 			AIDogKennelLimit = (Rule.AIDogHouseLimitBasic * IncreaseLimit);
 			AIBarracksLimit = (Rule.AIBarracksLimitBasic * IncreaseLimit);
 			AIWarFactoryLimit = (Rule.AIWarFactoryLimitBasic * IncreaseLimit);
@@ -9582,7 +9582,7 @@ void HouseClass::AI_CalcDynamics(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
-				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsMix;
+				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsMix;
 				AIDogKennelLimit = (Rule.AIDogHouseLimitMix * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitMix * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitMix * IncreaseLimit);
@@ -9598,7 +9598,6 @@ void HouseClass::AI_CalcDynamics(void)
 				AINukeLimit = (Rule.AINukeLimitMix * IncreaseLimit);
 				AIRepairBayLimit = (Rule.AIRepairBayLimitMix * IncreaseLimit);
 				AIMaxBuildings = Rule.AIMaxBuildingsMix;
-				//AIMaxMCVs = Rule.AIMaxMCVsMix;
 				AIMaxTanksNr = Rule.AIMaxTanksMix;
 				AIMaxNavalNr = Rule.AIMaxNavalMix;
 				AIMaxInfantryNr = Rule.AIMaxInfantryMix;
@@ -9606,7 +9605,7 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
-				AIMaxConYardsAndMCVs = Rule.AIMaxMCVsNaval;
+				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsNaval;
 				AIDogKennelLimit = (Rule.AIDogHouseLimitNaval * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitNaval * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitNaval * IncreaseLimit);
@@ -9630,20 +9629,20 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
-		if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
-			if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
-				AIWarFactoryLimit += 2;
-			}
-			if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
-				AIMaxConYardsAndMCVs += 2;
-			}
-			if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
-				AINavalLimit += 2;
-			}
-		}
+		//if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
+		//	if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
+		//		AIWarFactoryLimit += 2;
+		//	}
+		//	if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
+		//		AIMaxConYardsAndMCVs += 2;
+		//	}
+		//	if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
+		//		AINavalLimit += 2;
+		//	}
+		//}
 
 		//Set AI refinery limit before dynamic code
-		AIRefineryLimit = Rule.AIRefineryLimitOverwrite;
+		AIRefineryLimit = Rule.AIRefineryLimitOverwrite * IncreaseLimit;
 
 		//Dynamic stuff
 		if (Rule.AIAllowDynamicBaseGrow) {
@@ -9652,11 +9651,6 @@ void HouseClass::AI_CalcDynamics(void)
 				TempCalculation = (int)(enemy->BQuantity[STRUCT_REFINERY] / CountEnemiesForThisAI);
 				if (TempCalculation > AIRefineryLimit) {
 					AIRefineryLimit = TempCalculation;
-				}
-				//Barracks & Tent
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_BARRACKS] + enemy->BQuantity[STRUCT_TENT]) / CountEnemiesForThisAI);
-				if (TempCalculation > AIBarracksLimit) {
-					AIBarracksLimit = TempCalculation;
 				}
 				//Allied air units
 				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
