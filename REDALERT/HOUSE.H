@@ -488,12 +488,9 @@ class HouseClass {
 		int AIPersonalStrategyMode = 0;
 
 		//Used for MCV base expansion:
-		int CountMCVs = 0;
-		int CountChronoSpheres = 0;
 		void AI_Calc2ndBaseLocations(void);
 		int AI_Interesting_Waypoints[WAYPT_COUNT];
 		bool SellSomeStuffWasDone = false;
-		void AI_SellingLoop(void);
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.

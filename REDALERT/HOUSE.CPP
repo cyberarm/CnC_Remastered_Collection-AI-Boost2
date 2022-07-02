@@ -1440,22 +1440,6 @@ void HouseClass::AI(void)
 			}
 		}
 	}
-
-
-	// By Bas75, keep al AI MCV's hunting.
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * unit = Units.Ptr(index);
-			if (unit->House == this && !unit->IsInLimbo && *unit == UNIT_MCV) {
-				unit->Assign_Mission(MISSION_HUNT);
-			}
-		}
-	}
-
-	//During the game the AI's REFs etc are away from Tiberium because of a part is harvested
-	//This tells the AI so sell some buildings 1 time, after this he rebuilds them and hopefully at a better location.
-	AI_SellingLoop();
-
 }
 
 /***********************************************************************************************
@@ -6017,9 +6001,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 					u->Scatter(false, true, true);
 				}
 			}
-			else if (*u == UNIT_MCV) {
-				u->Assign_Mission(MISSION_HUNT);
-			}
 			else {
 				u->Scatter(false, true, true);
 				if ((*u == UNIT_MAD || *u == UNIT_CHRONOTANK) && Rule.AISpeedRush == 0) {
@@ -6518,18 +6499,15 @@ int HouseClass::AI_Building(void)
 		}
 	}
 
-	if (firstrundone == false || BQuantity[STRUCT_CONST] < 3) {
+	if (firstrundone == false) {
 		//We do this if we have less than 3 buildings, this because of multiplier of current construction yards, etc.
 		firstrundone = true;
 		AI_CalcDynamics();
-		AI_Calc2ndBaseLocations();
 	}
 
 	if (IsBaseBuilding) {
 		// Check if MCV is sleeping:
-		CountMCVs = UQuantity[UNIT_MCV]; //This line is also used in UNIT.CPP for the MCV second base option.
-		CountChronoSpheres = BQuantity[STRUCT_CHRONOSPHERE]; //This line is also used in UNIT.CPP for the MCV second base option.
-		if (!IsHuman && CountMCVs > 0) {
+		if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * u = Units.Ptr(index);
 				if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
@@ -6539,6 +6517,7 @@ int HouseClass::AI_Building(void)
 				}
 			}
 		}
+
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not too much:
 			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
@@ -10073,47 +10052,6 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				else {
 					//We found a building to close, we try new random....
 				}
-			}
-		}
-	}
-}
-
-	
-void HouseClass::AI_SellingLoop(void)
-{
-	assert(Houses.ID(this) == ID);
-
-	if (!IsHuman) {
-		if (!SellSomeStuffWasDone) {
-			//The AI should have enough to prevent him to become in trouble....
-			if (BQuantity[STRUCT_WEAP] > 2 && BQuantity[STRUCT_REFINERY] > 5) {
-				//The AI sells all of this:
-				static struct {
-					StructType Structure;
-					UrgencyType Urgency;
-				} _types[] = {
-					{STRUCT_KENNEL, URGENCY_LOW},
-					{STRUCT_PILLBOX, URGENCY_LOW},
-					{STRUCT_CAMOPILLBOX, URGENCY_LOW},
-					{STRUCT_TURRET, URGENCY_LOW},
-					{STRUCT_FLAME_TURRET, URGENCY_LOW},
-					{STRUCT_TESLA, URGENCY_LOW},
-					{STRUCT_SAM, URGENCY_LOW},
-					{STRUCT_AAGUN, URGENCY_LOW},
-					{STRUCT_BARRACKS, URGENCY_LOW},
-					{STRUCT_TENT, URGENCY_LOW},
-					{STRUCT_REFINERY, URGENCY_LOW},
-					{STRUCT_REFINERY, URGENCY_LOW},
-					{STRUCT_WEAP, URGENCY_LOW},
-					{STRUCT_REFINERY, URGENCY_LOW}
-				};
-				for (int i = 0; i < ARRAY_SIZE(_types); i++) {
-					BuildingClass * b = Find_Building(_types[i].Structure);
-					if (b != NULL) {
-						b->Sell_Back(1);
-					}
-				}
-				SellSomeStuffWasDone = true;
 			}
 		}
 	}
