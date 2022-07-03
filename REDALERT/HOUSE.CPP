@@ -6512,7 +6512,7 @@ int HouseClass::AI_Building(void)
 		}
 	}
 
-	if (firstrundone == false) {
+	if (firstrundone == false || BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs) {
 		firstrundone = true;
 		AI_CalcDynamics();
 	}
