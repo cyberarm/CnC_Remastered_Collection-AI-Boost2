@@ -1409,6 +1409,19 @@ void HouseClass::AI(void)
 		}
 	}
 
+	// Check if MCV is sleeping:
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+				if (*u == UNIT_MCV) {
+					u->Assign_Mission(MISSION_HUNT);
+					AI_Calc2ndBaseLocations();
+				}
+			}
+		}
+	}
+
 	//AISpeedRush set by .ini, instant attack
 	if (Rule.AISpeedRush == 1) {
 		int index;
@@ -6505,17 +6518,6 @@ int HouseClass::AI_Building(void)
 	}
 
 	if (IsBaseBuilding) {
-		// Check if MCV is sleeping:
-		if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
-			for (int index = 0; index < Units.Count(); index++) {
-				UnitClass * u = Units.Ptr(index);
-				if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-					if (*u == UNIT_MCV) {
-						u->Assign_Mission(MISSION_HUNT);
-					}
-				}
-			}
-		}
 
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not too much:

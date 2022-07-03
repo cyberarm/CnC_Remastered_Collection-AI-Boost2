@@ -1675,7 +1675,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 		bool ThisIsTheLastMCV = ((this->House->BuildingFactories + 1) == this->House->AIMaxConYardsAndMCVs);
 
 		if (Rule.AIAllowLastMCVToDoSecondBase && ThisIsTheLastMCV) {
-			//Ok, this is not the first MCV, use this one to start extra base:
+			//Ok, this is the last MCV, use this one to start extra base:
 
 			//Loop through waypoints:
 			int RandomWaypoint = 0;
