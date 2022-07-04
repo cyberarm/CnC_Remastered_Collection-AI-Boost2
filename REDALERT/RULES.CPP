@@ -660,6 +660,8 @@ bool RulesClass::General(CCINIClass & ini)
 		AIRepairBaySpeed = ini.Get_Int(MOREQOL, "AIRepairBaySpeed", 0);
 		AIGapSpeed = ini.Get_Int(MOREQOL, "AIGapSpeed", 0);
 		AINukeSpeed = ini.Get_Int(MOREQOL, "AINukeSpeed", 1);
+		AIChronosphereSpeed = ini.Get_Int(MOREQOL, "AIChronosphereSpeed", 1);
+		AIIronCurtainSpeed = ini.Get_Int(MOREQOL, "AIIronCurtainSpeed", 1);
 		AIMaxBuildingsSpeed = ini.Get_Int(MOREQOL, "AIMaxBuildingsSpeed", 90);
 		AIMaxTanksSpeed = ini.Get_Int(MOREQOL, "AIMaxTanksSpeed", 100);
 		AIMaxNavalSpeed = ini.Get_Int(MOREQOL, "AIMaxNavalSpeed", 125);
