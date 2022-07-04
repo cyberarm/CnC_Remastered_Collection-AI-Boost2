@@ -1411,12 +1411,12 @@ void HouseClass::AI(void)
 
 	// Check if MCV is sleeping:
 	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
+		AI_Calc2ndBaseLocations();
 		for (int index = 0; index < Units.Count(); index++) {
 			UnitClass * u = Units.Ptr(index);
 			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
 				if (*u == UNIT_MCV) {
 					u->Assign_Mission(MISSION_HUNT);
-					AI_Calc2ndBaseLocations();
 				}
 			}
 		}
@@ -2831,6 +2831,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				//If harvester and MCV is attacked, worth to protect it
 				if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
 					unittoprotect = u;
+					break; //Stop the for loop, we don't have to scan the other units because we selected a unit.
 				}
 				//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
 				else if (*u == UNIT_MAD) {
@@ -2856,6 +2857,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
 					if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
 						unittoprotect = u;
+						break; //Stop the for loop, we don't have to scan the other units because we selected a unit.
 					}
 				}
 			}
@@ -2865,24 +2867,27 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			CELL cell = Coord_Cell(unittoprotect->Center_Coord());
 			Place_Special_Blast(id, cell);
 		}
+		else {
+			//Only scan buildings if we don't have selected a unit.
 
-		//Select a building to protect
-		BuildingClass * buildingtoprotect = NULL;
+			//Select a building to protect
+			BuildingClass * buildingtoprotect = NULL;
 
-		for (int index = 0; index < Buildings.Count(); index++) {
-			BuildingClass * b = Buildings.Ptr(index);
+			for (int index = 0; index < Buildings.Count(); index++) {
+				BuildingClass * b = Buildings.Ptr(index);
 
-			if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-				//If a yard/ref or weap is attacked, worth to protect it
-				if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
-					buildingtoprotect = b;
+				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+					//If a yard/ref or weap is attacked, worth to protect it
+					if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						buildingtoprotect = b;
+					}
 				}
 			}
-		}
 
-		if (buildingtoprotect) {
-			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
-			Place_Special_Blast(id, cell);
+			if (buildingtoprotect) {
+				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
+				Place_Special_Blast(id, cell);
+			}
 		}
 	}
 	else {
