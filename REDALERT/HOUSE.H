@@ -451,6 +451,8 @@ class HouseClass {
 		int AITeslaGunLimit = 1;
 		int AIRefineryLimit = 1;
 		int AINukeLimit = 1;
+		int AIChronosphereLimit = 1;
+		int AIIronCurtainLimit = 1;
 		int AIRepairBayLimit = 1;
 		bool AIDetectedNavalWar = false;
 		bool AIDetectHumanGroundWar = false;
@@ -469,6 +471,7 @@ class HouseClass {
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
 		bool DoAntiHarvesterRun = false;
+		bool FoundTeleportDestination = false;
 
 		//For Dynamic AI
 		int IsHumanFriend = 0;
@@ -486,7 +489,7 @@ class HouseClass {
 		void AI_CalcDynamics(void);
 		bool firstrundone = false;
 		bool IncreaseLimitDone = false;
-		int IncreaseLimit;
+		int IncreaseLimit = 1;
 		int AIPersonalStrategyMode = 0;
 
 		//Used for MCV base expansion:

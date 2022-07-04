@@ -1674,7 +1674,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 		//Check if its the last MCV to expand to a 2nd base:
 		bool ThisIsTheLastMCV = ((this->House->BuildingFactories + 1) == this->House->AIMaxConYardsAndMCVs);
 
-		if (Rule.AIAllowLastMCVToDoSecondBase && ThisIsTheLastMCV) {
+		if (Rule.AIAllowLastMCVToDoSecondBase && ThisIsTheLastMCV && this->House->IncreaseLimitDone == false) {
 			//Ok, this is the last MCV, use this one to start extra base:
 
 			//Loop through waypoints:

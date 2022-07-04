@@ -35,7 +35,6 @@ To do: (All)
 -Scan the map for water fields, if more than x, its automatically enables naval war.
 -Scan the map for rocks and other blockades to know the AI must boosted extra to compensate space problems.
 -Split house building prio's in seperate VOIDs for better strategies/buildlimits for rush tactics etc.
--Chronosphere code need rework
 
 
 To do for Bast75:
@@ -69,5 +68,6 @@ Done (Need to be added to README.md if important enough):
 -MCV deploy should increase the limits. What limits exactly? Editable in .ini?
 -Airstrip/airpad code to check
 -Selling/power list tweak
+-Chronosphere code need rework
 
 

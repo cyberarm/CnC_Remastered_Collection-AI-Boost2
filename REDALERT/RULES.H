@@ -143,6 +143,8 @@ class RulesClass {
 		int AITeslaLimitBasic = 2;
 		int AIGapLimitBasic = 2;
 		int AINukeLimitBasic = 2;
+		int AIChronosphereLimitBasic = 2;
+		int AIIronCurtainLimitBasic = 2;
 		int AIRepairBayLimitBasic = 2;
 		int AIMaxConYardsAndMCVsBasic = 2;
 		int AIMaxBuildingsBasic = 2;
@@ -167,6 +169,8 @@ class RulesClass {
 		int AITeslaLimitMix = 2;
 		int AIGapLimitMix = 2;
 		int AINukeLimitMix = 2;
+		int AIChronosphereLimitMix = 2;
+		int AIIronCurtainLimitMix = 2;
 		int AIRepairBayLimitMix = 2;
 		int AIMaxConYardsAndMCVsMix = 2;
 		int AIMaxBuildingsMix = 2;
@@ -191,6 +195,8 @@ class RulesClass {
 		int AITeslaLimitNaval = 2;
 		int AIGapLimitNaval = 2;
 		int AINukeLimitNaval = 2;
+		int AIChronosphereLimitNaval = 2;
+		int AIIronCurtainLimitNaval = 2;
 		int AIRepairBayLimitNaval = 2;
 		int AIMaxConYardsAndMCVsNaval = 2;
 		int AIMaxBuildingsNaval = 2;
@@ -213,6 +219,8 @@ class RulesClass {
 		int AIRepairBaySpeed = 0;
 		int AIGapSpeed = 0;
 		int AINukeSpeed = 1;
+		int AIChronosphereSpeed = 1;
+		int AIIronCurtainSpeed = 1;
 		int AIMaxBuildingsSpeed = 90;
 		int AIMaxTanksSpeed = 100;
 		int AIMaxNavalSpeed = 125;

@@ -621,6 +621,12 @@ bool RulesClass::General(CCINIClass & ini)
 		AINukeLimitBasic = ini.Get_Int(MOREQOL, "AINukeLimitBasic", 1);
 		AINukeLimitMix = ini.Get_Int(MOREQOL, "AINukeLimitMix", 1);
 		AINukeLimitNaval = ini.Get_Int(MOREQOL, "AINukeLimitNaval", 1);
+		AIChronosphereLimitBasic = ini.Get_Int(MOREQOL, "AIChronosphereLimitBasic", 1);
+		AIChronosphereLimitMix = ini.Get_Int(MOREQOL, "AIChronosphereLimitMix", 1);
+		AIChronosphereLimitNaval = ini.Get_Int(MOREQOL, "AIChronosphereLimitNaval", 1);
+		AIIronCurtainLimitBasic = ini.Get_Int(MOREQOL, "AIIronCurtainLimitBasic", 1);
+		AIIronCurtainLimitMix = ini.Get_Int(MOREQOL, "AIIronCurtainLimitMix", 1);
+		AIIronCurtainLimitNaval = ini.Get_Int(MOREQOL, "AIIronCurtainLimitNaval", 1);
 		AIRepairBayLimitBasic = ini.Get_Int(MOREQOL, "AIRepairBayLimitBasic", 1);
 		AIRepairBayLimitMix = ini.Get_Int(MOREQOL, "AIRepairBayLimitMix", 1);
 		AIRepairBayLimitNaval = ini.Get_Int(MOREQOL, "AIRepairBayLimitNaval", 1);

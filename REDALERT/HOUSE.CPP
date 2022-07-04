@@ -2767,56 +2767,54 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	assert(Houses.ID(this) == ID);
 
 	//AI processing to be able to use Chronosphere and Iron Curtain - Mini Franki
-	//Chronosphere - need rework
+	//Chronosphere
 	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
 		//Select an unit to teleport
-		if (Map.IsTargettingMode == SPC_CHRONOSPHERE) {
-			UnitClass * unittoteleport = NULL;
+		UnitClass * unittoteleport = NULL;
 
-			for (int index = 0; index < Units.Count(); index++) {
-				UnitClass * u = Units.Ptr(index);
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
 
-				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
-					//If not passable, reserve and shift the last MCV to expend the base
-					if (*u == UNIT_MCV && UQuantity[UNIT_MCV] == 1 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) {
-						unittoteleport = u;
-					}
-					else if (*u == UNIT_DEMOTRUCK) {
-						unittoteleport = u;
-					}
+			if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
+				if (*u == UNIT_DEMOTRUCK) {
+					unittoteleport = u;
 				}
 			}
-
-			if (unittoteleport) {
-				CELL cell = Coord_Cell(unittoteleport->Center_Coord());
-				Place_Special_Blast(id, cell);
-			}
 		}
-		//Select a new destination for the unit - test 
-		else if (Map.IsTargettingMode == SPC_CHRONO2) {
-			int FarthestEnemyBuildingDist = -1;
-			for (int index = 0; index < Buildings.Count(); index++) {
-				BuildingClass * Ownbuilding = Buildings.Ptr(index);
-				if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
-					for (int index = 0; index < Buildings.Count(); index++) {
-						BuildingClass * building = Buildings.Ptr(index);
-						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-							if (FarthestEnemyBuildingDist == -1 && (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(25))) {
-								//Note: We added the 25 change option, otherwise it always takes the furtherest building. Now it's more random.
-								FarthestEnemyBuildingDist = index;
-								break; // we have selected a building, so don't do a new calculation again.
-							}
+		//We found an unit to teleport
+		if (unittoteleport) {
+			CELL cell = Coord_Cell(unittoteleport->Center_Coord());
+			Place_Special_Blast(SPC_CHRONOSPHERE, cell);
+		}
+
+		//Select a new destination for the unit
+		int FarthestEnemyBuildingDist = -1;
+		FoundTeleportDestination = false;
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * Ownbuilding = Buildings.Ptr(index);
+			if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+				for (int index = 0; index < Buildings.Count(); index++) {
+					BuildingClass * building = Buildings.Ptr(index);
+					if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+						if (FarthestEnemyBuildingDist == -1 && (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(25))) {
+							//Note: We added the 25 change option, otherwise it always takes the furtherest building. Now it's more random.
+							FarthestEnemyBuildingDist = index;
+							FoundTeleportDestination = true;
+							break; // we have selected a building, so don't do a new calculation again.
 						}
 					}
 				}
-				if (FarthestEnemyBuildingDist > -1) {
-					break; // we have selected a building, so don't do a new calculation again.
-				}
 			}
+			if (FarthestEnemyBuildingDist > -1) {
+				break; // we have selected a building, so don't do a new calculation again.
+			}
+		}
+		//We found a teleport destination
+		if (FoundTeleportDestination) {
 			COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
 			CELL TargetCell = Coord_Cell(TargetCoord);
 			CELL cell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false);
-			Place_Special_Blast(id, cell);
+			Place_Special_Blast(SPC_CHRONO2, cell);
 		}
 	}
 	//Iron Curtain
@@ -2831,7 +2829,6 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				//If harvester and MCV is attacked, worth to protect it
 				if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
 					unittoprotect = u;
-					break; //Stop the for loop, we don't have to scan the other units because we selected a unit.
 				}
 				//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
 				else if (*u == UNIT_MAD) {
@@ -2857,37 +2854,33 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
 					if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
 						unittoprotect = u;
-						break; //Stop the for loop, we don't have to scan the other units because we selected a unit.
 					}
 				}
 			}
 		}
-
+		//We found a unit to protect
 		if (unittoprotect) {
 			CELL cell = Coord_Cell(unittoprotect->Center_Coord());
-			Place_Special_Blast(id, cell);
+			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
 		}
-		else {
-			//Only scan buildings if we don't have selected a unit.
 
-			//Select a building to protect
-			BuildingClass * buildingtoprotect = NULL;
+		//Select a building to protect
+		BuildingClass * buildingtoprotect = NULL;
 
-			for (int index = 0; index < Buildings.Count(); index++) {
-				BuildingClass * b = Buildings.Ptr(index);
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * b = Buildings.Ptr(index);
 
-				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-					//If a yard/ref or weap is attacked, worth to protect it
-					if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
-						buildingtoprotect = b;
-					}
+			if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+				//If a yard/ref or weap is attacked, worth to protect it
+				if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+					buildingtoprotect = b;
 				}
 			}
-
-			if (buildingtoprotect) {
-				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
-				Place_Special_Blast(id, cell);
-			}
+		}
+		//We found a building to protect
+		if (buildingtoprotect) {
+			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
+			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
 		}
 	}
 	else {
@@ -5333,30 +5326,17 @@ void HouseClass::Recalc_Center(void)
 			BuildingClass const * b = Buildings.Ptr(index);
 
 			if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this && b->Strength > 0) {
-				//Added by Bast75
-				if (BQuantity[STRUCT_CONST] > 1) {
-					//We have multiple MCV's deployed, we only use the Construction Yards to calculate...
-					if (*b == STRUCT_CONST) {
-						int weight = (b->Class->Cost_Of() / 1000) + 1;
-						for (int i = 0; i < weight; i++) {
-							x += Coord_X(b->Center_Coord());
-							y += Coord_Y(b->Center_Coord());
-							count++;
-						}
-					}
-				}
-				else {
-					/*
-					**	Give more "weight" to buildings that cost more. The presumption is that cheap
-					**	buildings don't affect the base disposition as much as the more expensive
-					**	buildings do.
-					*/
-					int weight = (b->Class->Cost_Of() / 1000) + 1;
-					for (int i = 0; i < weight; i++) {
-						x += Coord_X(b->Center_Coord());
-						y += Coord_Y(b->Center_Coord());
-						count++;
-					}
+
+				/*
+				**	Give more "weight" to buildings that cost more. The presumption is that cheap
+				**	buildings don't affect the base disposition as much as the more expensive
+				**	buildings do.
+				*/
+				int weight = (b->Class->Cost_Of() / 1000) + 1;
+				for (int i = 0; i < weight; i++) {
+					x += Coord_X(b->Center_Coord());
+					y += Coord_Y(b->Center_Coord());
+					count++;
 				}
 			}
 		}
@@ -6285,9 +6265,10 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const
 		StructType Structure;
 		UrgencyType Urgency;
 	} _types[] = {
+		{STRUCT_KENNEL, URGENCY_LOW},
+		{STRUCT_GAP, URGENCY_LOW},
 		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
 		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
-		{STRUCT_KENNEL, URGENCY_MEDIUM},
 		{STRUCT_PILLBOX, URGENCY_MEDIUM},
 		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
 		{STRUCT_TURRET, URGENCY_MEDIUM},
@@ -6295,7 +6276,6 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const
 		{STRUCT_TESLA, URGENCY_MEDIUM},
 		{STRUCT_ADVANCED_TECH, URGENCY_MEDIUM},
 		{STRUCT_SOVIET_TECH, URGENCY_MEDIUM},
-		{STRUCT_GAP, URGENCY_MEDIUM},
 		{STRUCT_RADAR, URGENCY_MEDIUM},
 		{STRUCT_SAM, URGENCY_CRITICAL},
 		{STRUCT_AAGUN, URGENCY_CRITICAL},
@@ -6308,6 +6288,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const
 		{STRUCT_WEAP, URGENCY_CRITICAL},
 		{STRUCT_BARRACKS, URGENCY_CRITICAL},
 		{STRUCT_TENT, URGENCY_CRITICAL},
+		{STRUCT_STORAGE,URGENCY_CRITICAL},
 		{STRUCT_CONST, URGENCY_CRITICAL}
 	};
 
@@ -6355,10 +6336,10 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		StructType	Structure;
 		UrgencyType	Urgency;
 	} _types[] = {
-		{STRUCT_STORAGE,URGENCY_LOW},
+		{STRUCT_KENNEL, URGENCY_LOW},
+		{STRUCT_GAP, URGENCY_LOW},
 		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
 		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
-		{STRUCT_KENNEL, URGENCY_MEDIUM},
 		{STRUCT_PILLBOX, URGENCY_MEDIUM},
 		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
 		{STRUCT_FLAME_TURRET, URGENCY_MEDIUM},
@@ -6366,7 +6347,6 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		{STRUCT_TESLA, URGENCY_MEDIUM},
 		{STRUCT_ADVANCED_TECH, URGENCY_MEDIUM},
 		{STRUCT_SOVIET_TECH, URGENCY_MEDIUM},
-		{STRUCT_GAP, URGENCY_MEDIUM},
 		{STRUCT_RADAR, URGENCY_MEDIUM},
 		{STRUCT_AIRSTRIP, URGENCY_MEDIUM},
 		{STRUCT_HELIPAD, URGENCY_MEDIUM},
@@ -6378,6 +6358,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		{STRUCT_WEAP, URGENCY_CRITICAL},
 		{STRUCT_BARRACKS, URGENCY_CRITICAL},
 		{STRUCT_TENT, URGENCY_CRITICAL},
+		{STRUCT_STORAGE,URGENCY_CRITICAL},
 		{STRUCT_CONST, URGENCY_CRITICAL}
 	};
 	BuildingClass * b = 0;
@@ -6919,7 +6900,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Allied tech center
-		if (BQuantity[STRUCT_ADVANCED_TECH] < 1) {
+		if (BQuantity[STRUCT_ADVANCED_TECH] < (1 * IncreaseLimit)) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
@@ -6930,7 +6911,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Soviet tech center
-		if (BQuantity[STRUCT_SOVIET_TECH] < 1) {
+		if (BQuantity[STRUCT_SOVIET_TECH] < (1 * IncreaseLimit)) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
@@ -6940,8 +6921,8 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//iron curtain
-		if (BQuantity[STRUCT_IRON_CURTAIN] < 1) {
+		//Iron curtain
+		if (BQuantity[STRUCT_IRON_CURTAIN] < AIIronCurtainLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
@@ -6951,8 +6932,8 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//chronosphere
-		if (BQuantity[STRUCT_CHRONOSPHERE] < 1) {
+		//Chronosphere
+		if (BQuantity[STRUCT_CHRONOSPHERE] < AIChronosphereLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
@@ -9539,10 +9520,7 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Check if the last yard is built to increase limit by x2(only one time)
-		if (!IncreaseLimitDone) {
-			IncreaseLimit = 1;
-		}
-		else {
+		if (IncreaseLimitDone) {
 			IncreaseLimit = 2;
 		}
 
@@ -9564,6 +9542,8 @@ void HouseClass::AI_CalcDynamics(void)
 			AITeslaGunLimit = (Rule.AITeslaLimitBasic * IncreaseLimit);
 			AIGapLimit = (Rule.AIGapLimitBasic * IncreaseLimit);
 			AINukeLimit = (Rule.AINukeLimitBasic * IncreaseLimit);
+			AIChronosphereLimit = (Rule.AIChronosphereLimitBasic * IncreaseLimit);
+			AIIronCurtainLimit = (Rule.AIIronCurtainLimitBasic * IncreaseLimit);
 			AIRepairBayLimit = (Rule.AIRepairBayLimitBasic * IncreaseLimit);
 			AIMaxBuildings = Rule.AIMaxBuildingsBasic;
 			AIMaxTanksNr = Rule.AIMaxTanksBasic;
@@ -9589,6 +9569,8 @@ void HouseClass::AI_CalcDynamics(void)
 				AITeslaGunLimit = (Rule.AITeslaLimitMix * IncreaseLimit);
 				AIGapLimit = (Rule.AIGapLimitMix * IncreaseLimit);
 				AINukeLimit = (Rule.AINukeLimitMix * IncreaseLimit);
+				AIChronosphereLimit = (Rule.AIChronosphereLimitMix * IncreaseLimit);
+				AIIronCurtainLimit = (Rule.AIIronCurtainLimitMix * IncreaseLimit);
 				AIRepairBayLimit = (Rule.AIRepairBayLimitMix * IncreaseLimit);
 				AIMaxBuildings = Rule.AIMaxBuildingsMix;
 				AIMaxTanksNr = Rule.AIMaxTanksMix;
@@ -9612,6 +9594,8 @@ void HouseClass::AI_CalcDynamics(void)
 				AITeslaGunLimit = (Rule.AITeslaLimitNaval * IncreaseLimit);
 				AIGapLimit = (Rule.AIGapLimitNaval * IncreaseLimit);
 				AINukeLimit = (Rule.AINukeLimitNaval * IncreaseLimit);
+				AIChronosphereLimit = (Rule.AIChronosphereLimitNaval * IncreaseLimit);
+				AIIronCurtainLimit = (Rule.AIIronCurtainLimitNaval * IncreaseLimit);
 				AIRepairBayLimit = (Rule.AIRepairBayLimitNaval * IncreaseLimit);
 				AIMaxBuildings = Rule.AIMaxBuildingsNaval;
 				AIMaxTanksNr = Rule.AIMaxTanksNaval;
