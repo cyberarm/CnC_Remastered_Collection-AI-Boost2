@@ -485,6 +485,8 @@ class HouseClass {
 
 		void AI_CalcDynamics(void);
 		bool firstrundone = false;
+		bool IncreaseLimitDone = false;
+		int IncreaseLimit;
 		int AIPersonalStrategyMode = 0;
 
 		//Used for MCV base expansion:

@@ -6512,9 +6512,16 @@ int HouseClass::AI_Building(void)
 		}
 	}
 
-	if (firstrundone == false || BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs) {
-		firstrundone = true;
+	//Check if the last yard is built to increase limit by x2(only one time)
+	if (!IncreaseLimitDone && BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs) {
 		AI_CalcDynamics();
+		IncreaseLimitDone = true;
+	}
+
+	//Run dynamic calculations code one time at the start of the game
+	if (!firstrundone) {
+		AI_CalcDynamics();
+		firstrundone = true;
 	}
 
 	if (IsBaseBuilding) {
@@ -9526,16 +9533,17 @@ void HouseClass::AI_CalcDynamics(void)
 			AIDetectHumanGroundWar = true;
 		}
 
-		//Check if its the last yard to increase limit by x2
-		bool ThisIsTheLastYard = (BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs);
-		int IncreaseLimit = 1;
-		if (ThisIsTheLastYard) {
+		//Check if the last yard is built to increase limit by x2(only one time)
+		if (!IncreaseLimitDone) {
+			IncreaseLimit = 1;
+		}
+		else {
 			IncreaseLimit = 2;
 		}
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
-			AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsBasic;
+			AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsBasic * IncreaseLimit;
 			AIDogKennelLimit = (Rule.AIDogHouseLimitBasic * IncreaseLimit);
 			AIBarracksLimit = (Rule.AIBarracksLimitBasic * IncreaseLimit);
 			AIWarFactoryLimit = (Rule.AIWarFactoryLimitBasic * IncreaseLimit);
@@ -9562,7 +9570,7 @@ void HouseClass::AI_CalcDynamics(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
-				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsMix;
+				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsMix * IncreaseLimit;
 				AIDogKennelLimit = (Rule.AIDogHouseLimitMix * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitMix * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitMix * IncreaseLimit);
@@ -9585,7 +9593,7 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
-				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsNaval;
+				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsNaval * IncreaseLimit;
 				AIDogKennelLimit = (Rule.AIDogHouseLimitNaval * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitNaval * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitNaval * IncreaseLimit);
