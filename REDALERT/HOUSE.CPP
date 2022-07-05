@@ -5845,10 +5845,13 @@ UrgencyType HouseClass::Check_Raise_Money(void) const
 	assert(Houses.ID(this) == ID);
 
 	UrgencyType urgency = URGENCY_NONE;
-	if (Available_Money() < 100) {
+	//Fix for selling loop because low cash. Sell only when low tiberium on the map, cash drop drastically and stay low - Mini Franki
+	if (Available_Money() < 2000 && IsTiberiumShort) {
+	//if (Available_Money() < 100) {
 		urgency = URGENCY_LOW;
 	}
-	if (Available_Money() < 2000 && !Can_Make_Money()) {
+	if (Available_Money() < 100 && IsTiberiumShort) {
+	//if (Available_Money() < 2000 && !Can_Make_Money()) {
 		urgency++;
 	}
 
@@ -6265,10 +6268,10 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const
 		StructType Structure;
 		UrgencyType Urgency;
 	} _types[] = {
-		{STRUCT_KENNEL, URGENCY_LOW},
 		{STRUCT_GAP, URGENCY_LOW},
 		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
 		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
+		{STRUCT_KENNEL, URGENCY_MEDIUM},
 		{STRUCT_PILLBOX, URGENCY_MEDIUM},
 		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
 		{STRUCT_TURRET, URGENCY_MEDIUM},
@@ -6336,10 +6339,10 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		StructType	Structure;
 		UrgencyType	Urgency;
 	} _types[] = {
-		{STRUCT_KENNEL, URGENCY_LOW},
 		{STRUCT_GAP, URGENCY_LOW},
 		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
 		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
+		{STRUCT_KENNEL, URGENCY_MEDIUM},
 		{STRUCT_PILLBOX, URGENCY_MEDIUM},
 		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
 		{STRUCT_FLAME_TURRET, URGENCY_MEDIUM},
