@@ -7034,6 +7034,17 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
+	//Make MCV TEST
+	if (1 == 0) {
+		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
+			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
+				BuildUnit = UNIT_MCV;
+				AI_Calc2ndBaseLocations(); //MCV in production, recalculate all waypoints so see what can be used for an extra base :-)
+				return(TICKS_PER_SECOND);
+			}
+		}
+	}
+
 	// Make extra harvesters
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
@@ -10052,6 +10063,22 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				}
 				else {
 					//We found a building to close, we try new random....
+				}
+			}
+		}
+		//Send 50% of units with MCV to protect him - Dont work
+		UnitClass * protectmcv = NULL;
+		for (int index = 0; index < Units.Count(); index++) {
+			UnitClass * u = Units.Ptr(index);
+			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+				if (*u == UNIT_MCV) {
+					protectmcv = u;
+				}
+				else if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
+					if (protectmcv) {
+						CELL cell = Coord_Cell(protectmcv->Center_Coord());
+						u->Player_Assign_Mission(MISSION_GUARD_AREA, TARGET_NONE, ::As_Target(cell));
+					}
 				}
 			}
 		}
