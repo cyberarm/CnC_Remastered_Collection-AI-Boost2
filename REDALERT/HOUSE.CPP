@@ -5845,12 +5845,12 @@ UrgencyType HouseClass::Check_Raise_Money(void) const
 	assert(Houses.ID(this) == ID);
 
 	UrgencyType urgency = URGENCY_NONE;
-	//Fix for selling loop because low cash. Sell only when low tiberium on the map, cash drop drastically and stay low - Mini Franki
-	if (Available_Money() < 2000 && IsTiberiumShort) {
+	//Fix for selling loop because low cash. Sell only when low tiberium on the map or no harvester(no cash to buy one), cash drop drastically and stay low - Mini Franki
+	if (Available_Money() < 2000 && IsTiberiumShort || Available_Money() < 1400 && UQuantity[UNIT_HARVESTER] == 0) {
 	//if (Available_Money() < 100) {
 		urgency = URGENCY_LOW;
 	}
-	if (Available_Money() < 100 && IsTiberiumShort) {
+	if (Available_Money() < 100 && IsTiberiumShort || Available_Money() < 100 && UQuantity[UNIT_HARVESTER] == 0) {
 	//if (Available_Money() < 2000 && !Can_Make_Money()) {
 		urgency++;
 	}
