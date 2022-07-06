@@ -10066,18 +10066,25 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				}
 			}
 		}
-		//Send 50% of units with MCV to protect him - Dont work
-		UnitClass * protectmcv = NULL;
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-				if (*u == UNIT_MCV) {
-					protectmcv = u;
+		//Send 50% of units with MCV to protect him
+		if (UQuantity[UNIT_MCV] > 0) {
+			UnitClass * protectmcv = NULL;
+			for (int index = 0; index < Units.Count(); index++) {
+				UnitClass * MyUnit = Units.Ptr(index);
+				if (MyUnit != NULL && !MyUnit->IsInLimbo && MyUnit->House == this && MyUnit->Strength > 0) {
+					if (*MyUnit == UNIT_MCV) {
+						protectmcv = MyUnit;
+						break; // stop scanning the other units, we have found the MCV
+					}
 				}
-				else if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
-					if (protectmcv) {
-						CELL cell = Coord_Cell(protectmcv->Center_Coord());
-						u->Player_Assign_Mission(MISSION_GUARD_AREA, TARGET_NONE, ::As_Target(cell));
+			}
+			if (protectmcv) {
+				for (int index = 0; index < Units.Count(); index++) {
+					UnitClass * u = Units.Ptr(index);
+					if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+						if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
+							u->Player_Assign_Mission(MISSION_GUARD_AREA, TARGET_NONE, ::As_Target(Coord_Cell(protectmcv->Center_Coord())));
+						}
 					}
 				}
 			}
