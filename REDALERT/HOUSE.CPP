@@ -7035,7 +7035,7 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV TEST
-	if (1 == 0) {
+	if (1 == 1) {
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
 				BuildUnit = UNIT_MCV;
@@ -10066,8 +10066,10 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				}
 			}
 		}
-		//Send 50% of units with MCV to protect him
-		if (UQuantity[UNIT_MCV] > 0) {
+		//Check if its the last MCV
+		bool ThisIsTheLastMCV = ((UQuantity[UNIT_MCV] + 1) == AIMaxConYardsAndMCVs);
+		//Send 50% of units with last MCV to protect him
+		if (ThisIsTheLastMCV && Rule.AIAllowLastMCVToDoSecondBase && IncreaseLimitDone == false) {
 			UnitClass * protectmcv = NULL;
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * MyUnit = Units.Ptr(index);
