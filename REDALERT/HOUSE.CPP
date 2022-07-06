@@ -5332,19 +5332,31 @@ void HouseClass::Recalc_Center(void)
 
 		for (index = 0; index < Buildings.Count(); index++) {
 			BuildingClass const * b = Buildings.Ptr(index);
-
 			if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this && b->Strength > 0) {
-
-				/*
-				**	Give more "weight" to buildings that cost more. The presumption is that cheap
-				**	buildings don't affect the base disposition as much as the more expensive
-				**	buildings do.
-				*/
-				int weight = (b->Class->Cost_Of() / 1000) + 1;
-				for (int i = 0; i < weight; i++) {
-					x += Coord_X(b->Center_Coord());
-					y += Coord_Y(b->Center_Coord());
-					count++;
+				//Added by Bast75
+				if (BQuantity[STRUCT_CONST] > 1) {
+					//We have multiple MCV's deployed, we only use the Construction Yards to calculate...
+					if (*b == STRUCT_CONST) {
+						int weight = (b->Class->Cost_Of() / 1000) + 1;
+						for (int i = 0; i < weight; i++) {
+							x += Coord_X(b->Center_Coord());
+							y += Coord_Y(b->Center_Coord());
+							count++;
+						}
+					}
+				}
+				else {
+					/*
+					**	Give more "weight" to buildings that cost more. The presumption is that cheap
+					**	buildings don't affect the base disposition as much as the more expensive
+					**	buildings do.
+					*/
+					int weight = (b->Class->Cost_Of() / 1000) + 1;
+					for (int i = 0; i < weight; i++) {
+						x += Coord_X(b->Center_Coord());
+						y += Coord_Y(b->Center_Coord());
+						count++;
+					}
 				}
 			}
 		}
