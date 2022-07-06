@@ -5330,32 +5330,53 @@ void HouseClass::Recalc_Center(void)
 		int count = 0;
 		int index;
 
-		for (index = 0; index < Buildings.Count(); index++) {
-			BuildingClass const * b = Buildings.Ptr(index);
-			if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this && b->Strength > 0) {
-				//Added by Bast75
-				if (BQuantity[STRUCT_CONST] > 1) {
-					//We have multiple MCV's deployed, we only use the Construction Yards to calculate...
-					if (*b == STRUCT_CONST) {
+		// Overwrite Center if we have a building close to last stolen location (have building in enemy base):
+		bool BuildAtEnemy = false;
+		if (LastStolenLocationX > 0 && LastStolenLocationY > 0) {
+			for (int index2 = 0; index2 < Buildings.Count(); index2++) {
+				BuildingClass const * OwnBuilding = Buildings.Ptr(index2);
+				if (OwnBuilding != NULL && !OwnBuilding->IsInLimbo && (HouseClass *)OwnBuilding->House == this && OwnBuilding->Strength > 0) {
+					int dist = Distance(LastStolenLocationX, LastStolenLocationX, Coord_X(OwnBuilding->Center_Coord()), Coord_X(OwnBuilding->Center_Coord()));
+					if ((dist / 256) < 20) {
+						// We have a close building, make this our Center for base production.
+						x += Coord_X(OwnBuilding->Center_Coord());
+						y += Coord_Y(OwnBuilding->Center_Coord());
+						count++;
+						BuildAtEnemy = true;
+					}
+				}
+			}
+		}
+
+		if (!BuildAtEnemy) { // no building in enemy base, check for multi base or normal Center method:
+
+			for (index = 0; index < Buildings.Count(); index++) {
+				BuildingClass const * b = Buildings.Ptr(index);
+				if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this && b->Strength > 0) {
+					//Added by Bast75
+					if (BQuantity[STRUCT_CONST] >= AIMaxConYardsAndMCVs) {
+						//We have multiple MCV's deployed, we only use the Construction Yards to calculate...
+						if (*b == STRUCT_CONST) {
+							int weight = (b->Class->Cost_Of() / 1000) + 1;
+							for (int i = 0; i < weight; i++) {
+								x += Coord_X(b->Center_Coord());
+								y += Coord_Y(b->Center_Coord());
+								count++;
+							}
+						}
+					}
+					else { // not all MCV's, normal Center method:
+						/*
+						**	Give more "weight" to buildings that cost more. The presumption is that cheap
+						**	buildings don't affect the base disposition as much as the more expensive
+						**	buildings do.
+						*/
 						int weight = (b->Class->Cost_Of() / 1000) + 1;
 						for (int i = 0; i < weight; i++) {
 							x += Coord_X(b->Center_Coord());
 							y += Coord_Y(b->Center_Coord());
 							count++;
 						}
-					}
-				}
-				else {
-					/*
-					**	Give more "weight" to buildings that cost more. The presumption is that cheap
-					**	buildings don't affect the base disposition as much as the more expensive
-					**	buildings do.
-					*/
-					int weight = (b->Class->Cost_Of() / 1000) + 1;
-					for (int i = 0; i < weight; i++) {
-						x += Coord_X(b->Center_Coord());
-						y += Coord_Y(b->Center_Coord());
-						count++;
 					}
 				}
 			}

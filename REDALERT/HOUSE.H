@@ -470,6 +470,8 @@ class HouseClass {
 		//bool AIAttackMode = true;
 		int HasStolenTech = 0;
 		void SetStolenTech(void);
+		int LastStolenLocationX = 0;
+		int LastStolenLocationY = 0;
 		bool DoAntiHarvesterRun = false;
 		bool FoundTeleportDestination = false;
 

@@ -3863,6 +3863,11 @@ bool BuildingClass::Captured(HouseClass * newowner)
 		IsCaptured = true;
 		TechnoClass::Captured(newowner);
 
+		//By Bast75, used for AI to build at captured locations. See Recalc_Center():
+		newowner->LastStolenLocationX = Coord_X(this->Center_Coord());
+		newowner->LastStolenLocationY = Coord_Y(this->Center_Coord());
+
+
 		oldowner->ToCapture = tocap;
 		oldowner->Recalc_Center();
 		House->Recalc_Center();
