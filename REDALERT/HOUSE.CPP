@@ -2829,6 +2829,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				//If harvester and MCV is attacked, worth to protect it
 				if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
 					unittoprotect = u;
+					break; // stop scanning other units, we have select one.
 				}
 				//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
 				else if (*u == UNIT_MAD) {
@@ -2854,6 +2855,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
 					if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
 						unittoprotect = u;
+						break; // stop scanning other units, we have select one.
 					}
 				}
 			}
@@ -2874,6 +2876,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				//If a yard/ref or weap is attacked, worth to protect it
 				if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
 					buildingtoprotect = b;
+					break; // stop scanning other buildings, we have select one.
 				}
 			}
 		}
