@@ -10067,7 +10067,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 		//Check if its the last MCV
-		bool ThisIsTheLastMCV = ((UQuantity[UNIT_MCV] + 1) == AIMaxConYardsAndMCVs);
+		bool ThisIsTheLastMCV = ((BQuantity[STRUCT_CONST] + 1) == AIMaxConYardsAndMCVs);
 		//Send 50% of units with last MCV to protect him
 		if (ThisIsTheLastMCV && Rule.AIAllowLastMCVToDoSecondBase && IncreaseLimitDone == false) {
 			UnitClass * protectmcv = NULL;
