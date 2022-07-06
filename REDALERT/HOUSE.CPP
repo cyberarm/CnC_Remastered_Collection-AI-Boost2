@@ -2873,8 +2873,13 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			BuildingClass * b = Buildings.Ptr(index);
 
 			if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-				//If a yard/ref or weap is attacked, worth to protect it
-				if ((*b == STRUCT_CONST || *b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+				//If a construction yard is attacked, give it higheer prio than ref/war
+				if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
+					buildingtoprotect = b;
+					break; // stop scanning other buildings, we have select one.
+				}
+				//If a ref or weap is attacked, worth to protect it
+				else if ((*b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
 					buildingtoprotect = b;
 					break; // stop scanning other buildings, we have select one.
 				}
