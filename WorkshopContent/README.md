@@ -27,7 +27,7 @@ Fixed/Changed/Improved:
 - Several AI-tweaks for Air and Anti-Air production
 - Fixed some performance issues
 - Good pathfinding is back
-- Selling loop is fixed. Now AI sell for cash only when tiberium is low on the map and cash drop drastically
+- Selling loop for cash is fixed. Now AI only sell when tiberium is low on the map, when no more harvester and cash drop drastically
 
 ---
 
