@@ -7912,9 +7912,7 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 		case RTTI_UNIT:
 			CurUnits++;
 			unit = ((UnitTypeClass const &)techno->Class_Of()).Type;
-			if (unit == UNIT_MCV) {
-				MCVCount++; //A new MCV is built, give it a number - Dont work good
-			}
+
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			quant = unit;
 			if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;

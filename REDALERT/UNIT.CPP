@@ -326,6 +326,13 @@ UnitClass::UnitClass(UnitType classid, HousesType house) :
 {
 	Reload = 0;
 	House->Tracking_Add(this);
+
+	//By Bast75 & Mini Franki:
+	if (*this == UNIT_MCV) {
+		House->MCVCount++; //A new MCV is built, give it a number
+	}
+
+
 	Ammo = Class->MaxAmmo;
 	IsCloakable = Class->IsCloakable;
 	if (Class->IsAnimating) Set_Rate(Options.Normalize_Delay(3));
