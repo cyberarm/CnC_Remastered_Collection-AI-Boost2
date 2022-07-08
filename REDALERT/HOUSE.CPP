@@ -9663,19 +9663,6 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 		}
 
-		//Increase the maximum of War Factory/Yard/Vessel Carrier according to fast build On - Mini Franki
-		//if ((NewUnitsEnabled && Rule.AIAftermathfastbuild == 1) || !NewUnitsEnabled) {
-		//	if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit + 2) {
-		//		AIWarFactoryLimit += 2;
-		//	}
-		//	if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs + 2) {
-		//		AIMaxConYardsAndMCVs += 2;
-		//	}
-		//	if ((BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) < AINavalLimit + 2) {
-		//		AINavalLimit += 2;
-		//	}
-		//}
-
 		//Set AI refinery limit before dynamic code
 		AIRefineryLimit = Rule.AIRefineryLimitOverwrite * IncreaseLimit;
 
