@@ -7305,8 +7305,6 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 	time *= scale;
 
 	int divisor = hptr->Factory_Count(What_Am_I());
-	int slowdownlow = 0;
-	int slowdownhigh = 0;
 	if (divisor != 0) {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 		// Hack: allow the multiple-factory bonus, but only up to two factories if

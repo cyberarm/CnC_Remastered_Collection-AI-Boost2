@@ -7076,8 +7076,7 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV TEST
-	if (1 == 0) {
-		//Note: If you enable this one, tha AI builds multiple MCV's to fast so last <CV detection doesnt work resulting no extra bases
+	if (1 == 1) {
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
 				BuildUnit = UNIT_MCV;
@@ -7913,6 +7912,9 @@ void HouseClass::Tracking_Add(TechnoClass const * techno)
 		case RTTI_UNIT:
 			CurUnits++;
 			unit = ((UnitTypeClass const &)techno->Class_Of()).Type;
+			if (unit == UNIT_MCV) {
+				MCVCount++; //A new MCV is built, give it a number - Dont work good
+			}
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
 			quant = unit;
 			if (quant >= UNIT_RA_COUNT) quant -= UNIT_RA_COUNT;
@@ -10115,7 +10117,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 		//Check if its the last MCV
-		bool ThisIsTheLastMCV = ((BQuantity[STRUCT_CONST] + 1) == AIMaxConYardsAndMCVs);
+		bool ThisIsTheLastMCV = (MCVCount == AIMaxConYardsAndMCVs);
 		//Send 50% of units with last MCV to protect him
 		if (ThisIsTheLastMCV && Rule.AIAllowLastMCVToDoSecondBase && IncreaseLimitDone == false) {
 			UnitClass * protectmcv = NULL;
@@ -10133,7 +10135,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 					UnitClass * u = Units.Ptr(index);
 					if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
 						if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
-							u->Player_Assign_Mission(MISSION_GUARD_AREA, TARGET_NONE, ::As_Target(Coord_Cell(protectmcv->Center_Coord())));
+							u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(protectmcv->Center_Coord())), TARGET_NONE);
 						}
 					}
 				}

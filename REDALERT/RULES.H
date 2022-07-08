@@ -109,7 +109,7 @@ class RulesClass {
 		int AIMaxChronotanks = 5;
 		bool AIAllowChronotanksGroupShifting = true;
 		bool AIAllowLastMCVToDoSecondBase = true;
-		bool AIAllowMoreMCVsToExraBase = false;
+		bool AIAllowMoreMCVsToExtraBase = false;
 		int AIMinimalMCVOrConYardsInMainBase = 2;
 		int AIMCVWaypointFreeRadius = 20;
 

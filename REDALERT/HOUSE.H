@@ -497,7 +497,7 @@ class HouseClass {
 		//Used for MCV base expansion:
 		void AI_Calc2ndBaseLocations(void);
 		int AI_Interesting_Waypoints[WAYPT_COUNT];
-		bool SellSomeStuffWasDone = false;
+		int MCVCount = 0;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.
