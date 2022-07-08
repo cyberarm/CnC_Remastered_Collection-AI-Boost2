@@ -7076,7 +7076,8 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV TEST
-	if (1 == 1) {
+	if (1 == 0) {
+		//Note: If you enable this one, tha AI builds multiple MCV's to fast so last <CV detection doesnt work resulting no extra bases
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
 				BuildUnit = UNIT_MCV;
@@ -9767,7 +9768,13 @@ void HouseClass::AI_CalcDynamics(void)
 
 		//Default dynamic game like we always have/had
 		if (AIPersonalStrategyMode == 1) {
-			// no changes
+			if (BQuantity[STRUCT_MSLO] == 0) { //Not all tech, set defense limits at half, to tech up faster
+				AIAirdefenseLimit = (int)(AIAirdefenseLimit / 2);
+				AIPillBoxLimit = (int)(AIPillBoxLimit / 2);
+				AITurretGunLimit = (int)(AITurretGunLimit / 2);
+				AIFlameTurretLimit = (int)(AIFlameTurretLimit / 2);
+				AITeslaGunLimit = (int)(AITeslaGunLimit / 2);
+			}
 		}
 
 		//Naval rush
