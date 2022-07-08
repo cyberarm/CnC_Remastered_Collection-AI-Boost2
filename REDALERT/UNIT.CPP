@@ -1673,10 +1673,10 @@ bool UnitClass::Goto_Clear_Spot(void)
 
 		//Check if its the last MCV to expand to a 2nd base:
 		bool AllowExtraBaseAtWaypoint = false;
-		if ((this->House->MCVCount) == this->House->AIMaxConYardsAndMCVs) {
+		if ((this->House->MCVCount) == this->House->AIMaxConYardsAndMCVs && this->House->IncreaseLimitDone == false) {
 			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
 		}
-		if (Rule.AIAllowMoreMCVsToExtraBase && this->House->BuildingFactories >= Rule.AIMinimalMCVOrConYardsInMainBase) {
+		if (Rule.AIAllowMoreMCVsToExtraBase && this->House->BuildingFactories >= Rule.AIMaxMCVOrConYardsInMainBase) {
 			AllowExtraBaseAtWaypoint = true; // we have enough contruction yards in main base and AIAllowMoreMCVsToExraBase is enabled.
 		}
 
