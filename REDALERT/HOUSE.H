@@ -462,7 +462,6 @@ class HouseClass {
 		//int AINrOfMCVsProduced = 0;
 		int AIMaxBuildings = 75;
 		int AIMaxConYardsAndMCVs = 1;
-		int MCVsProduced = 0;
 		int AIMaxTanksNr = 50;
 		int AIMaxNavalNr = 50;
 		int AIMaxInfantryNr = 50;
@@ -498,6 +497,7 @@ class HouseClass {
 		void AI_Calc2ndBaseLocations(void);
 		int AI_Interesting_Waypoints[WAYPT_COUNT];
 		int MCVCount = 0;
+		int ConstrYardCount = 0;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.
