@@ -7082,7 +7082,7 @@ int HouseClass::AI_Unit(void)
 
 	//Make MCV TEST
 	if (1 == 0) {
-		if (!IsHuman && (MCVCount + ConstrYardCount) < AIMaxConYardsAndMCVs) {
+		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
 				BuildUnit = UNIT_MCV;
 				AI_Calc2ndBaseLocations(); //MCV in production, recalculate all waypoints so see what can be used for an extra base :-)
@@ -7106,7 +7106,7 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV by Bast75, if no conyard directly, otherwise 33% change of expanding
-	if (!IsHuman && IsBaseBuilding && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && (MCVCount + ConstrYardCount) < AIMaxConYardsAndMCVs) {
+	if (!IsHuman && IsBaseBuilding && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 		if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) && (Percent_Chance(33) || BQuantity[STRUCT_CONST] == 0)) {
 			BuildUnit = UNIT_MCV;
 			AI_Calc2ndBaseLocations(); //MCV in production, recalculate all waypoints so see what can be used for an extra base :-)
@@ -10107,7 +10107,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 		//Check if its the last MCV
-		bool ThisIsTheLastMCV = (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST] >= AIMaxConYardsAndMCVs);
+		bool ThisIsTheLastMCV = (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs);
 		//Send 50% of units with last MCV to protect him
 		if (ThisIsTheLastMCV && Rule.AIAllowLastMCVToDoSecondBase && IncreaseLimitDone == false) {
 			UnitClass * protectmcv = NULL;

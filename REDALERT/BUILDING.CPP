@@ -1725,11 +1725,6 @@ ResultType BuildingClass::Take_Damage(int & damage, int distance, WarheadType wa
 		switch (res) {
 			case RESULT_DESTROYED:
 
-				//Added by Bast75 and Mini Franki:
-				if (*this == STRUCT_CONST) {
-					House->MCVCount--;
-				}
-
 				/*
 				**	Add the building to the base prebuild list if allowed. This will force
 				**	the computer to rebuild this structure if it can.
