@@ -10106,10 +10106,20 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				}
 			}
 		}
-		//Check if its the last MCV
-		bool ThisIsTheLastMCV = (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs);
+
+		//Check if its the last MCV to expand to a 2nd base:
+		bool AllowExtraBaseAtWaypoint = false;
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && IncreaseLimitDone == false) {
+			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
+		}
+		if (Rule.AIAllowMoreMCVsToExtraBase) {
+			if (BQuantity[STRUCT_CONST] >= Rule.AIMaxMCVOrConYardsInMainBase) {
+				AllowExtraBaseAtWaypoint = true; // we have enough contruction yards in main base and AIAllowMoreMCVsToExraBase is enabled.
+			}
+		}
+
 		//Send 50% of units with last MCV to protect him
-		if (ThisIsTheLastMCV && Rule.AIAllowLastMCVToDoSecondBase && IncreaseLimitDone == false) {
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
 			UnitClass * protectmcv = NULL;
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * MyUnit = Units.Ptr(index);
