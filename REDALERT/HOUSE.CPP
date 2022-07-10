@@ -2771,7 +2771,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	int index;
 	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
-		//For test, AI teleport MCV to waypoint even if its passable
+		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
 		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
 			UnitClass * mcvtoteleport = NULL;
 
@@ -2789,9 +2789,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				CELL cell = Coord_Cell(mcvtoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, cell);
 			}
-			//Destination - Dont work correctly
-			COORDINATE TargetCoord = AI_Interesting_Waypoints[PersonalCounter];
-			CELL cell = Coord_Cell(TargetCoord);
+			//Destination - Dont work correctly, he get teleport in the corner of the map
+			CELL cell = Scen.Waypoint[AI_Interesting_Waypoints[PersonalCounter]];
 			Place_Special_Blast(SPC_CHRONO2, cell);
 		}
 		if (VQuantity[VESSEL_CA] > 0) {
@@ -2813,7 +2812,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				Place_Special_Blast(SPC_CHRONOSPHERE, cell);
 			}
 			//Destination
-			//Coming
+			//Coming, want to teleport cruiser at the nearest lake of the enemy base
 		}
 	}
 	//Iron Curtain
@@ -6544,14 +6543,14 @@ int HouseClass::AI_Building(void)
 
 	//Check if the last yard is built to increase limit by x2(only one time)
 	if (!IncreaseLimitDone && BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs) {
-		AI_CalcDynamics();
 		IncreaseLimitDone = true;
+		AI_CalcDynamics();
 	}
 
 	//Run dynamic calculations code one time at the start of the game
 	if (!firstrundone) {
-		AI_CalcDynamics();
 		firstrundone = true;
+		AI_CalcDynamics();
 	}
 
 	if (IsBaseBuilding) {
@@ -6751,6 +6750,32 @@ int HouseClass::AI_Building(void)
 						prio = prio + 3;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				}
+			}
+		}
+
+		//Superweapons test, need to change rules.ini techlevel and prerequisite to work
+		//Put timer to minimum to test faster
+		//Iron curtain
+		if (1 == 0) {
+			if (BQuantity[STRUCT_IRON_CURTAIN] < AIIronCurtainLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
+				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+					}
+				}
+			}
+
+			//Chronosphere
+			if (BQuantity[STRUCT_CHRONOSPHERE] < AIChronosphereLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
+				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+					}
 				}
 			}
 		}
@@ -7080,8 +7105,8 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
-	//Make MCV TEST
-	if (1 == 1) {
+	//Make MCV TEST, put speed 20 for faster test
+	if (1 == 0) {
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
 				BuildUnit = UNIT_MCV;
@@ -10109,7 +10134,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 
 		//Check if its the last MCV to expand to a 2nd base:
 		AllowExtraBaseAtWaypoint = false;
-		if (((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) && IncreaseLimitDone == false) {
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && IncreaseLimitDone == false) {
 			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
 		}
 		if (Rule.AIAllowMoreMCVsToExtraBase) {
