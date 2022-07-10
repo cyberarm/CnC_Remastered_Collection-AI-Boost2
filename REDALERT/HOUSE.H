@@ -472,7 +472,6 @@ class HouseClass {
 		int LastStolenLocationX = 0;
 		int LastStolenLocationY = 0;
 		bool DoAntiHarvesterRun = false;
-		bool FoundTeleportDestination = false;
 
 		//For Dynamic AI
 		int IsHumanFriend = 0;
@@ -498,6 +497,8 @@ class HouseClass {
 		int AI_Interesting_Waypoints[WAYPT_COUNT];
 		int MCVCount = 0;
 		int ConstrYardCount = 0;
+		int PersonalCounter = 0;
+		bool AllowExtraBaseAtWaypoint = false;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.

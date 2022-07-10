@@ -2768,127 +2768,127 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 	//AI processing to be able to use Chronosphere and Iron Curtain - Mini Franki
 	//Chronosphere
+	int index;
 	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
-		//Select an unit to teleport
-		UnitClass * unittoteleport = NULL;
+		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
+		//For test, AI teleport MCV to waypoint even if its passable
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
+			UnitClass * mcvtoteleport = NULL;
 
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-
-			if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
-				if (*u == UNIT_DEMOTRUCK) {
-					unittoteleport = u;
-				}
-			}
-		}
-		//We found an unit to teleport
-		if (unittoteleport) {
-			CELL cell = Coord_Cell(unittoteleport->Center_Coord());
-			Place_Special_Blast(SPC_CHRONOSPHERE, cell);
-		}
-
-		//Select a new destination for the unit
-		int FarthestEnemyBuildingDist = -1;
-		FoundTeleportDestination = false;
-		for (int index = 0; index < Buildings.Count(); index++) {
-			BuildingClass * Ownbuilding = Buildings.Ptr(index);
-			if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
-				for (int index = 0; index < Buildings.Count(); index++) {
-					BuildingClass * building = Buildings.Ptr(index);
-					if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-						if (FarthestEnemyBuildingDist == -1 && (Ownbuilding->Distance(building) > FarthestEnemyBuildingDist && Percent_Chance(25))) {
-							//Note: We added the 25 change option, otherwise it always takes the furtherest building. Now it's more random.
-							FarthestEnemyBuildingDist = index;
-							FoundTeleportDestination = true;
-							break; // we have selected a building, so don't do a new calculation again.
-						}
+			for (index = 0; index < Units.Count(); index++) {
+				UnitClass * u = Units.Ptr(index);
+				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
+					if (*u == UNIT_MCV) {
+						mcvtoteleport = u;
+						break;
 					}
 				}
 			}
-			if (FarthestEnemyBuildingDist > -1) {
-				break; // we have selected a building, so don't do a new calculation again.
+			//We found the MCV to teleport
+			if (mcvtoteleport) {
+				CELL cell = Coord_Cell(mcvtoteleport->Center_Coord());
+				Place_Special_Blast(SPC_CHRONOSPHERE, cell);
 			}
-		}
-		//We found a teleport destination
-		if (FoundTeleportDestination) {
-			COORDINATE TargetCoord = Buildings.Ptr(FarthestEnemyBuildingDist)->Coord;
-			CELL TargetCell = Coord_Cell(TargetCoord);
-			CELL cell = Map.Nearby_Location(TargetCell, SPEED_WHEEL, -1, MZONE_NORMAL, false);
+			//Destination - Dont work correctly
+			COORDINATE TargetCoord = AI_Interesting_Waypoints[PersonalCounter];
+			CELL cell = Coord_Cell(TargetCoord);
 			Place_Special_Blast(SPC_CHRONO2, cell);
+		}
+		if (VQuantity[VESSEL_CA] > 0) {
+			//Select a ship to teleport
+			VesselClass * shiptoteleport = NULL;
+
+			for (index = 0; index < Vessels.Count(); index++) {
+				VesselClass * v = Vessels.Ptr(index);
+				if (v != NULL && !v->IsInLimbo && v->House == this && v->Strength > 0) {
+					if (*v == VESSEL_CA) {
+						shiptoteleport = v;
+						break;
+					}
+				}
+			}
+			//We found a ship to teleport
+			if (shiptoteleport) {
+				CELL cell = Coord_Cell(shiptoteleport->Center_Coord());
+				Place_Special_Blast(SPC_CHRONOSPHERE, cell);
+			}
+			//Destination
+			//Coming
 		}
 	}
 	//Iron Curtain
 	else if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
-		//Select an unit to protect
-		UnitClass * unittoprotect = NULL;
+		if (UQuantity[UNIT_MCV] > 0 || UQuantity[UNIT_MAD] > 0) {
+			//Select an unit to protect
+			UnitClass * unittoprotect = NULL;
 
-		for (int index = 0; index < Units.Count(); index++) {
-			UnitClass * u = Units.Ptr(index);
-
-			if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
-				//If harvester and MCV is attacked, worth to protect it
-				if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
-					unittoprotect = u;
-					break; // stop scanning other units, we have select one.
-				}
-				//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
-				else if (*u == UNIT_MAD) {
-					int ClosestOwnBuilding = -1;
-					for (int index = 0; index < Buildings.Count(); index++) {
-						BuildingClass * building = Buildings.Ptr(index);
-						if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
-							if (ClosestOwnBuilding == -1 || u->Distance(building) < ClosestOwnBuilding) {
-								ClosestOwnBuilding = u->Distance(building);
-							}
-						}
-					}
-					int ClosestEnemyBuildingDist = -1;
-					for (int index = 0; index < Buildings.Count(); index++) {
-						BuildingClass * building = Buildings.Ptr(index);
-						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
-							if (ClosestEnemyBuildingDist == -1 || u->Distance(building) < ClosestEnemyBuildingDist) {
-								ClosestEnemyBuildingDist = u->Distance(building);
-							}
-						}
-					}
-					ClosestOwnBuilding = ClosestOwnBuilding / 265;
-					ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
-					if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
+			for (index = 0; index < Units.Count(); index++) {
+				UnitClass * u = Units.Ptr(index);
+				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
+					//If harvester and MCV is attacked, worth to protect it
+					if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
 						unittoprotect = u;
 						break; // stop scanning other units, we have select one.
 					}
+					//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
+					else if (*u == UNIT_MAD) {
+						int ClosestOwnBuilding = -1;
+						for (index = 0; index < Buildings.Count(); index++) {
+							BuildingClass * building = Buildings.Ptr(index);
+							if (building != NULL && building->House->Is_Ally(this) && !building->IsInLimbo) {
+								if (ClosestOwnBuilding == -1 || u->Distance(building) < ClosestOwnBuilding) {
+									ClosestOwnBuilding = u->Distance(building);
+								}
+							}
+						}
+						int ClosestEnemyBuildingDist = -1;
+						for (index = 0; index < Buildings.Count(); index++) {
+							BuildingClass * building = Buildings.Ptr(index);
+							if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+								if (ClosestEnemyBuildingDist == -1 || u->Distance(building) < ClosestEnemyBuildingDist) {
+									ClosestEnemyBuildingDist = u->Distance(building);
+								}
+							}
+						}
+						ClosestOwnBuilding = ClosestOwnBuilding / 265;
+						ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
+						if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
+							unittoprotect = u;
+							break; // stop scanning other units, we have select one.
+						}
+					}
 				}
 			}
-		}
-		//We found a unit to protect
-		if (unittoprotect) {
-			CELL cell = Coord_Cell(unittoprotect->Center_Coord());
-			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
-		}
-
-		//Select a building to protect
-		BuildingClass * buildingtoprotect = NULL;
-
-		for (int index = 0; index < Buildings.Count(); index++) {
-			BuildingClass * b = Buildings.Ptr(index);
-
-			if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-				//If a construction yard is attacked, give it higheer prio than ref/war
-				if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
-					buildingtoprotect = b;
-					break; // stop scanning other buildings, we have select one.
-				}
-				//If a ref or weap is attacked, worth to protect it
-				else if ((*b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
-					buildingtoprotect = b;
-					break; // stop scanning other buildings, we have select one.
-				}
+			//We found a unit to protect
+			if (unittoprotect) {
+				CELL cell = Coord_Cell(unittoprotect->Center_Coord());
+				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
 			}
 		}
-		//We found a building to protect
-		if (buildingtoprotect) {
-			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
-			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+		if (BQuantity[STRUCT_CONST] > 0 || BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_WEAP] > 0) {
+			//Select a building to protect if no unit selected
+			BuildingClass * buildingtoprotect = NULL;
+
+			for (index = 0; index < Buildings.Count(); index++) {
+				BuildingClass * b = Buildings.Ptr(index);
+				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+					//If a construction yard is attacked, give it higher prio than ref/war
+					if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						buildingtoprotect = b;
+						break; // stop scanning other buildings, we have select one.
+					}
+					//If a ref or weap is attacked, worth to protect it
+					else if ((*b == STRUCT_REFINERY || *b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						buildingtoprotect = b;
+						break; // stop scanning other buildings, we have select one.
+					}
+				}
+			}
+			//We found a building to protect
+			if (buildingtoprotect) {
+				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
+				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+			}
 		}
 	}
 	else {
@@ -2899,7 +2899,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		BuildingClass * bestptr = NULL;
 		int best = -1;
 
-		for (int index = 0; index < Buildings.Count(); index++) {
+		for (index = 0; index < Buildings.Count(); index++) {
 			BuildingClass * b = Buildings.Ptr(index);
 
 			/*
@@ -6309,10 +6309,10 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const
 		StructType Structure;
 		UrgencyType Urgency;
 	} _types[] = {
+		{STRUCT_KENNEL, URGENCY_LOW}, //If selling loop happen, use this - Mini Franki
 		{STRUCT_GAP, URGENCY_LOW},
-		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
-		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
-		{STRUCT_KENNEL, URGENCY_MEDIUM},
+		{STRUCT_CHRONOSPHERE, URGENCY_MEDIUM},
+		{STRUCT_IRON_CURTAIN, URGENCY_MEDIUM},
 		{STRUCT_PILLBOX, URGENCY_MEDIUM},
 		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
 		{STRUCT_TURRET, URGENCY_MEDIUM},
@@ -6380,10 +6380,10 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const
 		StructType	Structure;
 		UrgencyType	Urgency;
 	} _types[] = {
+		{STRUCT_KENNEL, URGENCY_LOW}, //If selling loop happen, use this - Mini Franki
 		{STRUCT_GAP, URGENCY_LOW},
-		{STRUCT_CHRONOSPHERE, URGENCY_LOW},
-		{STRUCT_IRON_CURTAIN, URGENCY_LOW},
-		{STRUCT_KENNEL, URGENCY_MEDIUM},
+		{STRUCT_CHRONOSPHERE, URGENCY_MEDIUM},
+		{STRUCT_IRON_CURTAIN, URGENCY_MEDIUM},
 		{STRUCT_PILLBOX, URGENCY_MEDIUM},
 		{STRUCT_CAMOPILLBOX, URGENCY_MEDIUM},
 		{STRUCT_FLAME_TURRET, URGENCY_MEDIUM},
@@ -7069,7 +7069,7 @@ int HouseClass::AI_Unit(void)
 	//This loop runs fast, so update counters here:
 	MCVCount = (int)UQuantity[UNIT_MCV];
 	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
-
+	
 
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
 	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
@@ -7081,7 +7081,7 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV TEST
-	if (1 == 0) {
+	if (1 == 1) {
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
 			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
 				BuildUnit = UNIT_MCV;
@@ -10078,7 +10078,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 		for (int i = 0; i < WAYPT_COUNT; i++) {
 			AI_Interesting_Waypoints[i] = -1; // we flush all scanned waypoints, the situation can be different now
 		}
-		int PersonalCounter = 0;
+		PersonalCounter = 0;
 		for (int i = 0; i < WAYPT_COUNT; i++) {
 			if (Scen.Waypoint[i] != -1) {
 				int DistanceFromClosestBuildingToWaypoint = -1;
@@ -10108,8 +10108,8 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 		}
 
 		//Check if its the last MCV to expand to a 2nd base:
-		bool AllowExtraBaseAtWaypoint = false;
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && IncreaseLimitDone == false) {
+		AllowExtraBaseAtWaypoint = false;
+		if (((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) && IncreaseLimitDone == false) {
 			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
 		}
 		if (Rule.AIAllowMoreMCVsToExtraBase) {
