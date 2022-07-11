@@ -9612,7 +9612,7 @@ void HouseClass::AI_CalcDynamics(void)
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
-			AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsBasic * IncreaseLimit;
+			AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsBasic; // *IncreaseLimit;
 			AIDogKennelLimit = (Rule.AIDogHouseLimitBasic * IncreaseLimit);
 			AIBarracksLimit = (Rule.AIBarracksLimitBasic * IncreaseLimit);
 			AIWarFactoryLimit = (Rule.AIWarFactoryLimitBasic * IncreaseLimit);
@@ -9641,7 +9641,7 @@ void HouseClass::AI_CalcDynamics(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
-				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsMix * IncreaseLimit;
+				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsMix; // *IncreaseLimit;
 				AIDogKennelLimit = (Rule.AIDogHouseLimitMix * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitMix * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitMix * IncreaseLimit);
@@ -9666,7 +9666,7 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
-				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsNaval * IncreaseLimit;
+				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsNaval; // *IncreaseLimit;
 				AIDogKennelLimit = (Rule.AIDogHouseLimitNaval * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitNaval * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitNaval * IncreaseLimit);
@@ -10143,8 +10143,8 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 
-		//Send 50% of units with last MCV to protect him
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
+		//Send 50% of units with last MCV to protect him (But only if protection is needed)
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
 			UnitClass * protectmcv = NULL;
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * MyUnit = Units.Ptr(index);
@@ -10155,12 +10155,36 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 					}
 				}
 			}
-			if (protectmcv) {
+
+			//find closest building to check if this MCV need protection:
+			int MCVDistToOwnBuilding;
+			if (Buildings.Count() > 0) {
+				int ClosestOwnBuilding = -1;
+				for (int index = 0; index < Buildings.Count(); index++) {
+					BuildingClass * Ownbuilding = Buildings.Ptr(index);
+					if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+						if (ClosestOwnBuilding == -1 || (Ownbuilding->Distance(protectmcv) < ClosestOwnBuilding)) {
+							ClosestOwnBuilding = index;
+							MCVDistToOwnBuilding = Ownbuilding->Distance(protectmcv);
+						}
+					}
+				}
+				MCVDistToOwnBuilding = MCVDistToOwnBuilding / 265;
+			}
+			else {
+				MCVDistToOwnBuilding = 100; // No buildings? so always far enough.
+			}
+
+			//If MCV out of protection range of own buildings, send units that are not close too
+			int MCVToFarFromBaseValue = 20;
+			int MCVToFarFromUnitsValue = 5;
+			if (protectmcv && MCVDistToOwnBuilding > MCVToFarFromBaseValue) {
 				for (int index = 0; index < Units.Count(); index++) {
 					UnitClass * u = Units.Ptr(index);
 					if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-						if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
-							u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(protectmcv->Center_Coord())), TARGET_NONE);
+						if (Percent_Chance(50) && u->Is_Weapon_Equipped() && u->Distance(protectmcv) > MCVToFarFromUnitsValue) {
+							//u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(protectmcv->Center_Coord())), TARGET_NONE);
+							u->Assign_Destination(::As_Target(Coord_Cell(protectmcv->Center_Coord()))); //Drive to it
 						}
 					}
 				}
