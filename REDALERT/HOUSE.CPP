@@ -9612,7 +9612,7 @@ void HouseClass::AI_CalcDynamics(void)
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing
 		if (!AIDetectedNavalWar) {
-			AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsBasic; // *IncreaseLimit;
+			AIMaxConYardsAndMCVs = (Rule.AIMaxConYardsAndMCVsBasic * IncreaseLimit);
 			AIDogKennelLimit = (Rule.AIDogHouseLimitBasic * IncreaseLimit);
 			AIBarracksLimit = (Rule.AIBarracksLimitBasic * IncreaseLimit);
 			AIWarFactoryLimit = (Rule.AIWarFactoryLimitBasic * IncreaseLimit);
@@ -9641,7 +9641,7 @@ void HouseClass::AI_CalcDynamics(void)
 			//Naval war or mixed
 			if (AIDetectHumanGroundWar) {
 				//naval war and ground war, focus on everything
-				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsMix; // *IncreaseLimit;
+				AIMaxConYardsAndMCVs = (Rule.AIMaxConYardsAndMCVsMix * IncreaseLimit);
 				AIDogKennelLimit = (Rule.AIDogHouseLimitMix * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitMix * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitMix * IncreaseLimit);
@@ -9666,7 +9666,7 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 			else {
 				//naval war but no ground war, focus on naval and air only
-				AIMaxConYardsAndMCVs = Rule.AIMaxConYardsAndMCVsNaval; // *IncreaseLimit;
+				AIMaxConYardsAndMCVs = (Rule.AIMaxConYardsAndMCVsNaval * IncreaseLimit);
 				AIDogKennelLimit = (Rule.AIDogHouseLimitNaval * IncreaseLimit);
 				AIBarracksLimit = (Rule.AIBarracksLimitNaval * IncreaseLimit);
 				AIWarFactoryLimit = (Rule.AIWarFactoryLimitNaval * IncreaseLimit);
