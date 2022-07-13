@@ -1715,7 +1715,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 			int * ptr;
 			ptr = &_offsets[0];
 			while (*ptr) {
-				CELL	cell = Coord_Cell(Coord) + *ptr++;
+				CELL	cell = Coord_Cell(Coord) + *ptr++; //Orginal
 				CELL	check_cell = Adjacent_Cell(cell, FACING_NW);
 				if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(check_cell)) {
 					Assign_Destination(::As_Target(cell));
