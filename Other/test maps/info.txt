@@ -1,0 +1,18 @@
+
+Place these files in: Documents\CnCRemastered\Local_Custom_Maps\Red_Alert\
+
+
+A map to test the Iron Curtain and the ChronoSphere for 2 AI's
+
+Place yourself at the left bottom.
+Place the first AI at top left
+Place the second AI at top right
+Watch them chronoshift their MCV's.
+Iron Curtain should work also.
+
+Note:
+You can disable or add extra options in "AIboost-ironcurtainchronotest-2xAI.mpr"
+Just open this in notepad
+
+Have fun.
+Bast75
