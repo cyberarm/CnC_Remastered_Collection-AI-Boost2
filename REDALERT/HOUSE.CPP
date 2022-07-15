@@ -2792,6 +2792,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				//Destination - Dont work correctly, he get teleport in the corner of the map
 				//CELL CellToJumpTo = Scen.Waypoint[AI_Interesting_Waypoints[PersonalCounter]];
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
+				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
 			}
 		}
 		if (VQuantity[VESSEL_CA] > 0 && 1 == 0) { // disabled
@@ -2862,9 +2863,11 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			if (unittoprotect) {
 				CELL cell = Coord_Cell(unittoprotect->Center_Coord());
 				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+				Sound_Effect(VOC_IRON1, unittoprotect->Center_Coord()); // Sound at position
+				SuperWeapon[SPC_IRON_CURTAIN].Discharged(this == PlayerPtr); // Set Iron to discharge
 			}
 		}
-		if (BQuantity[STRUCT_CONST] > 0 || BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_WEAP] > 0) {
+		if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && (BQuantity[STRUCT_CONST] > 0 || BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_WEAP] > 0)) {
 			//Select a building to protect if no unit selected
 			BuildingClass * buildingtoprotect = NULL;
 
@@ -2887,6 +2890,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			if (buildingtoprotect) {
 				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
 				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+				Sound_Effect(VOC_IRON1, buildingtoprotect->Center_Coord()); // Sound at position
+				SuperWeapon[SPC_IRON_CURTAIN].Discharged(this == PlayerPtr); // Set Iron to discharge
 			}
 		}
 	}
