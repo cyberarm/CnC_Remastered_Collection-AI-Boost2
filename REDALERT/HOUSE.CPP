@@ -2771,7 +2771,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
 		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
 			UnitClass * mcvtoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
 			AI_Calc2ndBaseLocations(); //Re-calculate possible locations.
@@ -2795,7 +2795,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
 			}
 		}
-		if (VQuantity[VESSEL_CA] > 0 && 1 == 0) { // disabled
+		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && VQuantity[VESSEL_CA] > 0 && 1 == 0) { // disabled
 			//Select a ship to teleport
 			VesselClass * shiptoteleport = NULL;
 			for (int VesselIndex = 0; VesselIndex < Vessels.Count(); VesselIndex++) {
