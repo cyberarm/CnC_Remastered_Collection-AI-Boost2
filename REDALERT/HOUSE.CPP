@@ -2771,10 +2771,10 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
 		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
-		AI_Calc2ndBaseLocations(); //Re-calculate possible locations.
 		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
 			UnitClass * mcvtoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
+			AI_Calc2ndBaseLocations(); //Re-calculate possible locations.
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2785,8 +2785,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					}
 				}
 			}
-			//We found the MCV to teleport
-			if (mcvtoteleport) {
+			//We found the MCV to teleport and the destination
+			if (mcvtoteleport && LocationToJumpTo) {
 				CELL CellWithMCV = Coord_Cell(mcvtoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, CellWithMCV);
 				//Destination - Dont work correctly, he get teleport in the corner of the map
@@ -2807,13 +2807,13 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					}
 				}
 			}
-			//We found a ship to teleport
+			//Destination - Work in progress
+
+			//We found a ship to teleport and the destination
 			if (shiptoteleport) {
 				CELL cell = Coord_Cell(shiptoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, cell);
 			}
-			//Destination
-			//Coming, want to teleport cruiser at the nearest lake of the enemy base
 		}
 	}
 	//Iron Curtain
