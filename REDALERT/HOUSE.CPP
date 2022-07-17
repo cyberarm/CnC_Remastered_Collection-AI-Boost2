@@ -2781,6 +2781,25 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					if (*u == UNIT_MCV) {
 						mcvtoteleport = u;
 						LocationToJumpTo = u->NavCom; //The MCV has calculated this by himself, lets help him by using Chronosphere to this location.
+						
+						bool ToClose = u->Distance(As_Coord(u->NavCom)) < 15; //target to drive too is close because whe cant drive there?
+						//Sometimes the coordinates are topleft (0,0). If it is we do a waypoint selection, also when to close
+						if (ToClose || Coord_X(As_Coord(u->NavCom)) < 1 || Coord_Y(As_Coord(u->NavCom)) < 1) {
+							//Loop through free waypoints (no buildings there):
+							int RandomWaypoint = 0;
+							for (int i = 0; i < 16; i++) { // Select an interesting waypoint, try max 16 times
+								RandomWaypoint = Random_Pick(0, WAYPT_COUNT - 1); //random pick a waypoint
+								if (this->AI_Interesting_Waypoints[RandomWaypoint] != -1) {
+									CELL cell = Scen.Waypoint[AI_Interesting_Waypoints[RandomWaypoint]];
+									CELL check_cell = Adjacent_Cell(cell, FACING_NW);
+									if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(check_cell)) {
+										LocationToJumpTo = (::As_Target(cell)); //Select it
+										break; //We can build a construction yard at a scanned location, so stop the for loop
+									}
+								}
+							}
+						}
+
 						break;
 					}
 				}
@@ -5358,8 +5377,9 @@ void HouseClass::Recalc_Center(void)
 				BuildingClass const * b = Buildings.Ptr(index);
 				if (b != NULL && !b->IsInLimbo && (HouseClass *)b->House == this && b->Strength > 0) {
 					//Added by Bast75
-					if (BQuantity[STRUCT_CONST] >= 1) {
-						//We have multiple MCV's deployed, we only use the Construction Yards to calculate...
+					if (BQuantity[STRUCT_CONST] >= 1 && BQuantity[STRUCT_CONST] >= AIMaxConYardsAndMCVs) {
+						//We have multiple MCV's deployed, we only use the Construction Yards to calculate... 
+						//(but if we have all or more, we do normal center calculation)
 						if (*b == STRUCT_CONST) {
 							int weight = (b->Class->Cost_Of() / 1000) + 1;
 							for (int i = 0; i < weight; i++) {
@@ -7124,7 +7144,7 @@ int HouseClass::AI_Unit(void)
 
 	// Make extra harvesters
 	if (!IsHuman) {
-		if (IQ >= Rule.IQHarvester && !IsTiberiumShort) {
+		if (IQ >= Rule.IQHarvester && !IsTiberiumShort && BQuantity[STRUCT_REFINERY] > 0) {
 			if ((int)UQuantity[UNIT_HARVESTER] < (int)Rule.AIHarvesterMaxLimit) {
 				if ((int)UQuantity[UNIT_HARVESTER] < (int)(BQuantity[STRUCT_REFINERY] * Rule.AIHarvesterMultiplier) || (int)UQuantity[UNIT_HARVESTER] < 2) {
 					if (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <= (unsigned)Control.TechLevel) {
