@@ -2799,7 +2799,6 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 								}
 							}
 						}
-
 						break;
 					}
 				}
@@ -2808,8 +2807,6 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			if (mcvtoteleport && LocationToJumpTo) {
 				CELL CellWithMCV = Coord_Cell(mcvtoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, CellWithMCV);
-				//Destination - Dont work correctly, he get teleport in the corner of the map
-				//CELL CellToJumpTo = Scen.Waypoint[AI_Interesting_Waypoints[PersonalCounter]];
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
 				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
 			}
@@ -2817,6 +2814,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && VQuantity[VESSEL_CA] > 0 && 1 == 0) { // disabled
 			//Select a ship to teleport
 			VesselClass * shiptoteleport = NULL;
+			TARGET LocationToJumpTo = NULL;
 			for (int VesselIndex = 0; VesselIndex < Vessels.Count(); VesselIndex++) {
 				VesselClass * v = Vessels.Ptr(VesselIndex);
 				if (v != NULL && !v->IsInLimbo && v->House == this && v->Strength > 0) {
@@ -2827,11 +2825,36 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				}
 			}
 			//Destination - Work in progress
+			//Scan water cell on the map
+			for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+				if (Map[cell].Land_Type() == LAND_WATER) {
+					//Scan enemies buildings
+					int DistanceFromWaterToBuilding = -1;
+					for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+						BuildingClass * building = Buildings.Ptr(BuildingIndex);
+						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+							int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Map[cell].Land_Type() == LAND_WATER));
+							if (DistanceFromWaterToBuilding == -1 || centdist < DistanceFromWaterToBuilding) {
+								DistanceFromWaterToBuilding = centdist;
+							}
+						}
+					}
+					DistanceFromWaterToBuilding = (int)(DistanceFromWaterToBuilding / 265);
 
+					if (DistanceFromWaterToBuilding < 15) {
+						//We found water that is close enough to a building for Cruiser range(range:22)
+						//If not enough water to shift cruiser, try another destination
+						CELL cell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
+						CELL TargetFreeCell = Map.Nearby_Location(cell, SPEED_FLOAT, -1, MZONE_WATER, false);
+						LocationToJumpTo = (::As_Target(TargetFreeCell));
+					}
+				}
+			}
 			//We found a ship to teleport and the destination
-			if (shiptoteleport) {
-				CELL cell = Coord_Cell(shiptoteleport->Center_Coord());
-				Place_Special_Blast(SPC_CHRONOSPHERE, cell);
+			if (shiptoteleport && LocationToJumpTo) {
+				CELL cellwithcruiser = Coord_Cell(shiptoteleport->Center_Coord());
+				Place_Special_Blast(SPC_CHRONOSPHERE, cellwithcruiser);
+				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
 			}
 		}
 	}
