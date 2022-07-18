@@ -2808,27 +2808,27 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				CELL CellWithMCV = Coord_Cell(mcvtoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, CellWithMCV);
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
-				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
 			}
 		}
 		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && (VQuantity[VESSEL_CA] > 0 || VQuantity[VESSEL_MISSILESUB] > 0)) {
 			//Select a ship to teleport
-			VesselClass * shiptoteleport = NULL;
+			VesselClass * cruisertoteleport = NULL;
+			VesselClass * mstoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
 			for (int VesselIndex = 0; VesselIndex < Vessels.Count(); VesselIndex++) {
 				VesselClass * v = Vessels.Ptr(VesselIndex);
 				if (v != NULL && !v->IsInLimbo && v->House == this && v->Strength > 0) {
 					if (*v == VESSEL_CA) {
-						shiptoteleport = v;
+						cruisertoteleport = v;
 						break;
 					}
 					if (*v == VESSEL_MISSILESUB) { // Soviet can get this tech after capture and tech stealing also
-						shiptoteleport = v;
+						mstoteleport = v;
 						break;
 					}
 				}
 			}
-			//Destination - Work in progress
+			//Destination
 			//Scan water cell on the map
 			for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
 				if (Map[cell].Land_Type() == LAND_WATER) {
@@ -2845,7 +2845,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					}
 					DistanceFromWaterToBuilding = (int)(DistanceFromWaterToBuilding / 265);
 
-					if (DistanceFromWaterToBuilding < 15) {
+					if (DistanceFromWaterToBuilding < 18 && cruisertoteleport) {
 						//We found water that is close enough to a building for Cruiser range(range:22)
 						//If not enough water to shift cruiser, try another destination
 						CELL WaterCell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
@@ -2853,12 +2853,26 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 						LocationToJumpTo = (::As_Target(TargetFreeCell));
 						break; // Stop scanning the map for water, we have found a close enough location
 					}
+					else if (DistanceFromWaterToBuilding < 10 && mstoteleport) {
+						//We found water that is close enough to a building for Missile Sub range(range:14)
+						//If not enough water to shift Missile Sub, try another destination
+						CELL WaterCell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
+						CELL TargetFreeCell = Map.Nearby_Location(WaterCell, SPEED_FLOAT, -1, MZONE_WATER, false);
+						LocationToJumpTo = (::As_Target(TargetFreeCell));
+						break; // Stop scanning the map for water, we have found a close enough location
+					}
 				}
 			}
-			//We found a ship to teleport and the destination
-			if (shiptoteleport && LocationToJumpTo) {
-				CELL cellwithcruiser = Coord_Cell(shiptoteleport->Center_Coord());
+			//We found a Cruiser to teleport and the destination
+			if (cruisertoteleport && LocationToJumpTo) {
+				CELL cellwithcruiser = Coord_Cell(cruisertoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, cellwithcruiser);
+				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
+			}
+			//We found a Missile Sub to teleport and the destination
+			else if (mstoteleport && LocationToJumpTo) {
+				CELL cellwithms = Coord_Cell(cruisertoteleport->Center_Coord());
+				Place_Special_Blast(SPC_CHRONOSPHERE, cellwithms);
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
 			}
 		}
@@ -2910,19 +2924,17 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			if (unittoprotect) {
 				CELL cell = Coord_Cell(unittoprotect->Center_Coord());
 				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
-				Sound_Effect(VOC_IRON1, unittoprotect->Center_Coord()); // Sound at position
-				SuperWeapon[SPC_IRON_CURTAIN].Discharged(this == PlayerPtr); // Set Iron to discharge
 			}
 		}
-		if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && (BQuantity[STRUCT_CONST] > 0 || BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_WEAP] > 0)) {
+		if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && (BQuantity[STRUCT_CONST] > 0 || BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_WEAP] > 0 || BQuantity[STRUCT_IRON_CURTAIN] > 0 || BQuantity[STRUCT_CHRONOSPHERE] > 0)) {
 			//Select a building to protect if no unit selected
 			BuildingClass * buildingtoprotect = NULL;
 
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * b = Buildings.Ptr(BuildingIndex);
 				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-					//If a construction yard is attacked, give it higher prio than ref/war
-					if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
+					//If a construction yard or a super weapon is attacked, give it higher prio than ref/war
+					if ((*b == STRUCT_CONST || *b == STRUCT_IRON_CURTAIN || *b == STRUCT_CHRONOSPHERE) && b->Health_Ratio() <= Rule.ConditionYellow) {
 						buildingtoprotect = b;
 						break; // stop scanning other buildings, we have select one.
 					}
@@ -2937,8 +2949,6 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			if (buildingtoprotect) {
 				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
 				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
-				Sound_Effect(VOC_IRON1, buildingtoprotect->Center_Coord()); // Sound at position
-				SuperWeapon[SPC_IRON_CURTAIN].Discharged(this == PlayerPtr); // Set Iron to discharge
 			}
 		}
 	}
