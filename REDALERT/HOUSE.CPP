@@ -2811,7 +2811,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
 			}
 		}
-		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && VQuantity[VESSEL_CA] > 0 && 1 == 0) { // disabled
+		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && (VQuantity[VESSEL_CA] > 0 || VQuantity[VESSEL_MISSILESUB])) {
 			//Select a ship to teleport
 			VesselClass * shiptoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
@@ -2819,6 +2819,10 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				VesselClass * v = Vessels.Ptr(VesselIndex);
 				if (v != NULL && !v->IsInLimbo && v->House == this && v->Strength > 0) {
 					if (*v == VESSEL_CA) {
+						shiptoteleport = v;
+						break;
+					}
+					if (*v == VESSEL_MISSILESUB) { // Soviet can get this tech after capture and tech stealing also
 						shiptoteleport = v;
 						break;
 					}
@@ -2844,9 +2848,10 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 					if (DistanceFromWaterToBuilding < 15) {
 						//We found water that is close enough to a building for Cruiser range(range:22)
 						//If not enough water to shift cruiser, try another destination
-						CELL cell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
-						CELL TargetFreeCell = Map.Nearby_Location(cell, SPEED_FLOAT, -1, MZONE_WATER, false);
+						CELL WaterCell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
+						CELL TargetFreeCell = Map.Nearby_Location(WaterCell, SPEED_FLOAT, -1, MZONE_WATER, false);
 						LocationToJumpTo = (::As_Target(TargetFreeCell));
+						break; // Stop scanning the map for water, we have found a close enough location
 					}
 				}
 			}
