@@ -2811,7 +2811,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				SuperWeapon[SPC_CHRONOSPHERE].Discharged(this == PlayerPtr);
 			}
 		}
-		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && (VQuantity[VESSEL_CA] > 0 || VQuantity[VESSEL_MISSILESUB])) {
+		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && (VQuantity[VESSEL_CA] > 0 || VQuantity[VESSEL_MISSILESUB] > 0)) {
 			//Select a ship to teleport
 			VesselClass * shiptoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
