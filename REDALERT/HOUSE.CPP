@@ -2830,29 +2830,34 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 			//Destination
 
-			for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-				if (Map[cell].Land_Type() == LAND_WATER) {
-					//Scan enemies buildings
-					int DistanceFromWaterToBuilding = -1;
-					for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
-						BuildingClass * building = Buildings.Ptr(BuildingIndex);
-						if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+			//there are less buildings than cells on the map, so check it reverse to speed up:
+			int DistanceFromWaterToBuilding = -1;
+			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+				BuildingClass * building = Buildings.Ptr(BuildingIndex);
+				if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
+					for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+						//Scan enemy buildings for distance to water
+						if (Map[cell].Land_Type() == LAND_WATER) {
 							int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Map[cell].Land_Type() == LAND_WATER));
 							if (DistanceFromWaterToBuilding == -1 || centdist < DistanceFromWaterToBuilding) {
 								DistanceFromWaterToBuilding = centdist;
 							}
 						}
+						DistanceFromWaterToBuilding = (int)(DistanceFromWaterToBuilding / 265);
+						if ((DistanceFromWaterToBuilding < 18 && CruiserToTeleport
+							|| DistanceFromWaterToBuilding < 10 && MsubToTeleport)) {
+							//We found water that is close enough to a building for Cruiser range(range:22)
+							//If not enough water to shift cruiser, try another destination
+							CELL WaterCell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
+							CELL TargetFreeCell = Map.Nearby_Location(WaterCell, SPEED_FLOAT, -1, MZONE_WATER, false);
+							LocationToJumpTo = (::As_Target(TargetFreeCell));
+							break; // Stop scanning the map for water, we have found a close enough location
+						}
 					}
-					DistanceFromWaterToBuilding = (int)(DistanceFromWaterToBuilding / 265);
-					if ((DistanceFromWaterToBuilding < 18 && CruiserToTeleport
-						|| DistanceFromWaterToBuilding < 10 && MsubToTeleport)) {
-						//We found water that is close enough to a building for Cruiser range(range:22)
-						//If not enough water to shift cruiser, try another destination
-						CELL WaterCell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
-						CELL TargetFreeCell = Map.Nearby_Location(WaterCell, SPEED_FLOAT, -1, MZONE_WATER, false);
-						LocationToJumpTo = (::As_Target(TargetFreeCell));
-						break; // Stop scanning the map for water, we have found a close enough location
-					}
+				}
+				if (LocationToJumpTo) {
+					//we have a enemy building thats close enough to water, we dont scan the other buildings
+					break;
 				}
 			}
 
