@@ -38,8 +38,6 @@ To do: (All)
 
 
 To do for Bast75:
--Center of base must be set to all bases to make sure AI builds on all of them. If not possible, recalculate on new base only
--Prio for base defense set to half, if chronosphere, iron curtain, nuke ready, then defense limits to max? (This so those buildings will be produced faster)
 -New mission: Gather at enemy base (out of range), wait a minute and then attack.
 -New mission: Attack Factories
 -New mission: Attack Power Plants
@@ -48,7 +46,6 @@ To do for Bast75:
 
 
 To do for Mini Franki:
--Chronoshift MCV should use the Chronosphere with timer, etc.
 -Find way to load the MCV on a transport, then we can send it to a waypoint to unload.
 -Find way to load other units on a transport, then we can send it to a waypoint (gather at enemy?) to unload and attack/capture enemy stuff.
 -Send a X percentage of units to guard MCV to help him to reach the waypoint destination successfully and to have some defense for the new base
@@ -69,5 +66,8 @@ Done (Need to be added to README.md if important enough):
 -Airstrip/airpad code to check
 -Selling/power list tweak
 -Chronosphere code need rework
+-Center of base must be set to all bases to make sure AI builds on all of them. If not possible, recalculate on new base only
+-Prio for base defense set to half, if chronosphere, iron curtain, nuke ready, then defense limits to max? (This so those buildings will be produced faster)
+-Chronoshift MCV should use the Chronosphere with timer, etc.
 
 
