@@ -2822,7 +2822,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 						CruiserToTeleport = v;
 						break;
 					}
-					else if (*v == VESSEL_MISSILESUB) { // Soviet can get this tech after capture and tech stealing also
+					if (*v == VESSEL_MISSILESUB && !CruiserToTeleport) { //For tech stealing //Search only if no Cruiser
 						MsubToTeleport = v;
 						break;
 					}
@@ -2843,8 +2843,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 							}
 						}
 						DistanceFromWaterToBuilding = (int)(DistanceFromWaterToBuilding / 265);
-						if ((DistanceFromWaterToBuilding < 18 && CruiserToTeleport
-							|| DistanceFromWaterToBuilding < 10 && MsubToTeleport)) {
+						if ((DistanceFromWaterToBuilding < 18 && CruiserToTeleport)
+							|| (DistanceFromWaterToBuilding < 10 && MsubToTeleport)) {
 							//We found water that is close enough to a building for Cruiser range(range:22)
 							//If not enough water to shift cruiser, try another destination
 							CELL WaterCell = Cell_Coord(Map[cell].Land_Type() == LAND_WATER);
@@ -2866,7 +2866,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
 			}
 			//We found a Missile Sub to teleport and the destination
-			else if (MsubToTeleport && LocationToJumpTo) {
+			if (MsubToTeleport && LocationToJumpTo) {
 				Place_Special_Blast(SPC_CHRONOSPHERE, Coord_Cell(MsubToTeleport->Center_Coord()));
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
 			}
@@ -2877,9 +2877,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
 		UnitClass * unittoprotect = NULL;
 
-		// scan for MCV or MAD-Tanks to protect
-		if (UQuantity[UNIT_MCV] > 0 || UQuantity[UNIT_MAD] > 0) {
-			//If MCV is damaged/attacked, worth to protect it
+		//Scan for MCV to protect
+		if (UQuantity[UNIT_MCV] > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2891,7 +2890,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 		}
 		// No MCV found, scan for MAD Tanks now:
-		if (!unittoprotect) {
+		if (!unittoprotect && UQuantity[UNIT_MAD] > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2932,74 +2931,73 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
 		}
 
-
 		//No units to protect, so we select a building:
-		BuildingClass * buildingtoprotect = NULL;
+		if (!unittoprotect) {
+			BuildingClass * buildingtoprotect = NULL;
 
-		//scan damaged construction yards:
-		if (!unittoprotect && (BQuantity[STRUCT_CONST] > 0)) {
-			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
-				BuildingClass * b = Buildings.Ptr(BuildingIndex);
-				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-					if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
-						buildingtoprotect = b;
-						break;
+			//scan damaged construction yards:
+			if (BQuantity[STRUCT_CONST] > 0) {
+				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+					BuildingClass * b = Buildings.Ptr(BuildingIndex);
+					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+						if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
+							buildingtoprotect = b;
+							break;
+						}
 					}
 				}
 			}
-		}
-		
-		//scan damaged super weapons:
-		if (!unittoprotect && !buildingtoprotect && (BQuantity[STRUCT_CHRONOSPHERE] > 0 || BQuantity[STRUCT_IRON_CURTAIN] > 0)) {
-			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
-				BuildingClass * b = Buildings.Ptr(BuildingIndex);
-				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-					if ((*b == STRUCT_CHRONOSPHERE || *b == STRUCT_IRON_CURTAIN) && b->Health_Ratio() <= Rule.ConditionYellow) {
-						buildingtoprotect = b;
-						break;
-					}
-				}
-			}
-		}
-		
-		//scan damaged Warfactories:
-		if (!unittoprotect && !buildingtoprotect && (BQuantity[STRUCT_WEAP] > 0)) {
-			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
-				BuildingClass * b = Buildings.Ptr(BuildingIndex);
-				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-					if ((*b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
-						buildingtoprotect = b;
-						break;
-					}
-				}
-			}
-		}
 
-		//scan damaged PowerPlants or Refineries:
-		if (!unittoprotect && !buildingtoprotect && (BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_ADVANCED_POWER] > 0)) {
-			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
-				BuildingClass * b = Buildings.Ptr(BuildingIndex);
-				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-					if ((*b == STRUCT_REFINERY || *b == STRUCT_ADVANCED_POWER) && b->Health_Ratio() <= Rule.ConditionYellow) {
-						buildingtoprotect = b;
-						break;
+			//scan damaged super weapons:
+			if (!buildingtoprotect && (BQuantity[STRUCT_CHRONOSPHERE] > 0 || BQuantity[STRUCT_IRON_CURTAIN] > 0)) {
+				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+					BuildingClass * b = Buildings.Ptr(BuildingIndex);
+					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+						if ((*b == STRUCT_CHRONOSPHERE || *b == STRUCT_IRON_CURTAIN) && b->Health_Ratio() <= Rule.ConditionYellow) {
+							buildingtoprotect = b;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		//We found a building to protect
-		if (!unittoprotect && buildingtoprotect) {
-			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
-			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+			//scan damaged Warfactories:
+			if (!buildingtoprotect && BQuantity[STRUCT_WEAP] > 0) {
+				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+					BuildingClass * b = Buildings.Ptr(BuildingIndex);
+					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+						if ((*b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+							buildingtoprotect = b;
+							break;
+						}
+					}
+				}
+			}
+
+			//scan damaged PowerPlants or Refineries:
+			if (!buildingtoprotect && (BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_ADVANCED_POWER] > 0)) {
+				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+					BuildingClass * b = Buildings.Ptr(BuildingIndex);
+					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+						if ((*b == STRUCT_REFINERY || *b == STRUCT_ADVANCED_POWER) && b->Health_Ratio() <= Rule.ConditionYellow) {
+							buildingtoprotect = b;
+							break;
+						}
+					}
+				}
+			}
+
+			//We found a building to protect
+			if (buildingtoprotect) {
+				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
+				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+			}
 		}
 	}
 
-	//Other Super Weapons
-	if (!SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
-		//Some other super weapon is ready...
-
-
+	//Other Super Weapons is ready
+	else {
+		
 		/*
 		** Loop through all of the building objects on the map
 		** and see which ones are available.
