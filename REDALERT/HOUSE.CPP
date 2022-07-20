@@ -2822,15 +2822,14 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 						CruiserToTeleport = v;
 						break;
 					}
-					if (*v == VESSEL_MISSILESUB) { // Soviet can get this tech after capture and tech stealing also
+					else if (*v == VESSEL_MISSILESUB) { // Soviet can get this tech after capture and tech stealing also
 						MsubToTeleport = v;
 						break;
 					}
 				}
 			}
 			//Destination
-
-			//there are less buildings than cells on the map, so check it reverse to speed up:
+			//There are less buildings than cells on the map, so check it reverse to speed up:
 			int DistanceFromWaterToBuilding = -1;
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * building = Buildings.Ptr(BuildingIndex);
@@ -2988,15 +2987,41 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 		}
 
-		if (WeSelectedSomethingToProtect) {
-			//We found a building to protect
-			if (buildingtoprotect) {
-				CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
-				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
-			}
+		//We found a building to protect
+		if (buildingtoprotect && WeSelectedSomethingToProtect) {
+			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
+			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
 		}
 	}
+	//Other Super Weapons
+	else {
+		/*
+		** Loop through all of the building objects on the map
+		** and see which ones are available.
+		*/
+		BuildingClass * bestptr = NULL;
+		int best = -1;
 
+		for (int index = 0; index < Buildings.Count(); index++) {
+			BuildingClass * b = Buildings.Ptr(index);
+
+			/*
+			** If the building is valid, not in limbo, not in the process of
+			** being destroyed and not our ally, then we can consider it.
+			*/
+			if (b != NULL && !b->IsInLimbo && b->Strength && !Is_Ally(b)) {
+				if (Percent_Chance(90) && (b->Value() > best || best == -1)) {
+					best = b->Value();
+					bestptr = b;
+				}
+			}
+		}
+
+		if (bestptr) {
+			CELL cell = Coord_Cell(bestptr->Center_Coord());
+			Place_Special_Blast(id, cell);
+		}
+	}
 }
 
 
