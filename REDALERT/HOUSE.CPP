@@ -10249,9 +10249,8 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 
-		//Send 50% of units (if we have some of them) with last MCV to protect it (But only if protection is needed)
-		//this caused the game to crash, so disabled
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0 && 1 == 0) {
+		//Send 50% of units with last MCV to protect it
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
 			UnitClass * protectmcv = NULL;
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * MyUnit = Units.Ptr(index);
@@ -10263,40 +10262,27 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				}
 			}
 
-			//find closest building to check if this MCV need protection:
-			int MCVDistToOwnBuilding = 100;
-			if (Buildings.Count() > 0) {
-				int ClosestOwnBuilding = -1;
-				for (int BuildingCounter = 0; BuildingCounter < Buildings.Count(); BuildingCounter++) {
-					BuildingClass * Ownbuilding = Buildings.Ptr(BuildingCounter);
-					if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
-						if (ClosestOwnBuilding == -1 || (Ownbuilding->Distance(protectmcv) < ClosestOwnBuilding)) {
-							MCVDistToOwnBuilding = Ownbuilding->Distance(protectmcv);
-						}
+			//Scan own building to send units only if MCV is out of the base
+			int ClosestOwnBuilding = -1;
+			for (int BuildingCounter = 0; BuildingCounter < Buildings.Count(); BuildingCounter++) {
+				BuildingClass * Ownbuilding = Buildings.Ptr(BuildingCounter);
+				if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
+					if (ClosestOwnBuilding == -1 || (Ownbuilding->Distance(protectmcv) < ClosestOwnBuilding)) {
+						ClosestOwnBuilding = Ownbuilding->Distance(protectmcv);
 					}
 				}
-				if (MCVDistToOwnBuilding > 0) {
-					MCVDistToOwnBuilding = MCVDistToOwnBuilding / 265;
-				}
 			}
-
-			//If MCV out of protection range of own buildings, send units that are not close too
-			int MCVToFarFromBaseValue = 20;
-			int MCVToFarFromUnitsValue = 5;
-			if (protectmcv && MCVDistToOwnBuilding > MCVToFarFromBaseValue) {
+			ClosestOwnBuilding = ClosestOwnBuilding / 265;
+			if (protectmcv && ClosestOwnBuilding > 10) {
 				for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
 					UnitClass * u = Units.Ptr(unitnr);
 					if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-						if (Percent_Chance(50) && u->Is_Weapon_Equipped() && u->Distance(protectmcv) > MCVToFarFromUnitsValue) {
+						if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
 							u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(protectmcv->Center_Coord())), TARGET_NONE);
-							//u->Assign_Destination(::As_Target(Coord_Cell(protectmcv->Center_Coord()))); //Drive to it
 						}
 					}
 				}
 			}
-
-
-
 		}
 	}
 }
