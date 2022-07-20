@@ -2799,7 +2799,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 								}
 							}
 						}
-						break;
+						break; //We've found a MCV, don't scan for other MCV's
 					}
 				}
 			}
@@ -2875,24 +2875,27 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 	//Iron Curtain
 	if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
-		bool WeSelectedSomethingToProtect = false;
+		UnitClass * unittoprotect = NULL;
 
 		// scan for MCV or MAD-Tanks to protect
 		if (UQuantity[UNIT_MCV] > 0 || UQuantity[UNIT_MAD] > 0) {
-			//Select an unit to protect
-			UnitClass * unittoprotect = NULL;
-
+			//If MCV is damaged/attacked, worth to protect it
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
-					//If harvester and MCV is attacked, worth to protect it
 					if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
 						unittoprotect = u;
-						WeSelectedSomethingToProtect = true;
-						break; // stop scanning other units, we have select one.
+						break; // stop scanning other units, we have select a damaged MCV.
 					}
-					//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
-					else if (*u == UNIT_MAD) {
+				}
+			}
+		}
+		// No MCV found, scan for MAD Tanks now:
+		if (!unittoprotect) {
+			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
+				UnitClass * u = Units.Ptr(UnitIndex);
+				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
+					if (*u == UNIT_MAD) {
 						int ClosestOwnBuilding = -1;
 						for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 							BuildingClass * building = Buildings.Ptr(BuildingIndex);
@@ -2913,32 +2916,33 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 						}
 						ClosestOwnBuilding = ClosestOwnBuilding / 265;
 						ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
+						//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
 						if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
 							unittoprotect = u;
-							WeSelectedSomethingToProtect = true;
 							break; // stop scanning other units, we have select one.
 						}
 					}
 				}
 			}
-			//We found a unit to protect
-			if (unittoprotect && WeSelectedSomethingToProtect) {
-				CELL cell = Coord_Cell(unittoprotect->Center_Coord());
-				Place_Special_Blast(SPC_IRON_CURTAIN, cell);
-			}
 		}
+
+		//We found a unit to protect
+		if (unittoprotect) {
+			CELL cell = Coord_Cell(unittoprotect->Center_Coord());
+			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
+		}
+
 
 		//No units to protect, so we select a building:
 		BuildingClass * buildingtoprotect = NULL;
 
 		//scan damaged construction yards:
-		if (!WeSelectedSomethingToProtect && (BQuantity[STRUCT_CONST] > 0)) {
+		if (!unittoprotect && (BQuantity[STRUCT_CONST] > 0)) {
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * b = Buildings.Ptr(BuildingIndex);
 				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
 					if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
 						buildingtoprotect = b;
-						WeSelectedSomethingToProtect = true;
 						break;
 					}
 				}
@@ -2946,13 +2950,12 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		}
 		
 		//scan damaged super weapons:
-		if (!WeSelectedSomethingToProtect && (BQuantity[STRUCT_CHRONOSPHERE] > 0 || BQuantity[STRUCT_IRON_CURTAIN] > 0)) {
+		if (!unittoprotect && !buildingtoprotect && (BQuantity[STRUCT_CHRONOSPHERE] > 0 || BQuantity[STRUCT_IRON_CURTAIN] > 0)) {
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * b = Buildings.Ptr(BuildingIndex);
 				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
 					if ((*b == STRUCT_CHRONOSPHERE || *b == STRUCT_IRON_CURTAIN) && b->Health_Ratio() <= Rule.ConditionYellow) {
 						buildingtoprotect = b;
-						WeSelectedSomethingToProtect = true;
 						break;
 					}
 				}
@@ -2960,13 +2963,12 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		}
 		
 		//scan damaged Warfactories:
-		if (!WeSelectedSomethingToProtect && (BQuantity[STRUCT_WEAP] > 0)) {
+		if (!unittoprotect && !buildingtoprotect && (BQuantity[STRUCT_WEAP] > 0)) {
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * b = Buildings.Ptr(BuildingIndex);
 				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
 					if ((*b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
 						buildingtoprotect = b;
-						WeSelectedSomethingToProtect = true;
 						break;
 					}
 				}
@@ -2974,13 +2976,12 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		}
 
 		//scan damaged PowerPlants or Refineries:
-		if (!WeSelectedSomethingToProtect && (BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_ADVANCED_POWER] > 0)) {
+		if (!unittoprotect && !buildingtoprotect && (BQuantity[STRUCT_REFINERY] > 0 || BQuantity[STRUCT_ADVANCED_POWER] > 0)) {
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * b = Buildings.Ptr(BuildingIndex);
 				if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
 					if ((*b == STRUCT_REFINERY || *b == STRUCT_ADVANCED_POWER) && b->Health_Ratio() <= Rule.ConditionYellow) {
 						buildingtoprotect = b;
-						WeSelectedSomethingToProtect = true;
 						break;
 					}
 				}
@@ -2988,13 +2989,17 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		}
 
 		//We found a building to protect
-		if (buildingtoprotect && WeSelectedSomethingToProtect) {
+		if (!unittoprotect && buildingtoprotect) {
 			CELL cell = Coord_Cell(buildingtoprotect->Center_Coord());
 			Place_Special_Blast(SPC_IRON_CURTAIN, cell);
 		}
 	}
+
 	//Other Super Weapons
-	else {
+	if (!SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
+		//Some other super weapon is ready...
+
+
 		/*
 		** Loop through all of the building objects on the map
 		** and see which ones are available.
