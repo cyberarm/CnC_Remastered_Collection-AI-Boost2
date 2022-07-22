@@ -496,6 +496,7 @@ class HouseClass {
 		void AI_Calc2ndBaseLocations(void);
 		int AI_Interesting_Waypoints[WAYPT_COUNT];
 		int MCVCount = 0;
+		int MCVLastCount = 0;
 		int ConstrYardCount = 0;
 		int PersonalCounter = 0;
 		bool AllowExtraBaseAtWaypoint = false;

@@ -2768,13 +2768,16 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 	//AI processing to be able to use Chronosphere and Iron Curtain - Mini Franki and Bast75
 	//Chronosphere
-	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready()) {
+	if (!IsHuman && SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && Percent_Chance(25) && Rule.AIAllowChronoSphere) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
 		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && MCVCount > 0) {
 			UnitClass * mcvtoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
-			AI_Calc2ndBaseLocations(); //Re-calculate possible locations.
+
+			// already done at MCV production complete:
+			//AI_Calc2ndBaseLocations(); //Re-calculate possible locations.
+
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2805,9 +2808,11 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 			//We found the MCV to teleport and the destination
 			if (mcvtoteleport && LocationToJumpTo) {
+				mcvtoteleport->Assign_Mission(MISSION_SLEEP); //Stop doing anthing to prevent mis-click ChronoSphere
 				CELL CellWithMCV = Coord_Cell(mcvtoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, CellWithMCV);
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
+				mcvtoteleport->Try_To_Deploy(); //We jumped, now deploy
 			}
 		}
 		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && (VQuantity[VESSEL_CA] > 0 || VQuantity[VESSEL_MISSILESUB] > 0)) {
@@ -2862,23 +2867,27 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 			//We found a Cruiser to teleport and the destination
 			if (CruiserToTeleport && LocationToJumpTo) {
+				CruiserToTeleport->Assign_Mission(MISSION_SLEEP); //Stop doing anthing to prevent mis-click ChronoSphere
 				Place_Special_Blast(SPC_CHRONOSPHERE, Coord_Cell(CruiserToTeleport->Center_Coord()));
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
+				CruiserToTeleport->Assign_Mission(MISSION_HUNT); //Search and destroy
 			}
 			//We found a Missile Sub to teleport and the destination
 			if (MsubToTeleport && LocationToJumpTo) {
+				MsubToTeleport->Assign_Mission(MISSION_SLEEP); //Stop doing anthing to prevent mis-click ChronoSphere
 				Place_Special_Blast(SPC_CHRONOSPHERE, Coord_Cell(MsubToTeleport->Center_Coord()));
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
+				MsubToTeleport->Assign_Mission(MISSION_HUNT); //Search and destroy
 			}
 		}
 	}
 
 	//Iron Curtain
-	if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
+	if (!IsHuman && SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && Percent_Chance(25) && Rule.AIAllowIronCurtain) {
 		UnitClass * unittoprotect = NULL;
 
 		//Scan for MCV to protect
-		if (UQuantity[UNIT_MCV] > 0) {
+		if (MCVCount > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2995,8 +3004,9 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		}
 	}
 
-	//Other Super Weapons is ready
-	else {
+	//Other Super Weapon is ready
+	if (IsHuman || (!IsHuman && !SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !SuperWeapon[SPC_IRON_CURTAIN].Is_Ready())) {
+		//Human do always, Non Human do if not Chronospehere and not Iron Curtain. (For the other super weapons
 		
 		/*
 		** Loop through all of the building objects on the map
@@ -6642,6 +6652,9 @@ int HouseClass::AI_Building(void)
 
 	if (BuildStructure != STRUCT_NONE) return(TICKS_PER_SECOND);
 
+	//We have placed a building, recheck counter:
+	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
+
 	if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
 		BaseNodeClass * node = Base.Next_Buildable();
 		if (node) {
@@ -6858,32 +6871,6 @@ int HouseClass::AI_Building(void)
 						prio = prio + 3;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
-				}
-			}
-		}
-
-		//Superweapons test, need to change rules.ini techlevel and prerequisite to work
-		//Put timer to minimum to test faster
-		//Iron curtain
-		if (1 == 0) {
-			if (BQuantity[STRUCT_IRON_CURTAIN] < AIIronCurtainLimit) {
-				b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-					choiceptr = BuildChoice.Alloc();
-					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-					}
-				}
-			}
-
-			//Chronosphere
-			if (BQuantity[STRUCT_CHRONOSPHERE] < AIChronosphereLimit) {
-				b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
-				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
-					choiceptr = BuildChoice.Alloc();
-					if (choiceptr != NULL) {
-						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
-					}
 				}
 			}
 		}
@@ -7199,13 +7186,19 @@ int HouseClass::AI_Unit(void)
 {
 	assert(Houses.ID(this) == ID);
 
-	//This loop runs fast, so update counters here:
-	MCVCount = (int)UQuantity[UNIT_MCV];
-	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
-
-
-
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
+
+	//We have completed a unit, recheck MCV counter:
+	MCVCount = (int)UQuantity[UNIT_MCV];
+	if (MCVCount > 0 && MCVLastCount == 0) {
+		//MCV ready, recalculate all waypoints so see what can be used for an extra base :-)
+		MCVLastCount = MCVCount;
+		AI_Calc2ndBaseLocations(); 
+	}
+	else {
+		MCVLastCount = 0;
+	}
+
 	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
 	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
 
@@ -7240,10 +7233,12 @@ int HouseClass::AI_Unit(void)
 	}
 
 	//Make MCV by Bast75, if no conyard directly, otherwise 33% change of expanding
-	if (!IsHuman && IsBaseBuilding && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
-		if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel) && (Percent_Chance(33) || BQuantity[STRUCT_CONST] == 0)) {
+	if (!IsHuman) {
+		bool MCVProductionIsPossible = (IsBaseBuilding && !IsTiberiumShort && BQuantity[STRUCT_REPAIR] > 0 && (UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel));
+		bool HaveNoConYardAndNoMCV = ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == 0);
+		bool NotAtConYardLimit = ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs);
+		if (MCVProductionIsPossible && NotAtConYardLimit && (Percent_Chance(33) || HaveNoConYardAndNoMCV)) {
 			BuildUnit = UNIT_MCV;
-			AI_Calc2ndBaseLocations(); //MCV in production, recalculate all waypoints so see what can be used for an extra base :-)
 			return(TICKS_PER_SECOND);
 		}
 	}
@@ -10056,6 +10051,14 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 	}
 
+	//All limits done, overwrite if specified in .ini file:
+	if (!Rule.AIAllowChronoSphere) {
+		AIChronosphereLimit = 0;
+	}
+	if (!Rule.AIAllowIronCurtain) {
+		AIIronCurtainLimit = 0;
+	}
+
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
 		FILE *fp;
@@ -10208,7 +10211,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 {
 	assert(Houses.ID(this) == ID);
 
-	if (!IsHuman) {
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
 		for (int i = 0; i < WAYPT_COUNT; i++) {
 			AI_Interesting_Waypoints[i] = -1; // we flush all scanned waypoints, the situation can be different now
 		}
@@ -10253,7 +10256,8 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 		}
 
 		//Send 50% of units with last MCV to protect it
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
+		//Disabled, it makes the game crash!!!
+		if (1==0 && Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
 			UnitClass * protectmcv = NULL;
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * MyUnit = Units.Ptr(index);

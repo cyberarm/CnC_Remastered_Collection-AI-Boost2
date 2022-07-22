@@ -628,6 +628,30 @@ void UnitClass::AI(void)
 		}
 	}
 
+	//MCV, AI asks for protection
+	if (*this == UNIT_MCV && !House->IsHuman && !House->SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !House->SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
+		//Scan own buildings to check if MCV is out of range of the base, then send units to protect 
+		int ClosestFriendlyBuilding = -1;
+		for (int BuildingList = 0; BuildingList < Buildings.Count(); BuildingList++) {
+			BuildingClass * FriendlyBuilding = Buildings.Ptr(BuildingList);
+			if (FriendlyBuilding != NULL && (FriendlyBuilding->House->Is_Ally(this) || FriendlyBuilding->House == this->House) && !FriendlyBuilding->IsInLimbo && FriendlyBuilding->Strength > 0) {
+				if (ClosestFriendlyBuilding == -1 || (FriendlyBuilding->Distance(this) < ClosestFriendlyBuilding)) {
+					ClosestFriendlyBuilding = FriendlyBuilding->Distance(this);
+				}
+			}
+		}
+		ClosestFriendlyBuilding = ClosestFriendlyBuilding / 265;
+		if (ClosestFriendlyBuilding > 10) {
+			for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
+				UnitClass * u = Units.Ptr(unitnr);
+				if (u != NULL && !u->IsInLimbo && u->House == this->House && u->Strength > 0) {
+					if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
+						u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(this->Center_Coord())), TARGET_NONE);
+					}
+				}
+			}
+		}
+	}
 }
 
 
