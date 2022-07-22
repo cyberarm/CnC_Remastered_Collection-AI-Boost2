@@ -11,8 +11,8 @@ No extra settings and/or buildings
 ****AItest-GroundCurtainChrono****
 Same map, but with some prebuild buildings for Human and 2 AI's.
 Place yourself at bottom, left side
-Place the first AI at top, right side
-Place the second AI at right, top side
+Place the first AI at right, top side
+Place the second AI at top, right side
 Make one of the AI's your friend
 [AIBoost]
 NoShroud=true

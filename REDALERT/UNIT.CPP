@@ -645,8 +645,26 @@ void UnitClass::AI(void)
 			for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
 				UnitClass * u = Units.Ptr(unitnr);
 				if (u != NULL && !u->IsInLimbo && u->House == this->House && u->Strength > 0) {
-					if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
-						u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(this->Center_Coord())), TARGET_NONE);
+					if (Percent_Chance(25) && u->Is_Weapon_Equipped()) { // Not al units, select 25%
+						int x = Coord_X(this->Center_Coord());
+						int y = Coord_Y(this->Center_Coord());
+						x = x + Percent_Chance(50) ? 5 : -5; // random +5 or -5
+						y = y + Percent_Chance(50) ? 5 : -5; // random +5 or -5
+						u->Assign_Destination(::TARGET(XY_Coord(x, y)));
+						u->Assign_Mission(MISSION_ATTACKMOVE);
+					}
+				}
+			}
+			for (int index = 0; index < Infantry.Count(); index++) { //Ask some infantry
+				InfantryClass * i = Infantry.Ptr(index);
+				if (i != NULL && !i->IsInLimbo && i->House == this->House && i->Strength > 0) {
+					if (Percent_Chance(25) && i->Is_Weapon_Equipped()) { // Not al units, select 25%
+						int x = Coord_X(this->Center_Coord());
+						int y = Coord_Y(this->Center_Coord());
+						x = x + Percent_Chance(50) ? 5 : -5; // random +5 or -5
+						y = y + Percent_Chance(50) ? 5 : -5; // random +5 or -5
+						i->Assign_Destination(::TARGET(XY_Coord(x, y)));
+						i->Assign_Mission(MISSION_ATTACKMOVE);
 					}
 				}
 			}
@@ -1721,8 +1739,6 @@ bool UnitClass::Goto_Clear_Spot(void)
 		}
 
 		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
-			//use this one to start extra base:
-
 			//Loop through waypoints:
 			int RandomWaypoint = 0;
 			bool HaveFoundOne = false;
@@ -1737,14 +1753,15 @@ bool UnitClass::Goto_Clear_Spot(void)
 						CELL	check_cell = Adjacent_Cell(cell, FACING_NW);
 						if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(check_cell)) {
 							Assign_Destination(::As_Target(cell)); //Drive to it
-							break; //We can build a construction yard at a scanned location, so stop scanning with the offset
+							break; //We can build a construction yard at a scanned location, so stop scanning with the offset (while loop)
 						}
 					}
-					break; //Exit the for waypoint loop, we have selected a waypoint
+					break; //Exit the for i < 16 loop, we have selected a waypoint
 				}
 			}
 			if (!HaveFoundOne) {
-				Assign_Mission(MISSION_HUNT); //Retry the entire loop
+				Goto_Tiberium(99999999);
+				Goto_Clear_Spot();
 			}
 		}
 		else {
@@ -1769,6 +1786,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 	*/
 	if(!Target_Legal(NavCom) && !House->IsHuman) {
 		Scatter(0);
+		Goto_Clear_Spot();
 	}
 
 	return(false);

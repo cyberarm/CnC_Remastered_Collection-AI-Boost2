@@ -2803,11 +2803,12 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 			//We found the MCV to teleport and the destination
 			if (mcvtoteleport && LocationToJumpTo) {
-				mcvtoteleport->Assign_Mission(MISSION_SLEEP); //Stop doing anthing to prevent mis-click ChronoSphere
 				CELL CellWithMCV = Coord_Cell(mcvtoteleport->Center_Coord());
 				Place_Special_Blast(SPC_CHRONOSPHERE, CellWithMCV);
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
-				mcvtoteleport->Try_To_Deploy(); //We jumped, now deploy
+
+				//fix to make sure the ChronoJump always works:
+				mcvtoteleport->Teleport_To(::As_Cell(LocationToJumpTo));
 			}
 		}
 		if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && (VQuantity[VESSEL_CA] > 0 || VQuantity[VESSEL_MISSILESUB] > 0)) {
@@ -2862,17 +2863,17 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 			//We found a Cruiser to teleport and the destination
 			if (CruiserToTeleport && LocationToJumpTo) {
-				CruiserToTeleport->Assign_Mission(MISSION_SLEEP); //Stop doing anthing to prevent mis-click ChronoSphere
 				Place_Special_Blast(SPC_CHRONOSPHERE, Coord_Cell(CruiserToTeleport->Center_Coord()));
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
-				CruiserToTeleport->Assign_Mission(MISSION_HUNT); //Search and destroy
+				//fix to make sure the ChronoJump always works:
+				CruiserToTeleport->Teleport_To(::As_Cell(LocationToJumpTo));
 			}
 			//We found a Missile Sub to teleport and the destination
 			if (MsubToTeleport && LocationToJumpTo) {
-				MsubToTeleport->Assign_Mission(MISSION_SLEEP); //Stop doing anthing to prevent mis-click ChronoSphere
 				Place_Special_Blast(SPC_CHRONOSPHERE, Coord_Cell(MsubToTeleport->Center_Coord()));
 				Place_Special_Blast(SPC_CHRONO2, ::As_Cell(LocationToJumpTo));
-				MsubToTeleport->Assign_Mission(MISSION_HUNT); //Search and destroy
+				//fix to make sure the ChronoJump always works:
+				MsubToTeleport->Teleport_To(::As_Cell(LocationToJumpTo));
 			}
 		}
 	}
@@ -6777,7 +6778,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome) && !IsTiberiumShort) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1;
+					prio = ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_TENT] + BQuantity[STRUCT_BARRACKS] > 0) {
 						prio = prio + 1;
 					}
@@ -6796,9 +6797,6 @@ int HouseClass::AI_Building(void)
 							prio = prio + 1;
 						}
 					}
-					if (BQuantity[STRUCT_CONST] > 1) {
-						prio = prio + 1;
-					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
 					}
@@ -6813,7 +6811,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 2;
+					prio = 1 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 2;
 					}
@@ -6834,7 +6832,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1;
+					prio = 1 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 1;
 					}
@@ -6855,7 +6853,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 3;
+					prio = 2 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 3;
 					}
@@ -6876,11 +6874,8 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1;
+					prio = ConstrYardCount; //On deploy increase so new base has this too
 					if (BQuantity[STRUCT_RADAR] > 0) {
-						prio = prio + 1;
-					}
-					if (BQuantity[STRUCT_CONST] > 1) {
 						prio = prio + 1;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
@@ -6924,7 +6919,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 4;
+					prio = 3 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 4;
 					}
@@ -6945,7 +6940,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 3;
+					prio = 2 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 3;
 					}
