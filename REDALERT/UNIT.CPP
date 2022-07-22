@@ -1338,6 +1338,19 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 			}
 		}
 
+
+		//By Bast75, Recalc MCV and MAD-tank for Chronosphere/Iron Curtain loop, the unit was destroyed
+		if (*this == UNIT_MCV) {
+			if (!this->House->IsHuman) {
+				House->LastMCVCount = House->LastMCVCount - 1;
+			}
+		}
+		if (*this == UNIT_MAD) {
+			if (!this->House->IsHuman) {
+				House->LastMCVCount = House->LastMCVCount - 1;
+			}
+		}
+
 		/*
 		**	Finally, delete the vehicle.
 		*/
@@ -1698,7 +1711,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 
 		//Check if its the last MCV to expand to a 2nd base:
 		bool AllowExtraBaseAtWaypoint = false;
-		if ((this->House->MCVCount + this->House->ConstrYardCount) == this->House->AIMaxConYardsAndMCVs && this->House->IncreaseLimitDone == false) {
+		if ((this->House->LastMCVCount + this->House->ConstrYardCount) == this->House->AIMaxConYardsAndMCVs && this->House->IncreaseLimitDone == false) {
 			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
 		}
 		if (Rule.AIAllowMoreMCVsToExtraBase) {
@@ -1894,6 +1907,9 @@ bool UnitClass::Try_To_Deploy(void)
 						Scen.IsFadingColor = true;
 						Scen.FadeTimer = GRAYFADETIME;
 					}
+
+					House->LastMCVCount = House->LastMCVCount - 1; //By Bast75, the MCV is successfull deployed
+
 					delete this;
 					return(true);
 				} else {

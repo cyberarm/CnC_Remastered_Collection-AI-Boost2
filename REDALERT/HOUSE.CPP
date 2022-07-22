@@ -1411,7 +1411,6 @@ void HouseClass::AI(void)
 
 	// Check if MCV is sleeping:
 	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
-		AI_Calc2ndBaseLocations();
 		for (int index = 0; index < Units.Count(); index++) {
 			UnitClass * u = Units.Ptr(index);
 			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
@@ -2771,13 +2770,9 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	if (!IsHuman && SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && Percent_Chance(25) && Rule.AIAllowChronoSphere) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
 		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && MCVCount > 0) {
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && LastMCVCount > 0) {
 			UnitClass * mcvtoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
-
-			// already done at MCV production complete:
-			//AI_Calc2ndBaseLocations(); //Re-calculate possible locations.
-
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2887,7 +2882,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 		UnitClass * unittoprotect = NULL;
 
 		//Scan for MCV to protect
-		if (MCVCount > 0) {
+		if (LastMCVCount > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2899,7 +2894,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 		}
 		// No MCV found, scan for MAD Tanks now:
-		if (!unittoprotect && UQuantity[UNIT_MAD] > 0) {
+		if (!unittoprotect && LastMADCount > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -7187,16 +7182,19 @@ int HouseClass::AI_Unit(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
+	//We have completed a unit, we can recheck counters and build a new tank
 
-	//We have completed a unit, recheck MCV counter:
-	MCVCount = (int)UQuantity[UNIT_MCV];
-	if (MCVCount > 0 && MCVLastCount == 0) {
-		//MCV ready, recalculate all waypoints so see what can be used for an extra base :-)
-		MCVLastCount = MCVCount;
-		AI_Calc2ndBaseLocations(); 
+	//MCV ready
+	if (UQuantity[UNIT_MCV] != LastMCVCount) {
+		if (LastMCVCount < 1 && UQuantity[UNIT_MCV] > 0) {
+			AI_Calc2ndBaseLocations(); // New MCV ready, recalculate all waypoints so see what can be used for an extra base :-)
+		}
+		LastMCVCount = (int)UQuantity[UNIT_MCV];
 	}
-	else {
-		MCVLastCount = 0;
+
+	//MAD Tank ready
+	if (UQuantity[UNIT_MAD] != LastMADCount) {
+		LastMADCount = (int)UQuantity[UNIT_MAD]; // Used to set superweapon check active/inactive on MAD-Tanks
 	}
 
 	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
