@@ -21,10 +21,6 @@ AIAllowMoreMCVsToExtraBase=true
 AIMaxMCVOrConYardsInMainBase=1
 AIAllowChronoSphere=true
 AIAllowIronCurtain=true
-[Recharge]
-Chrono=2
-GPS=1
-
 
 ****AItest-Naval****
 A naval map with islands, not mutch space, but nice to test Naval and ChronoSphere stuff

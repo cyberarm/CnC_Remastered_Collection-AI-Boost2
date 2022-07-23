@@ -1409,13 +1409,16 @@ void HouseClass::AI(void)
 		}
 	}
 
-	// Check if MCV is sleeping:
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
+	// Check if MCV, but not too often because this loop repeats fast:
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Percent_Chance(50)) {
 		for (int index = 0; index < Units.Count(); index++) {
 			UnitClass * u = Units.Ptr(index);
 			if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
 				if (*u == UNIT_MCV) {
-					u->Assign_Mission(MISSION_HUNT);
+					//Make sure the MCV isn't sleeping
+					if (u->Mission != MISSION_HUNT) {
+						u->Assign_Mission(MISSION_HUNT);
+					}
 				}
 			}
 		}
@@ -6270,11 +6273,11 @@ bool HouseClass::AI_Attack(UrgencyType)
 				//if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) && (forced || Percent_Chance(90))) {
 				if (forced || Percent_Chance(PercentageToSend) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
 					//if (i->Team) i->Team->Remove(i); //make it not a member of a team
-					if (Percent_Chance(95) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
+					if (Percent_Chance(65) || *i == INFANTRY_SPY || *i == INFANTRY_THIEF) {
 						i->Assign_Mission(MISSION_HUNT);
 					}
 					else {
-						i->Assign_Mission(MISSION_ATTACK);
+						i->Assign_Mission(MISSION_ATTACK); // Closest objects
 					}
 				}
 				else {

@@ -6,10 +6,6 @@ AIMaxMCVOrConYardsInMainBase=1
 AIAllowChronoSphere=true
 AIAllowIronCurtain=true
 
-[Recharge]
-Chrono=2
-GPS=1
-
 [Basic]
 Win2=x
 Win3=x
@@ -69,8 +65,8 @@ PublishedFileId=0
 004=Multi1,apwr,256,15546,0,None,0,0
 005=Multi1,apwr,256,15161,0,None,0,0
 006=Multi1,apwr,256,15157,0,None,0,0
-007=Multi1,apwr,256,15153,0,None,0,0
-008=Multi1,apwr,256,15150,0,None,0,0
+007=Multi1,dome,256,15153,0,None,0,0
+008=Multi1,weap,256,15150,0,None,0,0
 009=Multi1,pdox,256,15146,0,None,0,0
 010=Multi2,apwr,256,468,0,None,0,0
 011=Multi2,apwr,256,337,0,None,0,0
@@ -80,8 +76,8 @@ PublishedFileId=0
 015=Multi2,apwr,256,1108,0,None,0,0
 016=Multi2,apwr,256,1104,0,None,0,0
 017=Multi2,apwr,256,973,0,None,0,0
-018=Multi2,apwr,256,970,0,None,0,0
-019=Multi2,apwr,256,965,0,None,0,0
+018=Multi2,dome,256,970,0,None,0,0
+019=Multi2,weap,256,965,0,None,0,0
 020=Multi2,fix,256,1089,0,None,0,0
 021=Multi2,pdox,256,1732,0,None,0,0
 022=Multi3,apwr,256,5115,0,None,0,0
@@ -91,8 +87,8 @@ PublishedFileId=0
 026=Multi3,apwr,256,6647,0,None,0,0
 027=Multi3,apwr,256,6007,0,None,0,0
 028=Multi3,apwr,256,5238,0,None,0,0
-029=Multi3,apwr,256,4475,0,None,0,0
-030=Multi3,apwr,256,4599,0,None,0,0
+029=Multi3,dome,256,4475,0,None,0,0
+030=Multi3,weap,256,4599,0,None,0,0
 031=Multi2,iron,256,704,0,None,0,0
 032=Multi1,fix,256,14644,0,None,0,0
 033=Multi1,iron,256,14507,0,None,0,0

@@ -601,7 +601,8 @@ void UnitClass::AI(void)
 
 	//MAD-tank deploy code. By Bast75
 	//Check if close enough to enemy building and far enough of own houses, then deploy MAD-tank.
-	if (*this == UNIT_MAD && !House->IsHuman) {
+	//Percent_Chance(xx) is added so the unit don't scan to fast. Else it will slow down the game too much
+	if (*this == UNIT_MAD && !House->IsHuman && Percent_Chance(50)) {
 		//Lets find the closest building from ourself. (allied buildings included)
 		int ClosestOwnBuilding = -1;
 		for (int index = 0; index < Buildings.Count(); index++) {
@@ -629,7 +630,7 @@ void UnitClass::AI(void)
 	}
 
 	//MCV, AI asks for protection
-	if (*this == UNIT_MCV && !House->IsHuman && !House->SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !House->SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
+	if (*this == UNIT_MCV && !House->IsHuman && Percent_Chance(10)) {
 		//Scan own buildings to check if MCV is out of range of the base, then send units to protect 
 		int ClosestFriendlyBuilding = -1;
 		for (int BuildingList = 0; BuildingList < Buildings.Count(); BuildingList++) {
@@ -641,30 +642,20 @@ void UnitClass::AI(void)
 			}
 		}
 		ClosestFriendlyBuilding = ClosestFriendlyBuilding / 265;
-		if (ClosestFriendlyBuilding > 10) {
+		int UnitMinimalDistanceToMCV = 2;
+		if (ClosestFriendlyBuilding > 2) {
+			//tank protection team
 			for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
 				UnitClass * u = Units.Ptr(unitnr);
 				if (u != NULL && !u->IsInLimbo && u->House == this->House && u->Strength > 0) {
-					if (Percent_Chance(25) && u->Is_Weapon_Equipped()) { // Not al units, select 25%
+					if (u->Is_Weapon_Equipped() && (Percent_Chance(30))) {
+						//u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(this->Center_Coord())), TARGET_NONE);
+						//u->Assign_Destination(::As_Target(this->Center_Coord())); //Go to it
 						int x = Coord_X(this->Center_Coord());
 						int y = Coord_Y(this->Center_Coord());
-						x = x + Percent_Chance(50) ? 5 : -5; // random +5 or -5
-						y = y + Percent_Chance(50) ? 5 : -5; // random +5 or -5
-						u->Assign_Destination(::TARGET(XY_Coord(x, y)));
-						u->Assign_Mission(MISSION_ATTACKMOVE);
-					}
-				}
-			}
-			for (int index = 0; index < Infantry.Count(); index++) { //Ask some infantry
-				InfantryClass * i = Infantry.Ptr(index);
-				if (i != NULL && !i->IsInLimbo && i->House == this->House && i->Strength > 0) {
-					if (Percent_Chance(25) && i->Is_Weapon_Equipped()) { // Not al units, select 25%
-						int x = Coord_X(this->Center_Coord());
-						int y = Coord_Y(this->Center_Coord());
-						x = x + Percent_Chance(50) ? 5 : -5; // random +5 or -5
-						y = y + Percent_Chance(50) ? 5 : -5; // random +5 or -5
-						i->Assign_Destination(::TARGET(XY_Coord(x, y)));
-						i->Assign_Mission(MISSION_ATTACKMOVE);
+						int x2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
+						int y2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
+						u->Assign_Destination(::As_Target(XY_Coord(x + x2, y + y2)));
 					}
 				}
 			}
@@ -1759,10 +1750,11 @@ bool UnitClass::Goto_Clear_Spot(void)
 					break; //Exit the for i < 16 loop, we have selected a waypoint
 				}
 			}
-			if (!HaveFoundOne) {
-				Goto_Tiberium(99999999);
-				Goto_Clear_Spot();
-			}
+			//Disabled, it gives problems to get MCV out of Tiberium
+			//if (!HaveFoundOne) {
+			//	Goto_Tiberium(99999999);
+			//	Goto_Clear_Spot();
+			//}
 		}
 		else {
 			// Normal deploy
