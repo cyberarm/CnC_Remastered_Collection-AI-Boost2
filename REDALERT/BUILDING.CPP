@@ -1987,7 +1987,6 @@ ResultType BuildingClass::Take_Damage(int & damage, int distance, WarheadType wa
 			}
 		}
 	}
-
 	return(res);
 }
 

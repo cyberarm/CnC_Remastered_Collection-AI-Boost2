@@ -2770,7 +2770,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 	//AI processing to be able to use Chronosphere and Iron Curtain - Mini Franki and Bast75
 	//Chronosphere
-	if (!IsHuman && SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && Percent_Chance(25) && Rule.AIAllowChronoSphere) {
+	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && Percent_Chance(25) && Rule.AIAllowChronoSphere) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
 		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
 		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && LastMCVCount > 0) {
@@ -2882,7 +2882,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	}
 
 	//Iron Curtain
-	if (!IsHuman && SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && Percent_Chance(25) && Rule.AIAllowIronCurtain) {
+	if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && Percent_Chance(25) && Rule.AIAllowIronCurtain) {
 		UnitClass * unittoprotect = NULL;
 
 		//Scan for MCV to protect
@@ -3004,7 +3004,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	}
 
 	//Other Super Weapon is ready
-	if (IsHuman || (!IsHuman && !SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !SuperWeapon[SPC_IRON_CURTAIN].Is_Ready())) {
+	if (!SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && !SuperWeapon[SPC_IRON_CURTAIN].Is_Ready()) {
 		//Human do always, Non Human do if not Chronospehere and not Iron Curtain. (For the other super weapons
 		
 		/*
