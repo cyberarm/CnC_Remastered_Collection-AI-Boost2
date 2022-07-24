@@ -6835,7 +6835,7 @@ int HouseClass::AI_Building(void)
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					prio = 1 + ConstrYardCount; //On deploy increase so new base has this too
+					prio = ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
 						prio = prio + 1;
 					}
@@ -6982,7 +6982,7 @@ int HouseClass::AI_Building(void)
 
 		//airstrip
 		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripLimit) {
-			prio = 2;
+			prio = 1;
 			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
 				prio = AIAirstripLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
 			}
@@ -7012,7 +7012,7 @@ int HouseClass::AI_Building(void)
 
 		//helipad soviet
 		if (BQuantity[STRUCT_FLAME_TURRET] > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadSovietLimit) {
-			prio = 2;
+			prio = 1;
 			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
 				prio = AIHelipadSovietLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
 			}
