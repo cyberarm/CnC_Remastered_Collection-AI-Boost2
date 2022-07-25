@@ -2833,13 +2833,13 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				}
 			}
 			//Destination
-			//There are less buildings than cells on the map, so check it reverse to speed up:
+			//Scan enemy buildings for distance to water
 			int DistanceFromWaterToBuilding = -1;
 			for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 				BuildingClass * building = Buildings.Ptr(BuildingIndex);
 				if (building != NULL && !building->House->Is_Ally(this) && !building->IsInLimbo) {
 					for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-						//Scan enemy buildings for distance to water
+						//Scan map to find water cells
 						if (Map[cell].Land_Type() == LAND_WATER) {
 							int centdist = ::Distance(building->Center_Coord(), Cell_Coord(Map[cell].Land_Type() == LAND_WATER));
 							if (DistanceFromWaterToBuilding == -1 || centdist < DistanceFromWaterToBuilding) {
