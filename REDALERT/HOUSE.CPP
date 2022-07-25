@@ -6900,6 +6900,9 @@ int HouseClass::AI_Building(void)
 							prio = AIWarFactoryLimit;
 						}
 					}
+					if (Rule.AIStrategyMode == 2) { //Naval War by .ini file
+						prio = 0;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -9716,6 +9719,7 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 			}
 		}
+
 		if (!AIDetectedNavalWar) {
 			//No Naval, so it must be ground war
 			AIDetectHumanGroundWar = true;
@@ -9910,6 +9914,11 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 		}
 
+
+		if (Rule.AIStrategyMode == 2 || AIPersonalStrategyMode == 2) { //Naval War set by .ini file or by House
+			AIDetectedNavalWar = true;
+			AIDetectHumanGroundWar = false;
+		}
 		//Naval rush
 		if (AIPersonalStrategyMode == 2) {
 			//AIMaxConYardsAndMCVs = 1;
