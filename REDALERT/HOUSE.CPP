@@ -6758,8 +6758,12 @@ int HouseClass::AI_Building(void)
 			b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
+				prio = 1;
+				if (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 0) { //infantry rush
+					prio = AIBarracksLimit;
+				}
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_BARRACKS] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_BARRACKS] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6769,8 +6773,12 @@ int HouseClass::AI_Building(void)
 			b = &BuildingTypeClass::As_Reference(STRUCT_TENT);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
+				prio = 1;
+				if (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 0) { //infantry rush
+					prio = AIBarracksLimit;
+				}
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TENT] < 1 ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TENT] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -6884,13 +6892,21 @@ int HouseClass::AI_Building(void)
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
 					}
+					if (AIPersonalStrategyMode == 5) { //tank rush
+						if (BQuantity[STRUCT_REFINERY] == 1) {
+							prio = 2;
+						}
+						if (BQuantity[STRUCT_REFINERY] > 1) {
+							prio = AIWarFactoryLimit;
+						}
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
 		//Only try Naval if human does, and not try always in case we can't place the building.
-		if (AIDetectedNavalWar && Percent_Chance(50)) {
+		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && BQuantity[STRUCT_REFINERY] > 0)) { // 2 = naval rush
 			//naval allies
 			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
@@ -6983,7 +6999,7 @@ int HouseClass::AI_Building(void)
 		//airstrip
 		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripLimit) {
 			prio = 1;
-			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
+			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 0)) { // 3 = air rush
 				prio = AIAirstripLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
 			}
 			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
@@ -6998,7 +7014,7 @@ int HouseClass::AI_Building(void)
 		//helipad allied
 		if ((BQuantity[STRUCT_CAMOPILLBOX] + BQuantity[STRUCT_PILLBOX]) > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadAlliedLimit) {
 			prio = 2;
-			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
+			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 0)) { // 3 = air rush
 				prio = AIHelipadAlliedLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
 			}
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
@@ -7013,7 +7029,7 @@ int HouseClass::AI_Building(void)
 		//helipad soviet
 		if (BQuantity[STRUCT_FLAME_TURRET] > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadSovietLimit) {
 			prio = 1;
-			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0) {
+			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 0)) { // 3 = air rush
 				prio = AIHelipadSovietLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
 			}
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
