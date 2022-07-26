@@ -2770,10 +2770,10 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 
 	//AI processing to be able to use Chronosphere and Iron Curtain - Mini Franki and Bast75
 	//Chronosphere
-	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && Percent_Chance(25) && Rule.AIAllowChronoSphere) {
+	if (SuperWeapon[SPC_CHRONOSPHERE].Is_Ready() && Percent_Chance(25)) {
 		//Select the MCV who want to go to an impossible to move waypoint(I'll add impossible move trigger when I find it)
 		//For test, AI teleport MCV to waypoint even if its passable. For final, only teleport when impassable
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && LastMCVCount > 0) {
+		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
 			UnitClass * mcvtoteleport = NULL;
 			TARGET LocationToJumpTo = NULL;
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
@@ -2882,11 +2882,11 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 	}
 
 	//Iron Curtain
-	if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && Percent_Chance(25) && Rule.AIAllowIronCurtain) {
+	if (SuperWeapon[SPC_IRON_CURTAIN].Is_Ready() && Percent_Chance(25)) {
 		UnitClass * unittoprotect = NULL;
 
 		//Scan for MCV to protect
-		if (LastMCVCount > 0) {
+		if (UQuantity[UNIT_MCV] > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -2898,7 +2898,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			}
 		}
 		// No MCV found, scan for MAD Tanks now:
-		if (!unittoprotect && LastMADCount > 0) {
+		if (!unittoprotect && UQuantity[UNIT_MAD] > 0) {
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
@@ -7199,19 +7199,22 @@ int HouseClass::AI_Unit(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
-	//We have completed a unit, we can recheck counters and build a new tank
 
-	//MCV ready
-	if (UQuantity[UNIT_MCV] != LastMCVCount) {
-		if (LastMCVCount < 1 && UQuantity[UNIT_MCV] > 0) {
-			AI_Calc2ndBaseLocations(); // New MCV ready, recalculate all waypoints so see what can be used for an extra base :-)
+	//Check if AI is allowed to make a new base
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase) {
+		AllowExtraBaseAtWaypoint = false;
+		//Check if its the last MCV to expand to a 2nd base
+		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && IncreaseLimitDone == false) {
+			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
+			AI_Calc2ndBaseLocations();
 		}
-		LastMCVCount = (int)UQuantity[UNIT_MCV];
-	}
-
-	//MAD Tank ready
-	if (UQuantity[UNIT_MAD] != LastMADCount) {
-		LastMADCount = (int)UQuantity[UNIT_MAD]; // Used to set superweapon check active/inactive on MAD-Tanks
+		//Check if AI is allowed to make more bases
+		if (Rule.AIAllowMoreMCVsToExtraBase) {
+			if (BQuantity[STRUCT_CONST] >= Rule.AIMaxMCVOrConYardsInMainBase) {
+				AllowExtraBaseAtWaypoint = true; // we have enough contruction yards in main base and AIAllowMoreMCVsToExraBase is enabled.
+				AI_Calc2ndBaseLocations();
+			}
+		}
 	}
 
 	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
@@ -7220,17 +7223,6 @@ int HouseClass::AI_Unit(void)
 	//AI Max units
 	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
 		return(TICKS_PER_SECOND);
-	}
-
-	//Make MCV TEST, put speed 20 for faster test
-	if (1 == 0) {
-		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs) {
-			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
-				BuildUnit = UNIT_MCV;
-				AI_Calc2ndBaseLocations(); //MCV in production, recalculate all waypoints so see what can be used for an extra base :-)
-				return(TICKS_PER_SECOND);
-			}
-		}
 	}
 
 	// Make extra harvesters
@@ -10072,14 +10064,6 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 	}
 
-	//All limits done, overwrite if specified in .ini file:
-	if (!Rule.AIAllowChronoSphere) {
-		AIChronosphereLimit = 0;
-	}
-	if (!Rule.AIAllowIronCurtain) {
-		AIIronCurtainLimit = 0;
-	}
-
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1 && Rule.AISpeedRush == 0) {
 		FILE *fp;
@@ -10232,7 +10216,7 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 {
 	assert(Houses.ID(this) == ID);
 
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0) {
+	if (AllowExtraBaseAtWaypoint) {
 		for (int i = 0; i < WAYPT_COUNT; i++) {
 			AI_Interesting_Waypoints[i] = -1; // we flush all scanned waypoints, the situation can be different now
 		}
@@ -10265,20 +10249,9 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 			}
 		}
 
-		//Check if its the last MCV to expand to a 2nd base:
-		AllowExtraBaseAtWaypoint = false;
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && IncreaseLimitDone == false) {
-			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
-		}
-		if (Rule.AIAllowMoreMCVsToExtraBase) {
-			if (BQuantity[STRUCT_CONST] >= Rule.AIMaxMCVOrConYardsInMainBase) {
-				AllowExtraBaseAtWaypoint = true; // we have enough contruction yards in main base and AIAllowMoreMCVsToExraBase is enabled.
-			}
-		}
-
 		//Send 50% of units with last MCV to protect it
 		//Disabled, it makes the game crash!!!
-		if (1==0 && Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint && UQuantity[UNIT_MCV] > 0) {
+		if (1==0) {
 			UnitClass * protectmcv = NULL;
 			for (int index = 0; index < Units.Count(); index++) {
 				UnitClass * MyUnit = Units.Ptr(index);

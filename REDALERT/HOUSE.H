@@ -495,8 +495,6 @@ class HouseClass {
 		//Used for MCV base expansion:
 		void AI_Calc2ndBaseLocations(void);
 		int AI_Interesting_Waypoints[WAYPT_COUNT];
-		int LastMCVCount = 0;
-		int LastMADCount = 0;
 		int ConstrYardCount = 0;
 		int PersonalCounter = 0;
 		bool AllowExtraBaseAtWaypoint = false;

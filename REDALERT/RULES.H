@@ -112,8 +112,6 @@ class RulesClass {
 		bool AIAllowMoreMCVsToExtraBase = false;
 		int AIMaxMCVOrConYardsInMainBase = 2;
 		int AIMCVWaypointFreeRadius = 20;
-		bool AIAllowChronoSphere = true;
-		bool AIAllowIronCurtain = true;
 
 		int AIMadTankSaveToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;

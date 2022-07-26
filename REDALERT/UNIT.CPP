@@ -630,7 +630,7 @@ void UnitClass::AI(void)
 	}
 
 	//MCV, AI asks for protection
-	if (*this == UNIT_MCV && !House->IsHuman && Percent_Chance(10)) {
+	if (*this == UNIT_MCV && !House->IsHuman && Percent_Chance(10) && House->AllowExtraBaseAtWaypoint) {
 		//Scan own buildings to check if MCV is out of range of the base, then send units to protect 
 		int ClosestFriendlyBuilding = -1;
 		for (int BuildingList = 0; BuildingList < Buildings.Count(); BuildingList++) {
@@ -642,15 +642,13 @@ void UnitClass::AI(void)
 			}
 		}
 		ClosestFriendlyBuilding = ClosestFriendlyBuilding / 265;
-		int UnitMinimalDistanceToMCV = 2;
-		if (ClosestFriendlyBuilding > 2) {
+		int UnitMinimalDistanceToMCV = 5;
+		if (ClosestFriendlyBuilding > 10) {
 			//tank protection team
 			for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
 				UnitClass * u = Units.Ptr(unitnr);
 				if (u != NULL && !u->IsInLimbo && u->House == this->House && u->Strength > 0) {
 					if (u->Is_Weapon_Equipped() && (Percent_Chance(30))) {
-						//u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(this->Center_Coord())), TARGET_NONE);
-						//u->Assign_Destination(::As_Target(this->Center_Coord())); //Go to it
 						int x = Coord_X(this->Center_Coord());
 						int y = Coord_Y(this->Center_Coord());
 						int x2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
@@ -1347,19 +1345,6 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 			}
 		}
 
-
-		//By Bast75, Recalc MCV and MAD-tank for Chronosphere/Iron Curtain loop, the unit was destroyed
-		if (*this == UNIT_MCV) {
-			if (!this->House->IsHuman) {
-				House->LastMCVCount = House->LastMCVCount - 1;
-			}
-		}
-		if (*this == UNIT_MAD) {
-			if (!this->House->IsHuman) {
-				House->LastMCVCount = House->LastMCVCount - 1;
-			}
-		}
-
 		/*
 		**	Finally, delete the vehicle.
 		*/
@@ -1718,18 +1703,7 @@ bool UnitClass::Goto_Clear_Spot(void)
 			Loopy++;
 		}
 
-		//Check if its the last MCV to expand to a 2nd base:
-		bool AllowExtraBaseAtWaypoint = false;
-		if ((this->House->LastMCVCount + this->House->ConstrYardCount) == this->House->AIMaxConYardsAndMCVs && this->House->IncreaseLimitDone == false) {
-			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
-		}
-		if (Rule.AIAllowMoreMCVsToExtraBase) {
-			if (this->House->ConstrYardCount >= Rule.AIMaxMCVOrConYardsInMainBase) {
-				AllowExtraBaseAtWaypoint = true; // we have enough contruction yards in main base and AIAllowMoreMCVsToExraBase is enabled.
-			}
-		}
-
-		if (Rule.AIAllowLastMCVToDoSecondBase && AllowExtraBaseAtWaypoint) {
+		if (House->AllowExtraBaseAtWaypoint) {
 			//Loop through waypoints:
 			int RandomWaypoint = 0;
 			bool HaveFoundOne = false;
@@ -1750,11 +1724,6 @@ bool UnitClass::Goto_Clear_Spot(void)
 					break; //Exit the for i < 16 loop, we have selected a waypoint
 				}
 			}
-			//Disabled, it gives problems to get MCV out of Tiberium
-			//if (!HaveFoundOne) {
-			//	Goto_Tiberium(99999999);
-			//	Goto_Clear_Spot();
-			//}
 		}
 		else {
 			// Normal deploy
@@ -1917,8 +1886,6 @@ bool UnitClass::Try_To_Deploy(void)
 						Scen.IsFadingColor = true;
 						Scen.FadeTimer = GRAYFADETIME;
 					}
-
-					House->LastMCVCount = House->LastMCVCount - 1; //By Bast75, the MCV is successfull deployed
 
 					delete this;
 					return(true);
