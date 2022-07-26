@@ -605,8 +605,10 @@ void UnitClass::AI(void)
 		LastStrength = Strength;
 	}
 	else {
-		IsUnderAttack = false;
-		LastStrength = Strength;
+		if (Percent_Chance(10)) { //Dont set it back too fast
+			IsUnderAttack = false;
+			LastStrength = Strength;
+		}
 	}
 
 	//MAD-tank deploy code. By Bast75
