@@ -598,6 +598,16 @@ void UnitClass::AI(void)
 		Shroud_Regen();
 	}
 	
+	//By Bast75 and Mini_Franki
+	//Set a bool so we can use it to detect if units under attack
+	if (Strength < LastStrength) {
+		IsUnderAttack = true;
+		LastStrength = Strength;
+	}
+	else {
+		IsUnderAttack = false;
+		LastStrength = Strength;
+	}
 
 	//MAD-tank deploy code. By Bast75
 	//Check if close enough to enemy building and far enough of own houses, then deploy MAD-tank.
@@ -630,7 +640,7 @@ void UnitClass::AI(void)
 	}
 
 	//MCV, AI asks for protection
-	if (*this == UNIT_MCV && !House->IsHuman && Percent_Chance(10) && House->AllowExtraBaseAtWaypoint) {
+	if (*this == UNIT_MCV && !House->IsHuman && Percent_Chance(10) && House->AllowExtraBaseAtWaypoint && !IsUnderAttack) {
 		//Scan own buildings to check if MCV is out of range of the base, then send units to protect 
 		int ClosestFriendlyBuilding = -1;
 		for (int BuildingList = 0; BuildingList < Buildings.Count(); BuildingList++) {
@@ -648,12 +658,20 @@ void UnitClass::AI(void)
 			for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
 				UnitClass * u = Units.Ptr(unitnr);
 				if (u != NULL && !u->IsInLimbo && u->House == this->House && u->Strength > 0) {
-					if (u->Is_Weapon_Equipped() && Percent_Chance(30) && !MCVIsAttacked) {
-						int x = Coord_X(this->Center_Coord());
-						int y = Coord_Y(this->Center_Coord());
+					if (u->Is_Weapon_Equipped() && Percent_Chance(30)) {
+						//Unit should stay on the side of the MCV as it currently is. (Left of MCV -> stay left. Etc.)
+						int MCV_x = Coord_X(this->Center_Coord());
+						int MCV_y = Coord_Y(this->Center_Coord());
+						int Unit_x = Coord_X(u->Center_Coord());
+						int Unit_y = Coord_Y(u->Center_Coord());
+						int Final_x = (Unit_x > MCV_x) ? 5 * 265 : -5 * 265; //If unit_x larger than mcv-x then 5*265, else -5*265
+						int Final_y = (Unit_y > MCV_y) ? 5 * 265 : -5 * 265; //If unit_y larger than mcv-x then 5*265, else -5*265
+
 						//int x2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
 						//int y2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
-						u->Assign_Destination(::As_Target(XY_Coord(x + 5, y)));
+						//u->Assign_Destination(::As_Target(XY_Coord(x + 5, y)));
+						u->Assign_Destination(::As_Target(XY_Coord(MCV_x + 5, MCV_y)));
+						u->Assign_Destination(::As_Target(XY_Coord(Final_x, Final_y)));
 					}
 				}
 			}
@@ -1415,9 +1433,9 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		}
 
 		//By Bast75: Call for help if under attack.
-		MCVIsAttacked = false;
+		IsUnderAttack = false;
 		if (*this == UNIT_MCV && !House->IsHuman && source) {
-			MCVIsAttacked = true;
+			IsUnderAttack = true;
 			Base_Is_Attacked(source); // call for help
 		}	
 

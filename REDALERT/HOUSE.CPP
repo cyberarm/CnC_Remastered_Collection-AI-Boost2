@@ -2890,7 +2890,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 			for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
 				UnitClass * u = Units.Ptr(UnitIndex);
 				if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this) {
-					if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow) {
+					if (*u == UNIT_MCV && u->Health_Ratio() <= Rule.ConditionYellow && u->IsUnderAttack) {
 						unittoprotect = u;
 						break; // stop scanning other units, we have select a damaged MCV.
 					}
