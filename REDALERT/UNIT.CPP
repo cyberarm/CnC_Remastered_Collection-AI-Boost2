@@ -642,18 +642,18 @@ void UnitClass::AI(void)
 			}
 		}
 		ClosestFriendlyBuilding = ClosestFriendlyBuilding / 265;
-		int UnitMinimalDistanceToMCV = 5;
+		//int UnitMinimalDistanceToMCV = 5;
 		if (ClosestFriendlyBuilding > 10) {
 			//tank protection team
 			for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
 				UnitClass * u = Units.Ptr(unitnr);
 				if (u != NULL && !u->IsInLimbo && u->House == this->House && u->Strength > 0) {
-					if (u->Is_Weapon_Equipped() && (Percent_Chance(30))) {
+					if (u->Is_Weapon_Equipped() && Percent_Chance(30) && !MCVIsAttacked) {
 						int x = Coord_X(this->Center_Coord());
 						int y = Coord_Y(this->Center_Coord());
-						int x2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
-						int y2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
-						u->Assign_Destination(::As_Target(XY_Coord(x + x2, y + y2)));
+						//int x2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
+						//int y2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
+						u->Assign_Destination(::As_Target(XY_Coord(x + 5, y)));
 					}
 				}
 			}
@@ -1415,7 +1415,9 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		}
 
 		//By Bast75: Call for help if under attack.
+		MCVIsAttacked = false;
 		if (*this == UNIT_MCV && !House->IsHuman && source) {
+			MCVIsAttacked = true;
 			Base_Is_Attacked(source); // call for help
 		}	
 

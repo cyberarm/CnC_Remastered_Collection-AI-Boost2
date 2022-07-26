@@ -284,6 +284,9 @@ class UnitClass :	public DriveClass
         bool MinelayerFindSpot();
         // for getting things to consistently exit the repair bay instead of twitching stupidly sometimes 
         bool DoSmarterRunAway();
+
+		//Mini Franki
+		bool MCVIsAttacked = false;
 };
 
 #endif

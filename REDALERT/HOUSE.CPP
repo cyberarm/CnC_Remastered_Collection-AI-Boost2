@@ -7225,6 +7225,16 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
+	//Make MCV TEST, put speed 20 for faster test
+	if (1 == 0) {
+		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs && Percent_Chance(33)) {
+			if ((UnitTypeClass::As_Reference(UNIT_MCV).Level <= (unsigned)Control.TechLevel)) {
+				BuildUnit = UNIT_MCV;
+				return(TICKS_PER_SECOND);
+			}
+		}
+	}
+
 	// Make extra harvesters
 	if (!IsHuman) {
 		if (IQ >= Rule.IQHarvester && !IsTiberiumShort && BQuantity[STRUCT_REFINERY] > 0) {
@@ -10245,43 +10255,6 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 				}
 				else {
 					//We found a building to close, we try new random....
-				}
-			}
-		}
-
-		//Send 50% of units with last MCV to protect it
-		//Disabled, it makes the game crash!!!
-		if (1==0) {
-			UnitClass * protectmcv = NULL;
-			for (int index = 0; index < Units.Count(); index++) {
-				UnitClass * MyUnit = Units.Ptr(index);
-				if (MyUnit != NULL && !MyUnit->IsInLimbo && MyUnit->House == this && MyUnit->Strength > 0) {
-					if (* MyUnit == UNIT_MCV) {
-						protectmcv = MyUnit;
-						break; // stop scanning the other units, we have found the MCV
-					}
-				}
-			}
-
-			//Scan own building to send units only if MCV is out of the base
-			int ClosestOwnBuilding = -1;
-			for (int BuildingCounter = 0; BuildingCounter < Buildings.Count(); BuildingCounter++) {
-				BuildingClass * Ownbuilding = Buildings.Ptr(BuildingCounter);
-				if (Ownbuilding != NULL && Ownbuilding->House->Is_Ally(this) && !Ownbuilding->IsInLimbo) {
-					if (ClosestOwnBuilding == -1 || (Ownbuilding->Distance(protectmcv) < ClosestOwnBuilding)) {
-						ClosestOwnBuilding = Ownbuilding->Distance(protectmcv);
-					}
-				}
-			}
-			ClosestOwnBuilding = ClosestOwnBuilding / 265;
-			if (protectmcv && ClosestOwnBuilding > 10) {
-				for (int unitnr = 0; unitnr < Units.Count(); unitnr++) {
-					UnitClass * u = Units.Ptr(unitnr);
-					if (u != NULL && !u->IsInLimbo && u->House == this && u->Strength > 0) {
-						if (Percent_Chance(50) && u->Is_Weapon_Equipped()) {
-							u->Player_Assign_Mission(MISSION_GUARD_AREA, ::As_Target(Coord_Cell(protectmcv->Center_Coord())), TARGET_NONE);
-						}
-					}
 				}
 			}
 		}
