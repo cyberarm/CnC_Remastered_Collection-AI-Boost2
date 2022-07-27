@@ -550,7 +550,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIDynamicBoostIQMin = ini.Get_Int(MOREQOL, "AIDynamicBoostIQMin", 2);
 		AIMoreStartingCash = ini.Get_Int(MOREQOL, "AIMoreStartingCash", 0);
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
-		AIBoostDebug = ini.Get_Bool(MOREQOL, "AIBoostDebug", false);
+		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
 		AIStrategyMode = ini.Get_Int(MOREQOL, "AIStrategyMode", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 5);
@@ -759,38 +759,6 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 	IsChronoKill = ChronoKillsCargo; //also overwrite with AIBoost settings.
 
-
-	//By Bast75 for debugging:
-	if (Rule.AIBoostDebug == 1) {
-		FILE *fp;
-		fp = fopen("aiboost-load-settings-debug.log", "a+");
-		if (fp) {
-			fprintf(fp, "********** Settings loaded: **********\n");
-			fprintf(fp, "AIDogHouseMinimalBasic: %d\n", AIDogHouseLimitBasic); // %d for decimal
-			fprintf(fp, "AIBarracksLimitBasic: %d\n", AIBarracksLimitBasic); // %d for decimal
-			fprintf(fp, "AIWarFactoryLimitBasic: %d\n", AIWarFactoryLimitBasic); // %d for decimal
-			fprintf(fp, "AINavalLimitBasic: %d\n", AINavalLimitBasic); // %d for decimal
-			fprintf(fp, "AIHelipadAlliedLimitBasic: %d\n", AIHelipadAlliedLimitBasic); // %d for decimal
-			fprintf(fp, "AIAirstripLimitBasic: %d\n", AIAirstripLimitBasic); // %d for decimal
-			fprintf(fp, "AIAirdefenseLimitBasic: %d\n", AIAirdefenseLimitBasic); // %d for decimal
-			fprintf(fp, "AIPillBoxLimitBasic: %d\n", AIPillBoxLimitBasic); // %d for decimal
-			fprintf(fp, "AICamoPillBoxLimitBasic: %d\n", AICamoPillBoxLimitBasic); // %d for decimal
-			fprintf(fp, "AITurretGunLimitBasic: %d\n", AITurretGunLimitBasic); // %d for decimal
-			fprintf(fp, "AIFlameTurretLimitBasic: %d\n", AIFlameTurretLimitBasic); // %d for decimal
-			fprintf(fp, "AIFlameTurretLimitBasic: %d\n", AIFlameTurretLimitBasic); // %d for decimal
-			fprintf(fp, "AITeslaLimitBasic: %d\n", AITeslaLimitBasic); // %d for decimal
-			fprintf(fp, "AIRepairBayLimitBasic: %d\n", AIRepairBayLimitBasic); // %d for decimal
-			fprintf(fp, "AIGapLimitBasic: %d\n", AIGapLimitBasic); // %d for decimal
-			fprintf(fp, "AINukeLimitBasic: %d\n", AINukeLimitBasic); // %d for decimal
-			fprintf(fp, "AIMaxBuildingsBasic: %d\n", AIMaxBuildingsBasic); // %d for decimal
-			fprintf(fp, "AIMaxTanksBasic: %d\n", AIMaxTanksBasic); // %d for decimal
-			fprintf(fp, "AIMaxNavalBasic: %d\n", AIMaxNavalBasic); // %d for decimal
-			fprintf(fp, "AIMaxInfantryBasic: %d\n", AIMaxInfantryBasic); // %d for decimal
-			fprintf(fp, "AIMaxAirBasic: %d\n", AIMaxAirBasic); // %d for decimal
-			//fprintf(fp, "myname: %s\n", myname); // %s for strings
-			fclose(fp);
-		}
-	}
 	return(GeneralDone);
 	//return(false);
 }
