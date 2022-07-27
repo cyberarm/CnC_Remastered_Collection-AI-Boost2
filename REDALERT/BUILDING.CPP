@@ -1434,6 +1434,17 @@ void BuildingClass::AI(void)
 		QueueBState = BSTATE_NONE;
 	}
 
+	//By Bast75 and Mini_Franki
+	//Set a bool so we can use it to detect if a building is under attack
+	if (Strength < LastStrength) {
+		IsUnderAttack = true;
+	}
+	else {
+		if (Percent_Chance(10)) { //Dont set it back too fast
+			IsUnderAttack = false;
+		}
+	}
+
 	/*
 	**	If the building's strength has changed, then update the power
 	**	accordingly.
@@ -1444,6 +1455,8 @@ void BuildingClass::AI(void)
 		int newpower = Power_Output();
 		House->Adjust_Power(newpower - oldpower);
 	}
+
+
 
 	/*
 	**	Check to see if the destruction countdown timer is active. If so, then decrement it.
@@ -1555,19 +1568,6 @@ void BuildingClass::AI(void)
 	*/
 	if (*this == STRUCT_CHRONOSPHERE && BState == BSTATE_ACTIVE && QueueBState == BSTATE_NONE && Scen.FadeTimer == 0) {
 		Begin_Mode(BSTATE_IDLE);
-	}
-
-	//By Bast75 and Mini_Franki
-	//Set a bool so we can use it to detect if a building is under attack
-	if (Strength < LastStrength) {
-		IsUnderAttack = true;
-		LastStrength = Strength;
-	}
-	else {
-		if (Percent_Chance(10)) { //Dont set it back too fast
-			IsUnderAttack = false;
-			LastStrength = Strength;
-		}
 	}
 }
 
@@ -1999,33 +1999,6 @@ ResultType BuildingClass::Take_Damage(int & damage, int distance, WarheadType wa
 				}
 			}
 		}
-
-		//Trigger for attacked buildings for Iron Curtain
-		IsUnderAttack = false;
-		if (*this == STRUCT_CONST && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-		IsUnderAttack = false;
-		if (*this == STRUCT_CHRONOSPHERE && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-		IsUnderAttack = false;
-		if (*this == STRUCT_IRON_CURTAIN && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-		IsUnderAttack = false;
-		if (*this == STRUCT_WEAP && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-		IsUnderAttack = false;
-		if (*this == STRUCT_REFINERY && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-		IsUnderAttack = false;
-		if (*this == STRUCT_ADVANCED_POWER && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-
 	}
 	return(res);
 }

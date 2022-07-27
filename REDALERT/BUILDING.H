@@ -194,8 +194,6 @@ class BuildingClass : public TechnoClass
 		**	discrepancy, then the owner power is adjusted accordingly.
 		*/
 		int LastStrength;
-		// By Bast75 and Mini Franki, so we can use it to detect if units/buildings is under attack
-		bool IsUnderAttack;
 
 		/*
 		** This is a target id of an animation we're keeping track of.  Examples

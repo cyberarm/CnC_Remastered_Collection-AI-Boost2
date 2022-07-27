@@ -1435,17 +1435,9 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		}
 
 		//By Bast75: Call for help if under attack.
-		//Trigger for attacked units - Mini Franki
-		IsUnderAttack = false;
 		if (*this == UNIT_MCV && !House->IsHuman && source) {
-			IsUnderAttack = true;
 			Base_Is_Attacked(source); // call for help
 		}
-		IsUnderAttack = false;
-		if (*this == UNIT_MAD && !House->IsHuman && source) {
-			IsUnderAttack = true;
-		}
-
 	}
 	return(res);
 }

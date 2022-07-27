@@ -128,6 +128,11 @@ class ObjectClass : public AbstractClass
 		*/
 		short Strength;
 
+		// By Bast75 and Mini Franki, so we can use it to detect if units under attack
+		short LastStrength;
+		bool IsUnderAttack;
+
+
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load
 		*/
