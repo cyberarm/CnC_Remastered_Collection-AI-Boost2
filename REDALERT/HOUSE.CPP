@@ -2924,7 +2924,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 						ClosestOwnBuilding = ClosestOwnBuilding / 265;
 						ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
 						//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
-						if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (u->Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
+						if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && ((u->Health_Ratio() <= Rule.ConditionYellow && u->IsUnderAttack) || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 10)) {
 							unittoprotect = u;
 							break; // stop scanning other units, we have select one.
 						}
@@ -2948,7 +2948,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 					BuildingClass * b = Buildings.Ptr(BuildingIndex);
 					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-						if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						if ((*b == STRUCT_CONST) && b->Health_Ratio() <= Rule.ConditionYellow && b->IsUnderAttack) {
 							buildingtoprotect = b;
 							break;
 						}
@@ -2961,7 +2961,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 					BuildingClass * b = Buildings.Ptr(BuildingIndex);
 					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-						if ((*b == STRUCT_CHRONOSPHERE || *b == STRUCT_IRON_CURTAIN) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						if (((*b == STRUCT_CHRONOSPHERE && b->IsUnderAttack) || (*b == STRUCT_IRON_CURTAIN && b->IsUnderAttack)) && b->Health_Ratio() <= Rule.ConditionYellow) {
 							buildingtoprotect = b;
 							break;
 						}
@@ -2974,7 +2974,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 					BuildingClass * b = Buildings.Ptr(BuildingIndex);
 					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-						if ((*b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						if ((*b == STRUCT_WEAP) && b->Health_Ratio() <= Rule.ConditionYellow && b->IsUnderAttack) {
 							buildingtoprotect = b;
 							break;
 						}
@@ -2987,7 +2987,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 				for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 					BuildingClass * b = Buildings.Ptr(BuildingIndex);
 					if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-						if ((*b == STRUCT_REFINERY || *b == STRUCT_ADVANCED_POWER) && b->Health_Ratio() <= Rule.ConditionYellow) {
+						if (((*b == STRUCT_REFINERY && b->IsUnderAttack) || (*b == STRUCT_ADVANCED_POWER && b->IsUnderAttack)) && b->Health_Ratio() <= Rule.ConditionYellow) {
 							buildingtoprotect = b;
 							break;
 						}
@@ -6879,6 +6879,32 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
+		//Superweapons test, need to change rules.ini techlevel and prerequisite to work
+		//Put timer to minimum to test faster
+		//Iron curtain
+		if (1 == 0) {
+			if (BQuantity[STRUCT_IRON_CURTAIN] < AIIronCurtainLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_IRON_CURTAIN);
+				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+					}
+				}
+			}
+
+			//Chronosphere
+			if (BQuantity[STRUCT_CHRONOSPHERE] < AIChronosphereLimit) {
+				b = &BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE);
+				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) && Power_Fraction() >= 1) {
+					choiceptr = BuildChoice.Alloc();
+					if (choiceptr != NULL) {
+						*choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+					}
+				}
+			}
+		}
+
 		//warfactory
 		if (BQuantity[STRUCT_WEAP] < AIWarFactoryLimit) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
@@ -7204,7 +7230,7 @@ int HouseClass::AI_Unit(void)
 	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase) {
 		AllowExtraBaseAtWaypoint = false;
 		//Check if its the last MCV to expand to a 2nd base
-		if ((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs && IncreaseLimitDone == false) {
+		if (((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) && IncreaseLimitDone == false) {
 			AllowExtraBaseAtWaypoint = true; //Ok, this is the last MCV, do extra base
 			AI_Calc2ndBaseLocations();
 		}

@@ -285,6 +285,9 @@ class UnitClass :	public DriveClass
         // for getting things to consistently exit the repair bay instead of twitching stupidly sometimes 
         bool DoSmarterRunAway();
 
+		// By Bast75 and Mini Franki, so we can use it to detect if units/buildings is under attack
+		short LastStrength;
+		bool IsUnderAttack;
 };
 
 #endif

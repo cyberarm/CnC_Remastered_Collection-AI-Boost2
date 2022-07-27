@@ -599,7 +599,7 @@ void UnitClass::AI(void)
 	}
 	
 	//By Bast75 and Mini_Franki
-	//Set a bool so we can use it to detect if units under attack
+	//Set a bool so we can use it to detect if a unit is under attack
 	if (Strength < LastStrength) {
 		IsUnderAttack = true;
 		LastStrength = Strength;
@@ -1435,11 +1435,16 @@ ResultType UnitClass::Take_Damage(int & damage, int distance, WarheadType warhea
 		}
 
 		//By Bast75: Call for help if under attack.
+		//Trigger for attacked units - Mini Franki
 		IsUnderAttack = false;
 		if (*this == UNIT_MCV && !House->IsHuman && source) {
 			IsUnderAttack = true;
 			Base_Is_Attacked(source); // call for help
-		}	
+		}
+		IsUnderAttack = false;
+		if (*this == UNIT_MAD && !House->IsHuman && source) {
+			IsUnderAttack = true;
+		}
 
 	}
 	return(res);
@@ -1728,11 +1733,9 @@ bool UnitClass::Goto_Clear_Spot(void)
 		if (House->AllowExtraBaseAtWaypoint) {
 			//Loop through waypoints:
 			int RandomWaypoint = 0;
-			bool HaveFoundOne = false;
 			for (int i = 0; i < 16; i++) { // Select an interesting waypoint, try max 16 times
 				RandomWaypoint = Random_Pick(0, WAYPT_COUNT - 1); //random pick a waypoint
 				if (this->House->AI_Interesting_Waypoints[RandomWaypoint] != -1) {
-					HaveFoundOne = true;
 					int * ptr;
 					ptr = &_offsets[0];
 					while (*ptr) {
