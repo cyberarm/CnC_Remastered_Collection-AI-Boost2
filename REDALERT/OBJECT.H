@@ -131,7 +131,7 @@ class ObjectClass : public AbstractClass
 		// By Bast75 and Mini Franki, so we can use it to detect if units under attack
 		short LastStrength;
 		bool IsUnderAttack;
-
+		bool IsIronCurtainProtected;
 
 		/*
 		** Some additional padding in case we need to add data to the class and maintain backwards compatibility for save/load

@@ -635,23 +635,25 @@ void UnitClass::AI(void)
 			}
 		}
 
-		//If not attacked, try to unload the closer you can, to make more damage
-		if (!IsUnderAttack) {
-			if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && ClosestEnemyBuilding < 5) {
-				Assign_Mission(MISSION_UNLOAD); //Very close, UNLOAD!
+		if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance) {
+			if (!IsUnderAttack) {
+				//It's not attacked, try to unload the closer you can, to make more damage
+				if (ClosestEnemyBuilding < 5) {
+					Assign_Mission(MISSION_UNLOAD); //Very close, UNLOAD!
+				}
 			}
-		}
-		//If is under attack
-		else {
-			if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
-				if (House->MADIsProtected) {
-					//MAD tank is protected, drive closer to make more damage
-					if (ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance - 8) {
+			else {
+				//Its under attack
+				if (IsIronCurtainProtected) {
+					//MAD tank is protected by Iron Curtain, drive closer to make more damage
+					if (ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance - 8 || ClosestEnemyBuilding < 5) {
 						Assign_Mission(MISSION_UNLOAD); //It will lose the protection soon, unload!
 					}
 				}
 				else {
-					Assign_Mission(MISSION_UNLOAD); //If not protected, unload if yellow condition or close enough to enemy base
+					if (Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance) {
+						Assign_Mission(MISSION_UNLOAD); //If not protected, unload if yellow condition or close enough to enemy base
+					}
 				}
 			}
 		}

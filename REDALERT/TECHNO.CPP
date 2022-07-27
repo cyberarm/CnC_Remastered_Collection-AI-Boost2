@@ -4726,7 +4726,21 @@ ResultType TechnoClass::Take_Damage(int & damage, int distance, WarheadType warh
 	int oldstrength = Strength; // Chthon CFE Note: save this before it changes 
 	
 	if (IronCurtainCountDown == 0) {
-		House->MADIsProtected = false;
+		// By Bast75 and Mini Franki
+		for (int UnitIndex = 0; UnitIndex < Units.Count(); UnitIndex++) {
+			UnitClass * u = Units.Ptr(UnitIndex);
+			if (u != NULL && !u->IsInLimbo && u->Strength > 0 && u->House == this->House && u->IsIronCurtainProtected) {
+				u->IsIronCurtainProtected = false;
+			}
+		}
+		for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+			BuildingClass * b = Buildings.Ptr(BuildingIndex);
+			if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this->House && b->IsIronCurtainProtected) {
+				b->IsIronCurtainProtected = false;
+			}
+		}
+
+
 		result = ObjectClass::Take_Damage(damage, distance, warhead, source, forced, NULL, ARMORPEN_NONE);
         // NULL for indirectsource b/c that was handled here (and non-techno things can't give XP)
         // ARMORPEN_NONE because we already handled specialarmorpen here, so don't pass it on
