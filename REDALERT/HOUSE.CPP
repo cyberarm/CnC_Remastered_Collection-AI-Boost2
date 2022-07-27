@@ -6698,7 +6698,7 @@ int HouseClass::AI_Building(void)
 			*/
 			AIPersonalStrategyMode = Random_Pick(1, 6);
 		}
-		else if (Rule.AIStrategyMode > 0) {
+		if (Rule.AIStrategyMode > 0) {
 			AIPersonalStrategyMode = Rule.AIStrategyMode; //In the .ini we have other value, so use this one
 		}
 
@@ -6935,7 +6935,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Only try Naval if human does, and not try always in case we can't place the building.
-		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && BQuantity[STRUCT_REFINERY] > 0)) { // 2 = naval rush
+		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2)) {
 			//naval allies
 			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
@@ -6943,6 +6943,9 @@ int HouseClass::AI_Building(void)
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
 						prio = 2;
+						if (AIPersonalStrategyMode == 2) {
+							prio = AINavalLimit;
+						}
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SHIP_YARD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
@@ -6955,6 +6958,9 @@ int HouseClass::AI_Building(void)
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
 						prio = 2;
+						if (AIPersonalStrategyMode == 2) {
+							prio = AINavalLimit;
+						}
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
@@ -9942,13 +9948,10 @@ void HouseClass::AI_CalcDynamics(void)
 			}
 		}
 
-
-		if (Rule.AIStrategyMode == 2 || AIPersonalStrategyMode == 2) { //Naval War set by .ini file or by House
-			AIDetectedNavalWar = true;
-			AIDetectHumanGroundWar = false;
-		}
 		//Naval rush
 		if (AIPersonalStrategyMode == 2) {
+			AIDetectedNavalWar = true;
+			AIDetectHumanGroundWar = false;
 			//AIMaxConYardsAndMCVs = 1;
 			AIDogKennelLimit = 0;
 			AIRefineryLimit = 5;
@@ -10123,25 +10126,49 @@ void HouseClass::AI_CalcDynamics(void)
 				switch (AIPersonalStrategyMode)
 				{
 				case 0:
-					fprintf(fp, "Player: Strategy mode: Not set\n");
+					fprintf(fp, "House: Strategy mode: Not set\n");
 					break;
 				case 1:
-					fprintf(fp, "Player: Strategy mode: Dynamic strategy\n");
+					fprintf(fp, "House: Strategy mode: Dynamic strategy\n");
 					break;
 				case 2:
-					fprintf(fp, "Player: Strategy mode: Naval rush\n");
+					fprintf(fp, "House: Strategy mode: Naval rush\n");
 					break;
 				case 3:
-					fprintf(fp, "Player: Strategy mode: Air rush\n");
+					fprintf(fp, "House: Strategy mode: Air rush\n");
 					break;
 				case 4:
-					fprintf(fp, "Player: Strategy mode: Infantry rush\n");
+					fprintf(fp, "House: Strategy mode: Infantry rush\n");
 					break;
 				case 5:
-					fprintf(fp, "Player: Strategy mode: Tank rush\n");
+					fprintf(fp, "House: Strategy mode: Tank rush\n");
 					break;
 				case 6:
-					fprintf(fp, "Player: Strategy mode: Defender\n");
+					fprintf(fp, "House: Strategy mode: Defender\n");
+					break;
+				}
+				switch (Rule.AIStrategyMode)
+				{
+				case 0:
+					fprintf(fp, "Rules.ini Strategy mode: Select a Random strategy\n");
+					break;
+				case 1:
+					fprintf(fp, "Rules.ini Strategy mode: Dynamic strategy\n");
+					break;
+				case 2:
+					fprintf(fp, "Rules.ini Strategy mode: Naval rush\n");
+					break;
+				case 3:
+					fprintf(fp, "Rules.ini Strategy mode: Air rush\n");
+					break;
+				case 4:
+					fprintf(fp, "Rules.ini Strategy mode: Infantry rush\n");
+					break;
+				case 5:
+					fprintf(fp, "Rules.ini Strategy mode: Tank rush\n");
+					break;
+				case 6:
+					fprintf(fp, "Rules.ini Strategy mode: Defender\n");
 					break;
 				}
 			}
