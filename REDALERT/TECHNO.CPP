@@ -4726,6 +4726,7 @@ ResultType TechnoClass::Take_Damage(int & damage, int distance, WarheadType warh
 	int oldstrength = Strength; // Chthon CFE Note: save this before it changes 
 	
 	if (IronCurtainCountDown == 0) {
+		House->MADIsProtected = false;
 		result = ObjectClass::Take_Damage(damage, distance, warhead, source, forced, NULL, ARMORPEN_NONE);
         // NULL for indirectsource b/c that was handled here (and non-techno things can't give XP)
         // ARMORPEN_NONE because we already handled specialarmorpen here, so don't pass it on

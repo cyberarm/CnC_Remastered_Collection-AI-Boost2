@@ -635,9 +635,25 @@ void UnitClass::AI(void)
 			}
 		}
 
-		//We are far enough from our base. Lets unload our Mad Tank.
-		if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
-			Assign_Mission(MISSION_UNLOAD);
+		//If not attacked, try to unload the closer you can, to make more damage
+		if (!IsUnderAttack) {
+			if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && ClosestEnemyBuilding < 5) {
+				Assign_Mission(MISSION_UNLOAD); //Very close, UNLOAD!
+			}
+		}
+		//If is under attack
+		else {
+			if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && (Health_Ratio() <= Rule.ConditionYellow || ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance)) {
+				if (House->MADIsProtected) {
+					//MAD tank is protected, drive closer to make more damage
+					if (ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance - 8) {
+						Assign_Mission(MISSION_UNLOAD); //It will lose the protection soon, unload!
+					}
+				}
+				else {
+					Assign_Mission(MISSION_UNLOAD); //If not protected, unload if yellow condition or close enough to enemy base
+				}
+			}
 		}
 	}
 

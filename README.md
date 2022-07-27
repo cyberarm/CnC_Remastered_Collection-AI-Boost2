@@ -1,5 +1,5 @@
 # AI-Boost 2.5 for Red Alert
-Last update at: 26th July 2022
+Last update at: 27th July 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -16,7 +16,8 @@ New:
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 - Added an option to allow the AI to make extra base using MCV's (Will use chronoshift for map with islands)
 - AI generates a team to proctect MCVs while going to extra base location
-- AI knows how to use Chronosphere and Iron Curtain (Will teleport MCV and Cruiser(Missile Sub if tech stolen))
+- AI know how to use Chronosphere (Will teleport MCV and Cruiser(Missile Sub if tech stolen))
+- AI Know how to use Iron CUrtain (Will protect MCV/Mad tank and Yard/Chronosphere/Iron Curtain/Weap/Ref/Adv Power if attacked and in yellow condition)
 - Harvester memory option re-added and made editable by .ini file
 - Added new slowdown production for the AI to compensate the multiple production hack. Time to build is like human now. That allow to increase war/yard/barrack/vessel limit a lot
 - Building limit for AI is increased by x2 when last construction yard is built or captured
@@ -29,6 +30,7 @@ Fixed/Changed/Improved:
 - Fixed some performance issues
 - Good pathfinding is back
 - Selling loop for cash is fixed. Now AI only sell when tiberium is low on the map, when no more harvester and cash drop drastically
+- MAD Tank is a lot smarter now
 
 ---
 
