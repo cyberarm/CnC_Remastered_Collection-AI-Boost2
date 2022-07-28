@@ -6643,6 +6643,7 @@ int HouseClass::AI_Building(void)
 	if (!firstrundone && BQuantity[STRUCT_CONST] > 0) {
 		firstrundone = true;
 		AI_CalcDynamics();
+		DoMyDebugStuff();
 	}
 
 	if (IsBaseBuilding) {
