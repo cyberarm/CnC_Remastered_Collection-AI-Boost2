@@ -646,7 +646,7 @@ void UnitClass::AI(void)
 				//Its under attack
 				if (IsIronCurtainProtected) {
 					//MAD tank is protected by Iron Curtain, drive closer to make more damage
-					if (ClosestEnemyBuilding < Rule.AIMadTankCloseEnoughToEnemyDistance - 8 || ClosestEnemyBuilding < 5) {
+					if (ClosestEnemyBuilding < 5) {
 						Assign_Mission(MISSION_UNLOAD); //It will lose the protection soon, unload!
 					}
 				}
@@ -686,10 +686,6 @@ void UnitClass::AI(void)
 						int Unit_y = Coord_Y(u->Center_Coord());
 						int Final_x = (Unit_x > MCV_x) ? 5 * 265 : -5 * 265; //If unit_x larger than mcv-x then 5*265, else -5*265
 						int Final_y = (Unit_y > MCV_y) ? 5 * 265 : -5 * 265; //If unit_y larger than mcv-x then 5*265, else -5*265
-
-						//int x2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
-						//int y2 = 265 * (Percent_Chance(50) ? UnitMinimalDistanceToMCV : -UnitMinimalDistanceToMCV); // random +5 or -5
-						//u->Assign_Destination(::As_Target(XY_Coord(x + 5, y)));
 						u->Assign_Destination(::As_Target(XY_Coord(MCV_x + 5, MCV_y)));
 						u->Assign_Destination(::As_Target(XY_Coord(Final_x, Final_y)));
 					}
