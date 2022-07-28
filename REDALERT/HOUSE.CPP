@@ -7235,7 +7235,7 @@ int HouseClass::AI_Unit(void)
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
 
 	//Check if AI is allowed to make a new base
-	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase) {
+	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase && AIMaxConYardsAndMCVs > 1) {
 		AllowExtraBaseAtWaypoint = false;
 		//Check if its the last MCV to expand to a 2nd base
 		if (((UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) == AIMaxConYardsAndMCVs) && IncreaseLimitDone == false) {
@@ -10130,8 +10130,9 @@ void HouseClass::DoMyDebugStuff(void) {
 			fprintf(MyFile, "Game: Aftermath Fast Build: %d\n", (int)Rule.AIAftermathfastbuild); // %d for decimal
 			//fprintf(MyFile, "ID: %d\n", ID); // %d for decimal
 			fprintf(MyFile, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
-			fprintf(MyFile, "Player Strategy mode by .ini: %d\n", (int)Rule.AIStrategyMode);
-			fprintf(MyFile, "Player Strategy mode selected: %d\n", (int)AIPersonalStrategyMode);
+
+			fprintf(MyFile, "Player Strategy mode (.ini): %d\n", (int)Rule.AIStrategyMode);
+			fprintf(MyFile, "Player Strategy mode (Real): %d\n", (int)AIPersonalStrategyMode);
 
 			if (Buildings.Count() == 0) {
 				fprintf(MyFile, "Is defeated: 1\n"); // %s for strings 
