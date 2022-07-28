@@ -6062,6 +6062,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 	int index;
 
 	AI_CalcDynamics();
+	DoMyDebugStuff();
 
 	// Possibility of 5% that we set harvesters a high prio level, otherwise we set it to normal.
 	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHarvesterHuntMadness));
@@ -10102,8 +10103,10 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 	}
 
+}
 
-
+void HouseClass::DoMyDebugStuff(void) {
+	assert(Houses.ID(this) == ID);
 
 	// Some debug stuff by Bast75
 	if (Rule.AIBoostDebug == 1) {
@@ -10122,26 +10125,21 @@ void HouseClass::AI_CalcDynamics(void)
 			fprintf(MyFile, "Game: Attack Interval: %d\n", (int)Rule.AIAttackInterval);
 			fprintf(MyFile, "Game: SpeedRush: %d\n", (int)Rule.AISpeedRush); // %d for decimal
 			fprintf(MyFile, "Game: Aftermath Fast Build: %d\n", (int)Rule.AIAftermathfastbuild); // %d for decimal
-			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
+			//fprintf(MyFile, "ID: %d\n", ID); // %d for decimal
 			fprintf(MyFile, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
-			if (!IsHuman) {
-				fprintf(MyFile, "Player Strategy mode by .ini: %d\n", (int)Rule.AIStrategyMode);
-				fprintf(MyFile, "Player Strategy mode selected: %d\n", (int)AIPersonalStrategyMode);
-			}
-			else {
-				fprintf(MyFile, "Player: Strategy mode: Human\n");
-			}
+			fprintf(MyFile, "Player Strategy mode by .ini: %d\n", (int)Rule.AIStrategyMode);
+			fprintf(MyFile, "Player Strategy mode selected: %d\n", (int)AIPersonalStrategyMode);
 
 			if (Buildings.Count() == 0) {
 				fprintf(MyFile, "Is defeated: 1\n"); // %s for strings 
 			}
 			else {
 				fprintf(MyFile, "Is defeated: 0\n"); // %s for strings 
-				// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
-				// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
-				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
+				// error, doesn't work:   fprintf(MyFile, "Color: %c\n", RemapColor); // %c for chars
+				// error, doesn't work:   fprintf(MyFile, "IniName: %c\n", IniName); // %c for chars
+				//fprintf(MyFile, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
 				fprintf(MyFile, "IQ: %d\n", (int)IQ); // %d for decimal
-				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
+				//fprintf(MyFile, "IsHuman: %d\n", IsHuman); // %d for decimal
 				fprintf(MyFile, "Tiberium: %d\n", (int)Tiberium); // %d for decimal
 				fprintf(MyFile, "Tiberium Capacity: %d\n", (int)Capacity); // %d for decimal
 				fprintf(MyFile, "Power produced: %d\n", (int)Power); // %d for decimal
@@ -10232,7 +10230,6 @@ void HouseClass::AI_CalcDynamics(void)
 
 
 }
-
 
 void HouseClass::AI_Calc2ndBaseLocations(void)
 {

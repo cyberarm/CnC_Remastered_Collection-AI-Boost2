@@ -491,6 +491,7 @@ class HouseClass {
 		bool IncreaseLimitDone = false;
 		int IncreaseLimit = 1;
 		int AIPersonalStrategyMode = 0;
+		void DoMyDebugStuff(void);
 
 		//Used for MCV base expansion:
 		void AI_Calc2ndBaseLocations(void);
