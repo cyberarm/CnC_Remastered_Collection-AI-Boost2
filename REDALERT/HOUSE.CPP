@@ -1985,7 +1985,7 @@ void HouseClass::Harvested(unsigned tiberium)
 		//Give the AI the boost
 		tiberium *= TotalBoost;
 	}
-	
+	DoMyDebugStuff();
 
 	Tiberium += tiberium;
 	if (Tiberium > Capacity) {
@@ -6062,7 +6062,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 	int index;
 
 	AI_CalcDynamics();
-	DoMyDebugStuff();
 
 	// Possibility of 5% that we set harvesters a high prio level, otherwise we set it to normal.
 	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHarvesterHuntMadness));
@@ -6790,6 +6789,9 @@ int HouseClass::AI_Building(void)
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
+					}
+					if (AIPersonalStrategyMode > 1 && BQuantity[STRUCT_REPAIR] == 0) {
+						prio = 2; //We rush till we have all factores to rush with (after this the AI builds a Repair Depot)
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
