@@ -8,7 +8,7 @@ AIAllowIronCurtain=true
 
 [Recharge]
 Chrono=2
-GPS=1
+IronCurtain=2
 
 [Basic]
 Win2=x

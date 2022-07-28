@@ -6,7 +6,6 @@ AIMaxMCVOrConYardsInMainBase=1
 
 [Recharge]
 Chrono=2
-GPS=1
 
 [Basic]
 Win2=x

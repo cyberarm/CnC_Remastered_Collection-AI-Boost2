@@ -6,6 +6,10 @@ AIMaxMCVOrConYardsInMainBase=1
 AIAllowChronoSphere=true
 AIAllowIronCurtain=true
 
+[Recharge]
+Chrono=2
+IronCurtain=2
+
 [Basic]
 Win2=x
 Win3=x

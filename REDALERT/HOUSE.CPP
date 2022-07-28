@@ -6274,178 +6274,6 @@ bool HouseClass::AI_Attack(UrgencyType)
 		Attack = (TICKS_PER_MINUTE * Rule.AIAttackInterval) + Random_Pick(1, TICKS_PER_SECOND * 30);
 	}
 
-
-
-	// Some debug stuff by Bast75
-	if (Rule.AIBoostDebug == 1) {
-		FILE *MyFile;
-		MyFile = fopen("aiboost-debug.log", "a+");
-		if (MyFile) {
-			fprintf(MyFile, "------------------\n"); // %d for decimal
-			fprintf(MyFile, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
-			fprintf(MyFile, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
-			fprintf(MyFile, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
-			fprintf(MyFile, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
-			fprintf(MyFile, "Game: Nr of Human Tanks: %d\n", NrOfHumanTanks); // %d for decimal
-			fprintf(MyFile, "Game: AI Human Ground War Tank Trigger: %d\n", Rule.AIHumanGroundWarTankTrigger); // %d for decimal
-
-			fprintf(MyFile, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
-			fprintf(MyFile, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
-			fprintf(MyFile, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
-			fprintf(MyFile, "Game: Aftermath Fast Build: %d\n", Rule.AIAftermathfastbuild); // %d for decimal
-			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
-			fprintf(MyFile, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
-			if (!IsHuman) {
-				switch (AIPersonalStrategyMode) {
-				case 0:
-					fprintf(MyFile, "House: Strategy mode: Not set\n");
-					break;
-				case 1:
-					fprintf(MyFile, "House: Strategy mode: Dynamic strategy\n");
-					break;
-				case 2:
-					fprintf(MyFile, "House: Strategy mode: Naval rush\n");
-					break;
-				case 3:
-					fprintf(MyFile, "House: Strategy mode: Air rush\n");
-					break;
-				case 4:
-					fprintf(MyFile, "House: Strategy mode: Infantry rush\n");
-					break;
-				case 5:
-					fprintf(MyFile, "House: Strategy mode: Tank rush\n");
-					break;
-				case 6:
-					fprintf(MyFile, "House: Strategy mode: Defender\n");
-					break;
-				}
-				switch (Rule.AIStrategyMode) {
-				case 0:
-					fprintf(MyFile, "Rules.ini Strategy mode: Select a Random strategy\n");
-					break;
-				case 1:
-					fprintf(MyFile, "Rules.ini Strategy mode: Dynamic strategy\n");
-					break;
-				case 2:
-					fprintf(MyFile, "Rules.ini Strategy mode: Naval rush\n");
-					break;
-				case 3:
-					fprintf(MyFile, "Rules.ini Strategy mode: Air rush\n");
-					break;
-				case 4:
-					fprintf(MyFile, "Rules.ini Strategy mode: Infantry rush\n");
-					break;
-				case 5:
-					fprintf(MyFile, "Rules.ini Strategy mode: Tank rush\n");
-					break;
-				case 6:
-					fprintf(MyFile, "Rules.ini Strategy mode: Defender\n");
-					break;
-				}
-			}
-			else {
-				fprintf(MyFile, "Player: Strategy mode: Human\n");
-			}
-
-			if (Buildings.Count() == 0) {
-				fprintf(MyFile, "Is defeated: 1\n"); // %s for strings 
-			}
-			else {
-				fprintf(MyFile, "Is defeated: 0\n"); // %s for strings 
-				// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
-				// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
-				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
-				fprintf(MyFile, "IQ: %d\n", IQ); // %d for decimal
-				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
-				fprintf(MyFile, "Tiberium: %d\n", Tiberium); // %d for decimal
-				fprintf(MyFile, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
-				fprintf(MyFile, "Power produced: %d\n", Power); // %d for decimal
-				fprintf(MyFile, "Power drain: %d\n", Drain); // %d for decimal
-				fprintf(MyFile, "Power plus: %d\n", AIPowerPlus); // %d for decimal
-				fprintf(MyFile, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
-				fprintf(MyFile, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
-				fprintf(MyFile, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
-				fprintf(MyFile, "Enemies for this AI: %d\n", CountEnemiesForThisAI); // %d for decimal
-
-				fprintf(MyFile, "AIBoostIQLevel (.ini file): %d\n", Rule.AIBoostIQLevel); // %d for decimal
-				fprintf(MyFile, "AIBoostIQLevelForAllies (.ini file): %d\n", Rule.AIBoostIQLevelForAllies); // %d for decimal
-				if (FFAgame) {
-					fprintf(MyFile, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
-				}
-				else {
-					if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
-						fprintf(MyFile, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
-					}
-					else {
-						if (IsHumanFriend == 1) {
-							fprintf(MyFile, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
-						}
-						else {
-							fprintf(MyFile, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
-						}
-					}
-				}
-				fprintf(MyFile, "TotalBoost: %d\n", TotalBoost); // %d for decimal
-
-				fprintf(MyFile, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
-				fprintf(MyFile, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
-				fprintf(MyFile, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
-				fprintf(MyFile, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
-				fprintf(MyFile, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
-				fprintf(MyFile, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
-				fprintf(MyFile, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
-				fprintf(MyFile, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
-				fprintf(MyFile, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
-				fprintf(MyFile, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
-				fprintf(MyFile, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
-				fprintf(MyFile, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
-				fprintf(MyFile, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
-				fprintf(MyFile, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
-				fprintf(MyFile, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
-				fprintf(MyFile, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
-				fprintf(MyFile, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
-				fprintf(MyFile, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
-				fprintf(MyFile, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
-				fprintf(MyFile, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
-				fprintf(MyFile, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
-				fprintf(MyFile, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
-				fprintf(MyFile, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
-				fprintf(MyFile, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
-				fprintf(MyFile, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
-				fprintf(MyFile, "Buildings: Total: %d\n", Buildings.Count()); // %d for decimal
-
-				fprintf(MyFile, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
-				fprintf(MyFile, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
-				fprintf(MyFile, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
-				fprintf(MyFile, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
-				fprintf(MyFile, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
-				fprintf(MyFile, "Units: Total: %d\n", Units.Count()); // %d for decimal
-
-				fprintf(MyFile, "Aircrafts: Total: %d\n", Aircraft.Count()); // %d for decimal
-
-				fprintf(MyFile, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
-				fprintf(MyFile, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
-				fprintf(MyFile, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
-				fprintf(MyFile, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
-				fprintf(MyFile, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
-				fprintf(MyFile, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
-				fprintf(MyFile, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
-				fprintf(MyFile, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
-				fprintf(MyFile, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
-				fprintf(MyFile, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
-				fprintf(MyFile, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
-				fprintf(MyFile, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
-				fprintf(MyFile, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
-				fprintf(MyFile, "Infantry: Total: %d\n", Infantry.Count()); // %d for decimal
-				fprintf(MyFile, "Vessels: Total: %d\n", Vessels.Count()); // %d for decimal
-
-
-				fclose(MyFile);
-			}
-		}
-	}
-	// End of debugging stuff.
-
 	return(true);
 }
 
@@ -6827,25 +6655,29 @@ int HouseClass::AI_Building(void)
 		}
 
 		// AI Strategy mode selection:
+		/*
+		This allowes the AI to select a random strategy to use for a house.
+		0: Not set, the AI is allowed to select a random one
+		1: Default dynamic strategy like we always have/had
+		2: Naval rush. Build naval, no barracks/tents, warfactories or air stuff.
+		3: Air rush. Helipads/airfields only
+		4: Infantry rush, just barracks/tents
+		5: Tank rush, warfactories only
+		6: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
+		*/
 		if (Rule.AIStrategyMode > 0) {
-			AIPersonalStrategyMode = Rule.AIStrategyMode; //In the .ini we have other value, so use this one always
+			AIPersonalStrategyMode = Rule.AIStrategyMode; //In the .ini we have forced a value, so use this one always
 		}
 		else {
-			if ((Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0)
-				|| (AIDetectedNavalWar && AIPersonalStrategyMode > 3)
-				|| (!AIDetectedNavalWar && AIPersonalStrategyMode == 2)
-				) {
-				/*
-				This allowes the AI to select a random strategy to use for a house.
-				0: Not set, the AI is allowed to select a random one
-				1: Default dynamic strategy like we always have/had
-				2: Naval rush. Build naval, no barracks/tents, warfactories or air stuff.
-				3: Air rush. Helipads/airfields only
-				4: Infantry rush, just barracks/tents
-				5: Tank rush, warfactories only
-				6: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
-				*/
-				AIPersonalStrategyMode = Random_Pick(1, 6);
+			bool SetOtherStrategy = false;
+			if (Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0) { //random selection allowed
+				SetOtherStrategy = true;
+			}
+			if (AIDetectedNavalWar && (AIPersonalStrategyMode == 4 || AIPersonalStrategyMode == 5)) { // ground rushes don't combine with naval wars because of islands, re-random selection
+				SetOtherStrategy = true;
+			}
+			if (SetOtherStrategy) {
+				AIPersonalStrategyMode = Random_Pick(1, 6); //Select a new random.
 			}
 		}
 
@@ -6979,6 +6811,10 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 2;
 					}
+					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+						//We have a rush tactic, no defense at high prio
+						prio = 0;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -7000,6 +6836,10 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 1;
 					}
+					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+						//We have a rush tactic, no defense at high prio
+						prio = 0;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -7020,6 +6860,10 @@ int HouseClass::AI_Building(void)
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 3;
+					}
+					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+						//We have a rush tactic, no defense at high prio
+						prio = 0;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -7081,33 +6925,32 @@ int HouseClass::AI_Building(void)
 			}
 		}
 
-		//Only try Naval if human does, and not try always in case we can't place the building.
-		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2)) {
+		//Only try Naval if human does, or if we are in Naval rush mode
+		//and not try always in case we can't place the building.
+		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && Percent_Chance(80))) {
+			prio = 2;
+			if (AIPersonalStrategyMode == 2) { //Naval rush!!!
+				prio = AINavalLimit;
+			}
+			if (AIPersonalStrategyMode > 2) { //Other rush, no high prio for this type
+				prio = 0;
+			}
 			//naval allies
 			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SHIP_YARD);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						prio = 2;
-						if (AIPersonalStrategyMode == 2) {
-							prio = AINavalLimit;
-						}
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SHIP_YARD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
 			}
-
 			//naval soviet
 			if (BQuantity[STRUCT_SUB_PEN] < AINavalLimit) {
 				b = &BuildingTypeClass::As_Reference(STRUCT_SUB_PEN);
 				if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 					choiceptr = BuildChoice.Alloc();
 					if (choiceptr != NULL) {
-						prio = 2;
-						if (AIPersonalStrategyMode == 2) {
-							prio = AINavalLimit;
-						}
 						*choiceptr = BuildChoiceClass(BQuantity[STRUCT_SUB_PEN] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 					}
 				}
@@ -7130,6 +6973,10 @@ int HouseClass::AI_Building(void)
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 4;
 					}
+					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+						//We have a rush tactic, no defense at high prio
+						prio = 0;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -7150,6 +6997,10 @@ int HouseClass::AI_Building(void)
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
 						prio = prio + 3;
+					}
+					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+						//We have a rush tactic, no defense at high prio
+						prio = 0;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -9900,6 +9751,9 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 			}
 		}
+		if (AIPersonalStrategyMode == 2) {
+			AIDetectedNavalWar = true;
+		}
 
 		if (!AIDetectedNavalWar) {
 			//No Naval, so it must be ground war
@@ -10097,8 +9951,6 @@ void HouseClass::AI_CalcDynamics(void)
 
 		//Naval rush
 		if (AIPersonalStrategyMode == 2) {
-			AIDetectedNavalWar = true;
-			AIDetectHumanGroundWar = false;
 			//AIMaxConYardsAndMCVs = 1;
 			AIDogKennelLimit = 0;
 			AIRefineryLimit = 5;
@@ -10249,6 +10101,137 @@ void HouseClass::AI_CalcDynamics(void)
 			AIDetectedNavalWar = true;
 		}
 	}
+
+
+
+
+	// Some debug stuff by Bast75
+	if (Rule.AIBoostDebug == 1) {
+		FILE *MyFile;
+		MyFile = fopen("aiboost-debug.log", "a+");
+		if (MyFile) {
+			fprintf(MyFile, "------------------\n"); // %d for decimal
+			fprintf(MyFile, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
+			fprintf(MyFile, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
+			fprintf(MyFile, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
+			fprintf(MyFile, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
+			fprintf(MyFile, "Game: Nr of Human Tanks: %d\n", NrOfHumanTanks); // %d for decimal
+			fprintf(MyFile, "Game: AI Human Ground War Tank Trigger: %d\n", Rule.AIHumanGroundWarTankTrigger); // %d for decimal
+
+			fprintf(MyFile, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
+			fprintf(MyFile, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
+			fprintf(MyFile, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
+			fprintf(MyFile, "Game: Aftermath Fast Build: %d\n", Rule.AIAftermathfastbuild); // %d for decimal
+			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
+			fprintf(MyFile, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
+			//if (!IsHuman) {
+			//	fprintf(MyFile, ".ini: AI Strategy mode: %d\n", Rule.AIStrategyMode);
+			//	fprintf(MyFile, "House: AI Strategy mode: %d\n", AIPersonalStrategyMode);
+			//}
+			//else {
+			//	fprintf(MyFile, "Player: Strategy mode: Human\n");
+			//}
+
+			if (Buildings.Count() == 0) {
+				fprintf(MyFile, "Is defeated: 1\n"); // %s for strings 
+			}
+			else {
+				fprintf(MyFile, "Is defeated: 0\n"); // %s for strings 
+				// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
+				// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
+				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
+				fprintf(MyFile, "IQ: %d\n", IQ); // %d for decimal
+				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
+				fprintf(MyFile, "Tiberium: %d\n", Tiberium); // %d for decimal
+				fprintf(MyFile, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
+				fprintf(MyFile, "Power produced: %d\n", Power); // %d for decimal
+				fprintf(MyFile, "Power drain: %d\n", Drain); // %d for decimal
+				fprintf(MyFile, "Power plus: %d\n", AIPowerPlus); // %d for decimal
+				fprintf(MyFile, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
+				fprintf(MyFile, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
+				fprintf(MyFile, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
+				fprintf(MyFile, "Enemies for this AI: %d\n", (int)CountEnemiesForThisAI); // %d for decimal
+
+				fprintf(MyFile, "AIBoostIQLevel (.ini file): %d\n", (int)Rule.AIBoostIQLevel); // %d for decimal
+				fprintf(MyFile, "AIBoostIQLevelForAllies (.ini file): %d\n", (int)Rule.AIBoostIQLevelForAllies); // %d for decimal
+				if (FFAgame) {
+					fprintf(MyFile, "DynamicBoost: 0 (Not used, FFA game)\n"); // %d for decimal
+				}
+				else {
+					if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
+						fprintf(MyFile, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
+					}
+					else {
+						if (IsHumanFriend == 1) {
+							fprintf(MyFile, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human friend)\n"); // %d for decimal
+						}
+						else {
+							fprintf(MyFile, "DynamicBoost: 0 (Non-dynamic by .ini, teams and human enemy)\n"); // %d for decimal
+						}
+					}
+				}
+				fprintf(MyFile, "TotalBoost: %d\n", TotalBoost); // %d for decimal
+
+				fprintf(MyFile, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
+				fprintf(MyFile, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
+				fprintf(MyFile, "Buildings: Adv. Power Plants: %d\n", (int)BQuantity[STRUCT_ADVANCED_POWER]); // %d for decimal
+				fprintf(MyFile, "Buildings: Refineries: %d\n", (int)BQuantity[STRUCT_REFINERY]); // %d for decimal
+				fprintf(MyFile, "Buildings: Kennels: %d\n", (int)BQuantity[STRUCT_KENNEL]); // %d for decimal
+				fprintf(MyFile, "Buildings: Storage Silo's: %d\n", (int)BQuantity[STRUCT_STORAGE]); // %d for decimal
+				fprintf(MyFile, "Buildings: Barracks & Tents: %d\n", (int)BQuantity[STRUCT_TENT] + (int)BQuantity[STRUCT_BARRACKS]); // %d for decimal
+				fprintf(MyFile, "Buildings: War Factories: %d\n", (int)BQuantity[STRUCT_WEAP]); // %d for decimal
+				fprintf(MyFile, "Buildings: Ship Yards: %d\n", (int)BQuantity[STRUCT_SHIP_YARD]); // %d for decimal
+				fprintf(MyFile, "Buildings: Sub Pen's: %d\n", (int)BQuantity[STRUCT_SUB_PEN]); // %d for decimal
+				fprintf(MyFile, "Buildings: Pillboxes: %d\n", (int)BQuantity[STRUCT_PILLBOX]); // %d for decimal
+				fprintf(MyFile, "Buildings: Camo Pillboxes: %d\n", (int)BQuantity[STRUCT_CAMOPILLBOX]); // %d for decimal
+				fprintf(MyFile, "Buildings: Turrets: %d\n", (int)BQuantity[STRUCT_TURRET]); // %d for decimal
+				fprintf(MyFile, "Buildings: Flame Turrets: %d\n", (int)BQuantity[STRUCT_FLAME_TURRET]); // %d for decimal
+				fprintf(MyFile, "Buildings: Tesla's: %d\n", (int)BQuantity[STRUCT_TESLA]); // %d for decimal
+				fprintf(MyFile, "Buildings: Radars: %d\n", (int)BQuantity[STRUCT_RADAR]); // %d for decimal
+				fprintf(MyFile, "Buildings: Repair Bays: %d\n", (int)BQuantity[STRUCT_REPAIR]); // %d for decimal
+				fprintf(MyFile, "Buildings: Adv. Tech Centres: %d\n", (int)BQuantity[STRUCT_ADVANCED_TECH]); // %d for decimal
+				fprintf(MyFile, "Buildings: Soviet Tech Centres: %d\n", (int)BQuantity[STRUCT_SOVIET_TECH]); // %d for decimal
+				fprintf(MyFile, "Buildings: Airstrips: %d\n", (int)BQuantity[STRUCT_AIRSTRIP]); // %d for decimal
+				fprintf(MyFile, "Buildings: Helipads: %d\n", (int)BQuantity[STRUCT_HELIPAD]); // %d for decimal
+				fprintf(MyFile, "Buildings: SAMs: %d\n", (int)BQuantity[STRUCT_SAM]); // %d for decimal
+				fprintf(MyFile, "Buildings: AAGuns: %d\n", (int)BQuantity[STRUCT_AAGUN]); // %d for decimal
+				fprintf(MyFile, "Buildings: Missile Silo: %d\n", (int)BQuantity[STRUCT_MSLO]); // %d for decimal
+				fprintf(MyFile, "Buildings: Gap Generators: %d\n", (int)BQuantity[STRUCT_GAP]); // %d for decimal
+				fprintf(MyFile, "Buildings: Total: %d\n", (int)Buildings.Count()); // %d for decimal
+
+				fprintf(MyFile, "Units: MCVs: %d\n", (int)UQuantity[UNIT_MCV]); // %d for decimal
+				fprintf(MyFile, "Units: Harvesters: %d\n", (int)UQuantity[UNIT_HARVESTER]); // %d for decimal
+				fprintf(MyFile, "Units: Chronotanks: %d\n", (int)UQuantity[UNIT_CHRONOTANK]); // %d for decimal
+				fprintf(MyFile, "Units: MAD-Tanks: %d\n", (int)UQuantity[UNIT_MAD]); // %d for decimal
+				fprintf(MyFile, "Units: Demo Trucks: %d\n", (int)UQuantity[UNIT_DEMOTRUCK]); // %d for decimal
+				fprintf(MyFile, "Units: Total: %d\n", (int)Units.Count()); // %d for decimal
+
+				fprintf(MyFile, "Aircrafts: Total: %d\n", (int)Aircraft.Count()); // %d for decimal
+
+				fprintf(MyFile, "Infantry: Rifle soldier: %d\n", (int)IQuantity[INFANTRY_E1]); // %d for decimal
+				fprintf(MyFile, "Infantry: Grenadiers: %d\n", (int)IQuantity[INFANTRY_E2]); // %d for decimal
+				fprintf(MyFile, "Infantry: Rocket soldiers: %d\n", (int)IQuantity[INFANTRY_E3]); // %d for decimal
+				fprintf(MyFile, "Infantry: Flamethrowers: %d\n", (int)IQuantity[INFANTRY_E4]); // %d for decimal
+				fprintf(MyFile, "Infantry: Shocktroopers: %d\n", (int)IQuantity[INFANTRY_SHOCK]); // %d for decimal
+				fprintf(MyFile, "Infantry: Engineers: %d\n", (int)IQuantity[INFANTRY_RENOVATOR]); // %d for decimal
+				fprintf(MyFile, "Infantry: Tanya's: %d\n", (int)IQuantity[INFANTRY_TANYA]); // %d for decimal
+				fprintf(MyFile, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+				fprintf(MyFile, "Infantry: Dogs: %d\n", (int)IQuantity[INFANTRY_DOG]); // %d for decimal
+				fprintf(MyFile, "Infantry: Medics: %d\n", (int)IQuantity[INFANTRY_MEDIC]); // %d for decimal
+				fprintf(MyFile, "Infantry: Mechanics: %d\n", (int)IQuantity[INFANTRY_MECHANIC]); // %d for decimal
+				fprintf(MyFile, "Infantry: Thiefs: %d\n", (int)IQuantity[INFANTRY_THIEF]); // %d for decimal
+				fprintf(MyFile, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
+				fprintf(MyFile, "Infantry: Total: %d\n", (int)Infantry.Count()); // %d for decimal
+				fprintf(MyFile, "Vessels: Total: %d\n", (int)Vessels.Count()); // %d for decimal
+
+
+				fclose(MyFile);
+			}
+		}
+	}
+	// End of debugging stuff.
+
+
 }
 
 
