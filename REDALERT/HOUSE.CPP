@@ -10112,25 +10112,25 @@ void HouseClass::AI_CalcDynamics(void)
 		if (MyFile) {
 			fprintf(MyFile, "------------------\n"); // %d for decimal
 			fprintf(MyFile, "Game: DynamicBoostIQAllowed: %d\n", Rule.AIDynamicBoostIQLevelAllowed); // %d for decimal
-			fprintf(MyFile, "Game: FFA-game: %d\n", FFAgame); // %d for decimal
-			fprintf(MyFile, "Game: Naval War: %d\n", AIDetectedNavalWar); // %d for decimal
-			fprintf(MyFile, "Game: Ground War: %d\n", AIDetectHumanGroundWar); // %d for decimal
-			fprintf(MyFile, "Game: Nr of Human Tanks: %d\n", NrOfHumanTanks); // %d for decimal
-			fprintf(MyFile, "Game: AI Human Ground War Tank Trigger: %d\n", Rule.AIHumanGroundWarTankTrigger); // %d for decimal
+			fprintf(MyFile, "Game: FFA-game: %d\n", (int)FFAgame); // %d for decimal
+			fprintf(MyFile, "Game: Naval War: %d\n", (int)AIDetectedNavalWar); // %d for decimal
+			fprintf(MyFile, "Game: Ground War: %d\n", (int)AIDetectHumanGroundWar); // %d for decimal
+			fprintf(MyFile, "Game: Nr of Human Tanks: %d\n", (int)NrOfHumanTanks); // %d for decimal
+			fprintf(MyFile, "Game: AI Human Ground War Tank Trigger: %d\n", (int)Rule.AIHumanGroundWarTankTrigger); // %d for decimal
 
-			fprintf(MyFile, "Game: Attack First Time: %d\n", Rule.AIAttackFirstTime);
-			fprintf(MyFile, "Game: Attack Interval: %d\n", Rule.AIAttackInterval);
-			fprintf(MyFile, "Game: SpeedRush: %d\n", Rule.AISpeedRush); // %d for decimal
-			fprintf(MyFile, "Game: Aftermath Fast Build: %d\n", Rule.AIAftermathfastbuild); // %d for decimal
+			fprintf(MyFile, "Game: Attack First Time: %d\n", (int)Rule.AIAttackFirstTime);
+			fprintf(MyFile, "Game: Attack Interval: %d\n", (int)Rule.AIAttackInterval);
+			fprintf(MyFile, "Game: SpeedRush: %d\n", (int)Rule.AISpeedRush); // %d for decimal
+			fprintf(MyFile, "Game: Aftermath Fast Build: %d\n", (int)Rule.AIAftermathfastbuild); // %d for decimal
 			//fprintf(fp, "ID: %d\n", ID); // %d for decimal
 			fprintf(MyFile, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
-			//if (!IsHuman) {
-			//	fprintf(MyFile, ".ini: AI Strategy mode: %d\n", Rule.AIStrategyMode);
-			//	fprintf(MyFile, "House: AI Strategy mode: %d\n", AIPersonalStrategyMode);
-			//}
-			//else {
-			//	fprintf(MyFile, "Player: Strategy mode: Human\n");
-			//}
+			if (!IsHuman) {
+				fprintf(MyFile, "Player Strategy mode by .ini: %d\n", (int)Rule.AIStrategyMode);
+				fprintf(MyFile, "Player Strategy mode selected: %d\n", (int)AIPersonalStrategyMode);
+			}
+			else {
+				fprintf(MyFile, "Player: Strategy mode: Human\n");
+			}
 
 			if (Buildings.Count() == 0) {
 				fprintf(MyFile, "Is defeated: 1\n"); // %s for strings 
@@ -10140,16 +10140,16 @@ void HouseClass::AI_CalcDynamics(void)
 				// error, doesn't work:   fprintf(fp, "Color: %c\n", RemapColor); // %c for chars
 				// error, doesn't work:   fprintf(fp, "IniName: %c\n", IniName); // %c for chars
 				//fprintf(fp, "Name: %s\n", Name); // %s for strings  --> Name doesn't work?!?
-				fprintf(MyFile, "IQ: %d\n", IQ); // %d for decimal
+				fprintf(MyFile, "IQ: %d\n", (int)IQ); // %d for decimal
 				//fprintf(fp, "IsHuman: %d\n", IsHuman); // %d for decimal
-				fprintf(MyFile, "Tiberium: %d\n", Tiberium); // %d for decimal
-				fprintf(MyFile, "Tiberium Capacity: %d\n", Capacity); // %d for decimal
-				fprintf(MyFile, "Power produced: %d\n", Power); // %d for decimal
-				fprintf(MyFile, "Power drain: %d\n", Drain); // %d for decimal
-				fprintf(MyFile, "Power plus: %d\n", AIPowerPlus); // %d for decimal
-				fprintf(MyFile, "Power sell value: %d\n", Rule.AIPowerPlusSellValue); // %d for decimal
-				fprintf(MyFile, "Friendlies for this AI: %d\n", CountFriendliesForThisAI); // %d for decimal
-				fprintf(MyFile, "Is Human Friend: %d\n", IsHumanFriend); // %d for decimal
+				fprintf(MyFile, "Tiberium: %d\n", (int)Tiberium); // %d for decimal
+				fprintf(MyFile, "Tiberium Capacity: %d\n", (int)Capacity); // %d for decimal
+				fprintf(MyFile, "Power produced: %d\n", (int)Power); // %d for decimal
+				fprintf(MyFile, "Power drain: %d\n", (int)Drain); // %d for decimal
+				fprintf(MyFile, "Power plus: %d\n", (int)AIPowerPlus); // %d for decimal
+				fprintf(MyFile, "Power sell value: %d\n", (int)Rule.AIPowerPlusSellValue); // %d for decimal
+				fprintf(MyFile, "Friendlies for this AI: %d\n", (int)CountFriendliesForThisAI); // %d for decimal
+				fprintf(MyFile, "Is Human Friend: %d\n", (int)IsHumanFriend); // %d for decimal
 				fprintf(MyFile, "Enemies for this AI: %d\n", (int)CountEnemiesForThisAI); // %d for decimal
 
 				fprintf(MyFile, "AIBoostIQLevel (.ini file): %d\n", (int)Rule.AIBoostIQLevel); // %d for decimal
@@ -10159,7 +10159,7 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 				else {
 					if (Rule.AIDynamicBoostIQLevelAllowed == 1) {
-						fprintf(MyFile, "DynamicBoost: %d (Active)\n", DynamicBoost); // %d for decimal
+						fprintf(MyFile, "DynamicBoost: %d (Active)\n", (int)DynamicBoost); // %d for decimal
 					}
 					else {
 						if (IsHumanFriend == 1) {
@@ -10170,7 +10170,7 @@ void HouseClass::AI_CalcDynamics(void)
 						}
 					}
 				}
-				fprintf(MyFile, "TotalBoost: %d\n", TotalBoost); // %d for decimal
+				fprintf(MyFile, "TotalBoost: %d\n", (int)TotalBoost); // %d for decimal
 
 				fprintf(MyFile, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
 				fprintf(MyFile, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
@@ -10223,10 +10223,9 @@ void HouseClass::AI_CalcDynamics(void)
 				fprintf(MyFile, "Infantry: Spies: %d\n", (int)IQuantity[INFANTRY_SPY]); // %d for decimal
 				fprintf(MyFile, "Infantry: Total: %d\n", (int)Infantry.Count()); // %d for decimal
 				fprintf(MyFile, "Vessels: Total: %d\n", (int)Vessels.Count()); // %d for decimal
-
-
-				fclose(MyFile);
 			}
+
+			fclose(MyFile);
 		}
 	}
 	// End of debugging stuff.
