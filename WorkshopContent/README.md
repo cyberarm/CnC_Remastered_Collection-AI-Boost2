@@ -1,5 +1,5 @@
-# AI-Boost 2.5 for Red Alert
-Last update at: 28th July 2022
+# AI-Boost 3.1 for Red Alert - pre-steam-test - Test branch where we work on
+Last update at: 14 aug 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -13,24 +13,9 @@ Please follow the steps below to update and reactivate the mod:
 
 Latest changes:
 New:
-- Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
-- Added an option to allow the AI to make extra base using MCV's (Will use chronoshift for map with islands)
-- AI generates a team to proctect MCVs while going to extra base location
-- AI know how to use Chronosphere (Will teleport MCV and Cruiser (Also Missile Sub if tech stolen))
-- AI Know how to use Iron CUrtain (Will protect MCV/Mad-Tank and Yard/Chronosphere/Iron Curtain/Weap/Ref/Adv Power if attacked and in yellow condition)
-- Harvester memory option re-added and made editable by .ini file
-- Added new slowdown production for the AI to compensate the multiple production hack. Time to build is like human now. That allow to increase war/yard/barrack/vessel limit a lot
-- Building limit for AI is increased by x2 when last construction yard is built or captured
 
 Fixed/Changed/Improved:
-- Prio for Tesla & Power buildings improved
-- Fixed the way AI count the refineries and the vessel units. He count according to the enemies average instead of human (because in multiplayer, you can have more than 1 human)
-- Several AI-tweaks for Naval War and Mixed War
-- Several AI-tweaks for Air and Anti-Air production
-- Fixed some performance issues
-- Good pathfinding is back
-- Selling loop for cash is fixed. Now AI only sell when tiberium is low on the map, when no more harvester and cash drop drastically
-- MAD Tank is a lot smarter now
+- Fixed less aggressive AI because of production hack removed. Now its back and you can customize it(editable by .ini)
 
 ---
 
@@ -52,6 +37,7 @@ Own mod's:
 - Now it's possible to add more starting cash and units! Editable by the .ini file
 - You can now remove toggle with space between old/new graphic in gameconstant.xml
 - Added extra zoom levels to the mod: "Additional Zoom Levels"
+- Harvester memory option and made editable by .ini file
 
 AI changes:
 - AI handles his cash flow and building priorities/limits a lot smarter
@@ -74,7 +60,14 @@ AI changes:
 - AI monitors what you are doing and uses this on how to react while upgrading / expanding his base. If you have more of building x, he builds more of x too. It's totally dynamic. :-)
 - AIBoostLevel is dynamic by the number of enemies/friendlies he personally sees, to re-balance unfair groups (Can be enabled/disabled/tweaked using the .ini file.)
 - You can now set the boost for your allies and your enemies independently (when dynamic AI boost is disabled)
+- Added an option to allow the AI to make extra base using MCV's (Will use chronoshift for map with islands)
+- AI generates a team to proctect MCVs while going to extra base location
+- AI know how to use Chronosphere (Will teleport MCV and Cruiser (Also Missile Sub if tech stolen))
+- AI Know how to use Iron CUrtain (Will protect MCV/Mad-Tank and Yard/Chronosphere/Iron Curtain/Weap/Ref/Adv Power if attacked and in yellow condition)
+- Production hack is now customizable
+- Building limit for AI is increased by x2 when last construction yard is built or captured
 - Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to re-balance
+- Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
 
 ---
 
@@ -86,9 +79,6 @@ Note:
 
 To do / wishes:
 - AI Minelayer control in Skirmish
-- AI Chronosphere control in Skirmish
-- AI Iron Curtain control in Skirmish
-- In skirmish add new play-methods for the AI like: Turtle, Air rush, Infantry rush, Tank rush, etc.
 - In skirmish and not in FFA-games, the AI should be enabled to ally or declare war to change his friends and enemies
 - The AI should know how to send a MCV (Or other unit) into a transport and send it over water to a better location
 - Like in RA2 Yuri's Revenge: Units should be able to scan the area and attack a specified object while avoiding all other dangers. (Attack object from other side by driving around units and defenses)

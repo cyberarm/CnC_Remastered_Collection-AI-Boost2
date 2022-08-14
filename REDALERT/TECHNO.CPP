@@ -7319,6 +7319,13 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 	}
 	time *= scale;
 
+	//Percentage of the production time - Mini Franki
+	int hackpercent;
+	if (Rule.AIProductionAggressiveness <= 1) { hackpercent = 1; } // Like human, not aggressive
+	if (Rule.AIProductionAggressiveness == 2) { hackpercent = 0.75; } // Agressive
+	if (Rule.AIProductionAggressiveness == 3) { hackpercent = 0.5; } // Super aggressive
+	if (Rule.AIProductionAggressiveness >= 4) { hackpercent = 0.25; } // Madness
+
 	int divisor = hptr->Factory_Count(What_Am_I());
 	if (divisor != 0) {
 #ifdef FIXIT_CSII	//	checked - ajw 9/28/98
@@ -7329,17 +7336,22 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 			if (hptr->IsHuman) {
 				time /= min(divisor, 2);
 			}
-			// Slowdown AI production for fast build OFF
+			// AI production time for fast build OFF
 			else {
-				if (divisor > 2) {
+				if (divisor > 1) {
 					time *= divisor;
 					time /= 2;
+					time *= hackpercent;
 				}
 			}
 		}
 		else {
 			if (hptr->IsHuman) {
 				time /= divisor;
+			}
+			// AI production time for fast build ON
+			else {
+				time *= hackpercent;
 			}
 		}
 #else

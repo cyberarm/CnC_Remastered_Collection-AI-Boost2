@@ -538,6 +538,7 @@ bool RulesClass::General(CCINIClass & ini)
 		AIAllowMoreMCVsToExtraBase = ini.Get_Bool(MOREQOL, "AIAllowMoreMCVsToExtraBase", false);
 		AIMaxMCVOrConYardsInMainBase = ini.Get_Int(MOREQOL, "AIMaxMCVOrConYardsInMainBase", 2);
 		AIMCVWaypointFreeRadius = ini.Get_Int(MOREQOL, "AIMCVWaypointFreeRadius", 20);
+		AIProductionAggressiveness = ini.Get_Int(MOREQOL, "AIProductionAggressiveness", 3);
 
 		AllowTechStealing = ini.Get_Bool(MOREQOL, "AllowTechStealing", true);
 		AIHarvesterMemoryValue = ini.Get_Int(MOREQOL, "AIHarvesterMemoryValue", 50);

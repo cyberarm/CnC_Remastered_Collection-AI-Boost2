@@ -1,5 +1,5 @@
 # AI-Boost 3.1 for Red Alert - pre-steam-test - Test branch where we work on
-Last update at: 10 aug 2022
+Last update at: 14 aug 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -15,6 +15,7 @@ Latest changes:
 New:
 
 Fixed/Changed/Improved:
+- Fixed less aggressive AI because of production hack removed. Now its back and you can customize it(editable by .ini)
 
 ---
 
@@ -63,7 +64,7 @@ AI changes:
 - AI generates a team to proctect MCVs while going to extra base location
 - AI know how to use Chronosphere (Will teleport MCV and Cruiser (Also Missile Sub if tech stolen))
 - AI Know how to use Iron CUrtain (Will protect MCV/Mad-Tank and Yard/Chronosphere/Iron Curtain/Weap/Ref/Adv Power if attacked and in yellow condition)
-- Added new slowdown production for the AI to compensate the multiple production hack. Time to build is like human now. That allow to increase war/yard/barrack/vessel limit a lot
+- Production hack is now customizable
 - Building limit for AI is increased by x2 when last construction yard is built or captured
 - Free-For-All detection, it automatically disables Dynamic AI in these cases because there are no teams so nothing to re-balance
 - Harvester prio switcher. There is a 5% change of AI goes wild on harvester hunting. The rest of the time it gives harvesters lower prio
