@@ -7321,10 +7321,10 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 
 	//Percentage of the production time - Mini Franki
 	int hackpercent;
-	if (Rule.AIProductionAggressiveness <= 1) { hackpercent = 1; } // Like human, not aggressive
-	if (Rule.AIProductionAggressiveness == 2) { hackpercent = 0.75; } // Agressive
-	if (Rule.AIProductionAggressiveness == 3) { hackpercent = 0.5; } // Super aggressive
-	if (Rule.AIProductionAggressiveness >= 4) { hackpercent = 0.25; } // Madness
+	if (Rule.AIProductionAggressiveness <= 1) { hackpercent = 1; } // No hack like human, not aggressive
+	if (Rule.AIProductionAggressiveness == 2) { hackpercent = 0.75; } // 25% of the hack, more agressive
+	if (Rule.AIProductionAggressiveness == 3) { hackpercent = 0.5; } // 50% of the hack, super aggressive
+	if (Rule.AIProductionAggressiveness >= 4) { hackpercent = 0.25; } // 75% of the hack, Madness
 
 	int divisor = hptr->Factory_Count(What_Am_I());
 	if (divisor != 0) {
