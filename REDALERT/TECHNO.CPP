@@ -7351,7 +7351,9 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 			}
 			// AI production time for fast build ON
 			else {
-				time *= hackpercent;
+				if (divisor > 1) {
+					time *= hackpercent;
+				}
 			}
 		}
 #else
