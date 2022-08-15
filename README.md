@@ -1,5 +1,5 @@
 # AI-Boost 3.1 for Red Alert - pre-steam-test - Test branch where we work on
-Last update at: 14 aug 2022
+Last update at: 15 aug 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -16,6 +16,7 @@ New:
 
 Fixed/Changed/Improved:
 - Fixed less aggressive AI because of production hack removed. Now its back and you can customize it(editable by .ini)
+- Naval is allowed in dynamic mode also. The AI doesn't wait for human anymore
 
 ---
 
