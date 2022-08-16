@@ -51,6 +51,11 @@ AIAllowIronCurtain=true
 Chrono=2
 GPS=1
 
+***Production Test***
+Map with prebuilt weapon factories for each AI(2,4,6,8)
+Place yourself at the top left
+Place the rest of the AI in order
+
 
 
 Have fun.
