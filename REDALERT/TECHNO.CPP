@@ -7340,8 +7340,8 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 			else {
 				if (divisor > 1) {
 					time *= divisor;
-					time /= 2;
-					time *= (hackpercent/100);
+					time *= hackpercent;
+					time /= 200;
 				}
 			}
 		}
@@ -7352,7 +7352,8 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 			// AI production time for fast build ON
 			else {
 				if (divisor > 1) {
-					time *= (hackpercent / 100);
+					time *= hackpercent;
+					time /= 100;
 				}
 			}
 		}
