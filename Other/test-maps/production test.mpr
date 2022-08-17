@@ -1,3 +1,9 @@
+[AIBoost]
+NoShroud=true
+
+[Recharge]
+Chrono=1
+
 [Digest]
 1=w/q6noTEOj0WRXpMLgniOn/azbE=
 
@@ -106,11 +112,11 @@ PublishedFileId=0
 011=Multi5,weap,256,8160,0,None,0,0
 012=Multi5,weap,256,7900,0,None,0,0
 013=Multi2,weap,256,5184,0,None,0,0
-014=Multi2,apwr,256,3511,0,None,0,0
+014=Multi2,harv,256,3511,0,None,0,0
 015=Multi2,apwr,256,3896,0,None,0,0
-016=Multi5,apwr,256,8812,0,None,0,0
+016=Multi5,harv,256,8812,0,None,0,0
 017=Multi5,apwr,256,9313,0,None,0,0
-018=Multi4,apwr,256,8859,0,None,0,0
+018=Multi4,harv,256,8859,0,None,0,0
 019=Multi4,apwr,256,8991,0,None,0,0
 020=Multi4,apwr,256,8998,0,None,0,0
 021=Multi4,apwr,256,8994,0,None,0,0
@@ -123,7 +129,7 @@ PublishedFileId=0
 028=Multi5,apwr,256,9323,0,None,0,0
 029=Multi2,apwr,256,3514,0,None,0,0
 030=Multi2,apwr,256,2870,0,None,0,0
-031=Multi3,apwr,256,2797,0,None,0,0
+031=Multi3,harv,256,2797,0,None,0,0
 032=Multi3,apwr,256,3949,0,None,0,0
 033=Multi3,apwr,256,3436,0,None,0,0
 034=Multi3,apwr,256,2285,0,None,0,0

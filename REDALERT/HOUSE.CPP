@@ -6932,7 +6932,9 @@ int HouseClass::AI_Building(void)
 		//Only try Naval if human does, or if we are in Naval rush mode
 		//and not try always in case we can't place the building.
 		//Allow on Naval war and 80%, or AIPersonalStrategyMode=dynamic and 50%, or AIPersonalStrategyMode=naval rush and 80%
-		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 1 && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && Percent_Chance(80))) {
+		// 		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 1 && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && Percent_Chance(80))) {
+		// Dont do Naval always, only when naval rush or dynamic mode and humans uses naval
+		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && Percent_Chance(80))) {
 			prio = 2;
 			if (AIPersonalStrategyMode == 2) { //Naval rush!!!
 				prio = AINavalLimit;
