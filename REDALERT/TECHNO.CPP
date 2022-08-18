@@ -7258,7 +7258,14 @@ extern int UnitBuildPenalty;
 
 int TechnoTypeClass::Time_To_Build(HousesType house) const
 {
-	int time = Cost * Rule.BuildSpeedBias * fixed(TICKS_PER_MINUTE, 1000);
+	//Now AI build at the same speed than human. You want more challenge? Put some hack back - Mini Franki
+	float hackpercent;
+	if (Rule.AIProductionAggressiveness <= 1) { hackpercent = 1; } // No hack like human, not aggressive
+	if (Rule.AIProductionAggressiveness == 2) { hackpercent = 0.75; } // 25% of the hack, more agressive
+	if (Rule.AIProductionAggressiveness == 3) { hackpercent = 0.50; } // 50% of the hack, super aggressive
+	if (Rule.AIProductionAggressiveness >= 4) { hackpercent = 0.25; } // 75% of the hack, Madness
+
+	int time = Cost * Rule.BuildSpeedBias * fixed(TICKS_PER_MINUTE, 1000) * hackpercent;
 
 	HouseClass* hptr = HouseClass::As_Pointer(house);
 	if (!hptr || !hptr->IsActive) {
@@ -7326,29 +7333,20 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		//			this is an AM<->AM game.
 		// Enable fast build with Aftermath units - Mini Franki
 		if (NewUnitsEnabled && Rule.AIAftermathfastbuild == 0) {
-			// Production time for fast build OFF
-			time /= min(divisor, 2);
+			if (hptr->IsHuman) {
+				time /= min(divisor, 2);
+			}
+			// Slowdown AI production for fast build OFF
+			else {
+				if (divisor > 1) {
+					time *= divisor;
+					time *= 0.5;
+				}
+			}
 		}
 		else {
-			// Production time for fast build ON - Mini Franki
-			time /= divisor;
-		}
-
-		// Speed hack fix by Mini Franki and Bast75
-		if (!hptr->IsHuman) {
-			if ((What_Am_I() == RTTI_BUILDINGTYPE)) {
-				//No speed-up for buildings
-			}
-			else
-			{
-				//Percentage of the production time - Mini Franki
-				int hackpercent;
-				if (Rule.AIProductionAggressiveness <= 1) { hackpercent = 100; } // No hack like human, not aggressive
-				if (Rule.AIProductionAggressiveness == 2) { hackpercent = 75; } // 25% of the hack, more agressive
-				if (Rule.AIProductionAggressiveness == 3) { hackpercent = 50; } // 50% of the hack, super aggressive
-				if (Rule.AIProductionAggressiveness == 4) { hackpercent = 25; } // 75% of the hack, Madness
-				if (Rule.AIProductionAggressiveness >= 5) { hackpercent = 10; } // 90% of the hack, Madness Extreme (for testing)
-				time *= (int)(hackpercent * 0.01); // Use the hack and divide by 100 to use the percentage
+			if (hptr->IsHuman) {
+				time /= divisor;
 			}
 		}
 #else
