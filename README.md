@@ -1,5 +1,5 @@
 # AI-Boost 3.1 for Red Alert - pre-steam-test - Test branch where we work on
-Last update at: 17 aug 2022
+Last update at: 19 aug 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
