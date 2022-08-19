@@ -1,8 +1,6 @@
 [AIBoost]
 NoShroud=true
-
-[Recharge]
-Chrono=1
+AIMoreStartingCash=1000000
 
 [Digest]
 1=w/q6noTEOj0WRXpMLgniOn/azbE=

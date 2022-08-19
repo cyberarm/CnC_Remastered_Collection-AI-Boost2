@@ -7354,14 +7354,6 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		if (Rule.AIProductionAggressiveness == 2) { hackpercent = 0.75; } // 25% of the hack, more agressive
 		if (Rule.AIProductionAggressiveness == 3) { hackpercent = 0.50; } // 50% of the hack, super aggressive
 		if (Rule.AIProductionAggressiveness >= 4) { hackpercent = 0.25; } // 75% of the hack, Madness
-
-		if (Rule.AIProductionAggressiveness == 0) {
-			//AI TotalBoost can be between 1 and 10, normally is 3,4,5 and in extreme 6, so we set:
-			if (hptr->TotalBoost <= 3) { hackpercent = 1; } // No hack like human, not aggressive
-			if (hptr->TotalBoost == 4) { hackpercent = 0.75; } // 25% of the hack, more agressive
-			if (hptr->TotalBoost == 5) { hackpercent = 0.50; } // 50% of the hack, super aggressive
-			if (hptr->TotalBoost >= 6) { hackpercent = 0.25; } // 75% of the hack, Madness
-		}
 		time *= hackpercent;
 	}
 	return(time);
