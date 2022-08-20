@@ -9750,10 +9750,10 @@ void HouseClass::AI_CalcDynamics(void)
 					//	//A AI house has switched to Navalwar=true, so we are allowed to switch too.
 					//	AIDetectedNavalWar = true;
 					//}
-					if (!airthreat) {
-						if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
-							airthreat = true;
-						}
+				}
+				if (!airthreat) {
+					if (hptr != NULL && !Is_Ally(h) && hptr->AScan != 0) {
+						airthreat = true;
 					}
 				}
 			}
@@ -9770,6 +9770,9 @@ void HouseClass::AI_CalcDynamics(void)
 		//Check if the last yard is built to increase limit by x2(only one time)
 		if (IncreaseLimitDone) {
 			IncreaseLimit = 2;
+		}
+		if (IncreaseLimit != 2) {
+			IncreaseLimit = 1;
 		}
 
 		//Set minimals depending on IsNavalWar && KeepGroundWarGoing

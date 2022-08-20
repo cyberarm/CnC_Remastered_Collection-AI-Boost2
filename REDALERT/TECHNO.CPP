@@ -7350,10 +7350,11 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 	if (divisor > 1) {
 		//Now AI build at the same speed than human. You want more challenge? Put some hack back - Mini Franki
 		float hackpercent;
-		if (Rule.AIProductionAggressiveness == 1) { hackpercent = 1; } // No hack like human, not aggressive
-		if (Rule.AIProductionAggressiveness == 2) { hackpercent = 0.75; } // 25% of the hack, more agressive
-		if (Rule.AIProductionAggressiveness == 3) { hackpercent = 0.50; } // 50% of the hack, super aggressive
-		if (Rule.AIProductionAggressiveness >= 4) { hackpercent = 0.25; } // 75% of the hack, Madness
+		if (Rule.AIProductionAggressiveness == 1) { hackpercent = (float)1; } // No hack like human, not aggressive
+		if (Rule.AIProductionAggressiveness == 2) { hackpercent = (float)0.75; } // 25% of the hack, a bit agressive
+		if (Rule.AIProductionAggressiveness == 3) { hackpercent = (float)0.50; } // 50% of the hack, super aggressive
+		if (Rule.AIProductionAggressiveness == 4) { hackpercent = (float)0.30; } // 70% of the hack, Madness
+		if (Rule.AIProductionAggressiveness >= 5) { hackpercent = (float)0.20; } // 80% of the hack, Hell
 		time *= hackpercent;
 	}
 	return(time);
