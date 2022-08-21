@@ -500,6 +500,13 @@ class HouseClass {
 		int PersonalCounter = 0;
 		bool AllowExtraBaseAtWaypoint = false;
 
+		//Trigger for AI production to remove multiple production hack - Mini Franki
+		bool VesselInProduction = false;
+		bool UnitInProduction = false;
+		bool InfantryInProduction = false;
+		bool BuildingInProduction = false;
+		bool AircraftInProduction = false;
+
 		/*
 		** Stuff to keep track of the total number of units built by this house.
 		*/

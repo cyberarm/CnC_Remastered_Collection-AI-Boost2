@@ -6623,6 +6623,9 @@ int HouseClass::AI_Building(void)
 
 	if (BuildStructure != STRUCT_NONE) return(TICKS_PER_SECOND);
 
+	//If building is in production, skip - Mini Franki
+	if (BuildingInProduction) return(TICKS_PER_SECOND);
+
 	//We have placed a building, recheck counter:
 	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
 
@@ -7237,6 +7240,9 @@ int HouseClass::AI_Unit(void)
 
 	if (BuildUnit != UNIT_NONE) return(TICKS_PER_SECOND);
 
+	//If unit is in production, skip - Mini Franki
+	if (UnitInProduction) return(TICKS_PER_SECOND);
+
 	//Check if AI is allowed to make a new base
 	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase && AIMaxConYardsAndMCVs > 1) {
 		AllowExtraBaseAtWaypoint = false;
@@ -7444,6 +7450,9 @@ int HouseClass::AI_Vessel(void)
 	
 	if (BuildVessel != VESSEL_NONE) return(TICKS_PER_SECOND);
 
+	//If vessel is in production, skip - Mini Franki
+	if (VesselInProduction) return(TICKS_PER_SECOND);
+
 	if ((int)(BQuantity[STRUCT_SHIP_YARD] + BQuantity[STRUCT_SUB_PEN]) == 0) return(TICKS_PER_SECOND);
 
 	// Check if nr of Vessels isn't above game limit
@@ -7617,6 +7626,10 @@ int HouseClass::AI_Infantry(void)
 	assert(Houses.ID(this) == ID);
 
 	if (BuildInfantry != INFANTRY_NONE) return(TICKS_PER_SECOND);
+
+	//If infantry is in production, skip - Mini Franki
+	if (InfantryInProduction) return(TICKS_PER_SECOND);
+
 	if ((int)(BQuantity[STRUCT_BARRACKS] + BQuantity[STRUCT_TENT]) == 0) return(TICKS_PER_SECOND);
 	if (CurInfantry >= Control.MaxInfantry && !IsHuman) return(TICKS_PER_SECOND);
 
@@ -7863,6 +7876,10 @@ int HouseClass::AI_Aircraft(void)
 
 	if (!IsHuman && IQ >= Rule.IQAircraft) {
 		if (BuildAircraft != AIRCRAFT_NONE) return(TICKS_PER_SECOND);
+
+		//If aircraft is in production, skip - Mini Franki
+		if (AircraftInProduction) return(TICKS_PER_SECOND);
+
 		if ((int)CurAircraft >= Control.MaxAircraft) return(TICKS_PER_SECOND);
 		if ((int)CurAircraft > AIMaxAirNr) return(TICKS_PER_SECOND);
 
@@ -7929,30 +7946,35 @@ void HouseClass::Production_Begun(TechnoClass const * product)
 			case RTTI_UNIT:
 				if (*((UnitClass*)product) == BuildUnit) {
 					BuildUnit = UNIT_NONE;
+					UnitInProduction = true;
 				}
 				break;
 
 			case RTTI_VESSEL:
 				if (*((VesselClass*)product) == BuildVessel) {
 					BuildVessel = VESSEL_NONE;
+					VesselInProduction = true;
 				}
 				break;
 
 			case RTTI_INFANTRY:
 				if (*((InfantryClass*)product) == BuildInfantry) {
 					BuildInfantry = INFANTRY_NONE;
+					InfantryInProduction = true;
 				}
 				break;
 
 			case RTTI_BUILDING:
 				if (*((BuildingClass*)product) == BuildStructure) {
 					BuildStructure = STRUCT_NONE;
+					BuildingInProduction = true;
 				}
 				break;
 
 			case RTTI_AIRCRAFT:
 				if (*((AircraftClass*)product) == BuildAircraft) {
 					BuildAircraft = AIRCRAFT_NONE;
+					AircraftInProduction = true;
 				}
 				break;
 

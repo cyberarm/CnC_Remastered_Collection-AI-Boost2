@@ -6268,26 +6268,31 @@ void BuildingClass::Factory_AI(void)
 					case RTTI_VESSEL:
 						House->JustBuiltVessel = ((VesselClass*)product)->Class->Type;
 						House->IsBuiltSomething = true;
+						House->VesselInProduction = false;
 						break;
 
 					case RTTI_UNIT:
 						House->JustBuiltUnit = ((UnitClass*)product)->Class->Type;
 						House->IsBuiltSomething = true;
+						House->UnitInProduction = false;
 						break;
 
 					case RTTI_INFANTRY:
 						House->JustBuiltInfantry = ((InfantryClass*)product)->Class->Type;
 						House->IsBuiltSomething = true;
+						House->InfantryInProduction = false;
 						break;
 
 					case RTTI_BUILDING:
 						House->JustBuiltStructure = ((BuildingClass*)product)->Class->Type;
 						House->IsBuiltSomething = true;
+						House->BuildingInProduction = false;
 						break;
 
 					case RTTI_AIRCRAFT:
 						House->JustBuiltAircraft = ((AircraftClass*)product)->Class->Type;
 						House->IsBuiltSomething = true;
+						House->AircraftInProduction = false;
 						break;
 
 					default:
