@@ -7243,6 +7243,14 @@ int HouseClass::AI_Unit(void)
 	//If unit is in production, skip - Mini Franki
 	if (UnitInProduction) return(TICKS_PER_SECOND);
 
+	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
+	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
+
+	//AI Max units
+	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
+		return(TICKS_PER_SECOND);
+	}
+
 	//Check if AI is allowed to make a new base
 	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase && AIMaxConYardsAndMCVs > 1) {
 		AllowExtraBaseAtWaypoint = false;
@@ -7258,14 +7266,6 @@ int HouseClass::AI_Unit(void)
 				AI_Calc2ndBaseLocations();
 			}
 		}
-	}
-
-	if ((int)(BQuantity[STRUCT_WEAP]) == 0) return(TICKS_PER_SECOND);
-	if (CurUnits >= Control.MaxUnit && !IsHuman) return(TICKS_PER_SECOND);
-
-	//AI Max units
-	if (!IsHuman && (int)CurUnits > AIMaxTanksNr) {
-		return(TICKS_PER_SECOND);
 	}
 
 	//Make MCV TEST, put speed 20 for faster test
@@ -7946,7 +7946,7 @@ void HouseClass::Production_Begun(TechnoClass const * product)
 			case RTTI_UNIT:
 				if (*((UnitClass*)product) == BuildUnit) {
 					BuildUnit = UNIT_NONE;
-					UnitInProduction = true;
+					///////UnitInProduction = true;
 				}
 				break;
 

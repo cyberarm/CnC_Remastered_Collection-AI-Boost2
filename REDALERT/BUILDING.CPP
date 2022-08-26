@@ -6354,6 +6354,9 @@ void BuildingClass::Factory_AI(void)
 							} else {
 								House->Production_Begun(Factory->Get_Object());
 								Factory->Start();
+								if (*this == STRUCT_WEAP) { //added by Bast75
+									House->UnitInProduction = true;
+								}
 							}
 						}
 					}

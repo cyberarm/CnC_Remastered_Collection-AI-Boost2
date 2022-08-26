@@ -195,6 +195,8 @@ class BuildingClass : public TechnoClass
 		*/
 		int LastStrength;
 
+		//By Bast75, this makes the AI to use primary warfactory, and he switches after each tank production.
+		bool AIThisIsPrimaryFactory = false;
 		/*
 		** This is a target id of an animation we're keeping track of.  Examples
 		** of this usage are the advanced tech center, which needs to know
