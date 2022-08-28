@@ -1,5 +1,5 @@
-# AI-Boost 3.1 for Red Alert - pre-steam-test - Test branch where we work on
-Last update at: 20 aug 2022
+# AI-Boost 3.2 for Red Alert
+Last update at: 28 aug 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -13,9 +13,12 @@ Please follow the steps below to update and reactivate the mod:
 
 Latest changes:
 New:
+- AI no longer builds with all WarFactories at the same time. It's using primary factory now and can switch between them. (Like Humans)
+  (This also gives a huge performance boost for the engine!!!)
+
 
 Fixed/Changed/Improved:
-- Fixed less aggressive AI because of production hack removed. Now its back and you can customize it(editable by .ini)
+- 
 
 ---
 
@@ -42,6 +45,7 @@ Own mod's:
 AI changes:
 - AI handles his cash flow and building priorities/limits a lot smarter
 - AI customizable limits for number of AI buildings, tanks, etc. using the .ini file
+- AI customizable aggressivness using the .ini file
 - AI scatters all units on new attack launch to unlock stuck/blocked units
 - AI understands importance of buildings & units a lot better and uses it during attack
 - AI attacks interval uses different ways (Hunt, Closest enemy, etc.)

@@ -7268,6 +7268,30 @@ int HouseClass::AI_Unit(void)
 		}
 	}
 
+	//We are goint to start a new tank production, set primary to next available WarFactory first.
+	AICurrentWEAPs = (int)BQuantity[STRUCT_WEAP];
+	AICurrentPrimaryWEAP++;
+	if (AICurrentPrimaryWEAP > AICurrentWEAPs) {
+		AICurrentPrimaryWEAP = 1;
+	}
+	int FindCorrectWeap = 0;
+	//Primary has been chosen, now set the correct building to this value:
+	for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+		BuildingClass * b = Buildings.Ptr(BuildingIndex);
+		if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
+			if (*b == STRUCT_WEAP) {
+				FindCorrectWeap++;
+				if (FindCorrectWeap == AICurrentPrimaryWEAP) {
+					b->AIThisIsPrimaryFactory = true;
+				}
+				else {
+					b->AIThisIsPrimaryFactory = true;
+				}
+			}
+		}
+	}
+
+
 	//Make MCV TEST, put speed 20 for faster test
 	if (1 == 0) {
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs && Percent_Chance(33)) {
