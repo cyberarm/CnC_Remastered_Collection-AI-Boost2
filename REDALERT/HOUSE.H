@@ -507,7 +507,7 @@ class HouseClass {
 		bool BuildingInProduction = false;
 		bool AircraftInProduction = false;
 		int AICurrentWEAPs = 0;
-		int AICurrentPrimaryWEAP = 0;
+		int AICurrentSelectedWeap = 0;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.

@@ -6333,12 +6333,38 @@ void BuildingClass::Factory_AI(void)
 
 			} else {
 
+				//Primary stuff, by Bast75
+				//AIThisIsPrimaryFactory = false;
+				if (*this == STRUCT_WEAP) {
+					int RandomWarFactory = House->AICurrentSelectedWeap;
+					//RandomWarFactory = Random_Pick(1, House->AICurrentWEAPs); // Pick a random factory (this works)
+					int FindCorrectWeap = 0;
+					//Primary has been chosen, now set the correct building to this value:
+					for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
+						BuildingClass * b = Buildings.Ptr(BuildingIndex);
+						if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this->House) {
+							if (*b == STRUCT_WEAP) {
+								FindCorrectWeap++;
+								if (FindCorrectWeap == RandomWarFactory) {
+									b->AIThisIsPrimaryFactory = true;
+								}
+								else {
+									b->AIThisIsPrimaryFactory = false;
+								}
+							}
+						}
+					}
+				}
+				else {
+					AIThisIsPrimaryFactory = true; //Other factories can keep building always
+				}
+
 				/*
 				**	Only look to start production if there is at least a small amount of
 				**	money available. In cases where there is no practical money left, then
 				**	production can never complete -- don't bother starting it.
 				*/
-				if (House->IsStarted && House->Available_Money() > 10) {
+				if (House->IsStarted && House->Available_Money() > 10 && AIThisIsPrimaryFactory) {
 					TechnoTypeClass const * techno = House->Suggest_New_Object(Class->ToBuild, *this == STRUCT_KENNEL);
 
 					/*
@@ -6354,8 +6380,9 @@ void BuildingClass::Factory_AI(void)
 							} else {
 								House->Production_Begun(Factory->Get_Object());
 								Factory->Start();
-								if (*this == STRUCT_WEAP && AIThisIsPrimaryFactory) {
-									//House->UnitInProduction = true;
+
+								if (*this == STRUCT_WEAP) {
+									House->UnitInProduction = true;
 								}
 							}
 						}

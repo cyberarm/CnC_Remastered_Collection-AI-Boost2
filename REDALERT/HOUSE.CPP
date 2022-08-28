@@ -1984,6 +1984,13 @@ void HouseClass::Harvested(unsigned tiberium)
 	if (!IsHuman) {
 		//Give the AI the boost
 		tiberium *= TotalBoost;
+
+		//Let the AI switch primary war factory:
+		AICurrentWEAPs = (int)BQuantity[STRUCT_WEAP];
+		AICurrentSelectedWeap++;
+		if (AICurrentSelectedWeap > AICurrentWEAPs || AICurrentSelectedWeap < 1) {
+			AICurrentSelectedWeap = 1;
+		}
 	}
 	DoMyDebugStuff();
 
@@ -7268,30 +7275,6 @@ int HouseClass::AI_Unit(void)
 		}
 	}
 
-	//We are goint to start a new tank production, set primary to next available WarFactory first.
-	AICurrentWEAPs = (int)BQuantity[STRUCT_WEAP];
-	AICurrentPrimaryWEAP++;
-	if (AICurrentPrimaryWEAP > AICurrentWEAPs) {
-		AICurrentPrimaryWEAP = 1;
-	}
-	int FindCorrectWeap = 0;
-	//Primary has been chosen, now set the correct building to this value:
-	for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
-		BuildingClass * b = Buildings.Ptr(BuildingIndex);
-		if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this) {
-			if (*b == STRUCT_WEAP) {
-				FindCorrectWeap++;
-				if (FindCorrectWeap == AICurrentPrimaryWEAP) {
-					b->AIThisIsPrimaryFactory = true;
-				}
-				else {
-					b->AIThisIsPrimaryFactory = true;
-				}
-			}
-		}
-	}
-
-
 	//Make MCV TEST, put speed 20 for faster test
 	if (1 == 0) {
 		if (!IsHuman && (UQuantity[UNIT_MCV] + BQuantity[STRUCT_CONST]) < AIMaxConYardsAndMCVs && Percent_Chance(33)) {
@@ -7970,7 +7953,6 @@ void HouseClass::Production_Begun(TechnoClass const * product)
 			case RTTI_UNIT:
 				if (*((UnitClass*)product) == BuildUnit) {
 					BuildUnit = UNIT_NONE;
-					///////UnitInProduction = true;
 				}
 				break;
 
@@ -9931,7 +9913,7 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 				//Pillbox & Camo Pillbox
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
-				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
+				if (AIPillBoxLimit + AICamoPillBoxLimit < (TempCalculation / 2)) {
 					AIPillBoxLimit = (int)(TempCalculation / 2);
 					AICamoPillBoxLimit = (int)(TempCalculation / 2);
 				}
@@ -9942,7 +9924,7 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 				//Tesla & Turretgun
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
-				if (AITurretGunLimit + (AITeslaGunLimit * 2) < TempCalculation) {
+				if (AITurretGunLimit + AITeslaGunLimit < (TempCalculation / 2)) {
 					AITurretGunLimit = (int)(TempCalculation / 2);
 					AITeslaGunLimit = (int)(TempCalculation / 4);
 				}
@@ -9997,11 +9979,11 @@ void HouseClass::AI_CalcDynamics(void)
 		//Default dynamic game like we always have/had
 		if (AIPersonalStrategyMode == 1) {
 			if (BQuantity[STRUCT_MSLO] == 0) { //Not all tech, set defense limits at half, to tech up faster
-				AIAirdefenseLimit = (int)(AIAirdefenseLimit / 2);
-				AIPillBoxLimit = (int)(AIPillBoxLimit / 2);
-				AITurretGunLimit = (int)(AITurretGunLimit / 2);
-				AIFlameTurretLimit = (int)(AIFlameTurretLimit / 2);
-				AITeslaGunLimit = (int)(AITeslaGunLimit / 2);
+				AIAirdefenseLimit = (int)(AIAirdefenseLimit / 2) + 1;
+				AIPillBoxLimit = (int)(AIPillBoxLimit / 2) + 1;
+				AITurretGunLimit = (int)(AITurretGunLimit / 2) + 1;
+				AIFlameTurretLimit = (int)(AIFlameTurretLimit / 2) + 1;
+				AITeslaGunLimit = (int)(AITeslaGunLimit / 2) + 1;
 			}
 		}
 
@@ -10183,8 +10165,8 @@ void HouseClass::DoMyDebugStuff(void) {
 			//fprintf(MyFile, "ID: %d\n", ID); // %d for decimal
 			fprintf(MyFile, "Player: %s %d\n", IniName, ID - 12); // %s for strings (multi-player starts at ID=12 -> human. First AI is 13, 14, etc.
 
-			fprintf(MyFile, "Player Strategy mode (.ini): %d\n", (int)Rule.AIStrategyMode);
-			fprintf(MyFile, "Player Strategy mode (Real): %d\n", (int)AIPersonalStrategyMode);
+			//fprintf(MyFile, "Player Strategy mode (.ini): %d\n", (int)Rule.AIStrategyMode);
+			//fprintf(MyFile, "Player Strategy mode (Real): %d\n", (int)AIPersonalStrategyMode);
 
 			if (Buildings.Count() == 0) {
 				fprintf(MyFile, "Is defeated: 1\n"); // %s for strings 
