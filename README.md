@@ -1,5 +1,5 @@
 # AI-Boost 3.2 for Red Alert
-Last update at: 28 aug 2022
+Last update at: 29 aug 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -14,7 +14,7 @@ Please follow the steps below to update and reactivate the mod:
 Latest changes:
 New:
 - AI no longer builds with all WarFactories at the same time. It's using primary factory now and can switch between them. (Like Humans)
-  (This also gives a huge performance boost for the engine!!!)
+  (This also gives a huge performance boost for the engine that fixes the cannot build issue for human in late games!!!)
 
 
 Fixed/Changed/Improved:

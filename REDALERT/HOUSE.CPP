@@ -1987,9 +1987,14 @@ void HouseClass::Harvested(unsigned tiberium)
 
 		//Let the AI switch primary war factory:
 		AICurrentWEAPs = (int)BQuantity[STRUCT_WEAP];
-		AICurrentSelectedWeap++;
-		if (AICurrentSelectedWeap > AICurrentWEAPs || AICurrentSelectedWeap < 1) {
-			AICurrentSelectedWeap = 1;
+		//Switch primaries, but not to fast
+		if (UQuantity[UNIT_HARVESTER] > 0) { //Should always be this, but just in case
+			if (Percent_Chance((int)(100 / (1 + UQuantity[UNIT_HARVESTER])))) {
+				AICurrentSelectedWeap++;
+				if (AICurrentSelectedWeap > AICurrentWEAPs || AICurrentSelectedWeap < 1) {
+					AICurrentSelectedWeap = 1;
+				}
+			}
 		}
 	}
 	DoMyDebugStuff();
