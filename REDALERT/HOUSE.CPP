@@ -1989,7 +1989,23 @@ void HouseClass::Harvested(unsigned tiberium)
 		AICurrentWEAPs = (int)BQuantity[STRUCT_WEAP];
 		//Switch primaries, but not to fast
 		if (UQuantity[UNIT_HARVESTER] > 0) { //Should always be this, but just in case
-			if (Percent_Chance((int)(100 / (1 + UQuantity[UNIT_HARVESTER])))) {
+			int SlowDown = 2 + UQuantity[UNIT_HARVESTER]; //Not to fast
+			SlowDown = (int)(100 / SlowDown);
+			// 1 harvester = 100/3 == 33 chance
+			// 2 harvester = 100/4 == 25 chance
+			// 3 harvester = 100/5 == 20 change
+			// 4 harvester = 100/6 == 16.6 change
+			// 5 harvester = 100/7 == 14.3 change
+			// 6 harvester = 100/8 == 12.5 change
+			// 7 harvester = 100/9 == 11.1 change
+			// 8 harvester = 100/10 == 10 change
+			if (SlowDown < 10) {
+				SlowDown = 10;
+			}
+			if (SlowDown > 33) {
+				SlowDown = 33;
+			}
+			if (Percent_Chance(SlowDown)) {
 				AICurrentSelectedWeap++;
 				if (AICurrentSelectedWeap > AICurrentWEAPs || AICurrentSelectedWeap < 1) {
 					AICurrentSelectedWeap = 1;

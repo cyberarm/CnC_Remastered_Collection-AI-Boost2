@@ -90,6 +90,7 @@ class RulesClass {
 		int AIAttackInterval = 5;
 		int AIAttackFirstTime = 5;
 		int AISpeedRush = 0;
+		bool AIProductionCheatStillAllowed = false;
 		bool AIAftermathfastbuild = true;
 		bool NoShroud = false;
 		bool AIAllowDynamicBaseGrow = true;
