@@ -9934,7 +9934,7 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 				//Pillbox & Camo Pillbox
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
-				if (AIPillBoxLimit + AICamoPillBoxLimit < (TempCalculation / 2)) {
+				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
 					AIPillBoxLimit = (int)(TempCalculation / 2);
 					AICamoPillBoxLimit = (int)(TempCalculation / 2);
 				}
@@ -9945,7 +9945,7 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 				//Tesla & Turretgun
 				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
-				if (AITurretGunLimit + AITeslaGunLimit < (TempCalculation / 2)) {
+				if (AITurretGunLimit + (AITeslaGunLimit * 2) < TempCalculation) {
 					AITurretGunLimit = (int)(TempCalculation / 2);
 					AITeslaGunLimit = (int)(TempCalculation / 4);
 				}
@@ -10000,11 +10000,11 @@ void HouseClass::AI_CalcDynamics(void)
 		//Default dynamic game like we always have/had
 		if (AIPersonalStrategyMode == 1) {
 			if (BQuantity[STRUCT_MSLO] == 0) { //Not all tech, set defense limits at half, to tech up faster
-				AIAirdefenseLimit = (int)(AIAirdefenseLimit / 2) + 1;
-				AIPillBoxLimit = (int)(AIPillBoxLimit / 2) + 1;
-				AITurretGunLimit = (int)(AITurretGunLimit / 2) + 1;
-				AIFlameTurretLimit = (int)(AIFlameTurretLimit / 2) + 1;
-				AITeslaGunLimit = (int)(AITeslaGunLimit / 2) + 1;
+				AIAirdefenseLimit = (int)(AIAirdefenseLimit / 2);
+				AIPillBoxLimit = (int)(AIPillBoxLimit / 2);
+				AITurretGunLimit = (int)(AITurretGunLimit / 2);
+				AIFlameTurretLimit = (int)(AIFlameTurretLimit / 2);
+				AITeslaGunLimit = (int)(AITeslaGunLimit / 2);
 			}
 		}
 
