@@ -6334,12 +6334,13 @@ void BuildingClass::Factory_AI(void)
 			} else {
 
 				//Primary stuff, by Bast75
-				if (*this == STRUCT_WEAP || *this == STRUCT_BARRACKS || *this == STRUCT_TENT || *this == STRUCT_SUB_PEN || *this == STRUCT_SHIP_YARD) {
+				if (*this == STRUCT_WEAP || *this == STRUCT_BARRACKS || *this == STRUCT_TENT || *this == STRUCT_SUB_PEN || *this == STRUCT_SHIP_YARD || *this == STRUCT_CONST) {
 					int FindCorrectWeap = 0;
 					int FindCorrectBarrack = 0;
 					int FindCorrectTent = 0;
 					int FindCorrectSubPen = 0;
 					int FindCorrectShipYard = 0;
+					int FindCorrectConstYard = 0;
 					//Primary has been chosen, now set the correct building to this value:
 					for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 						BuildingClass * b = Buildings.Ptr(BuildingIndex);
@@ -6373,7 +6374,7 @@ void BuildingClass::Factory_AI(void)
 							}
 							if (*b == STRUCT_SUB_PEN) {
 								FindCorrectSubPen++;
-								if (FindCorrectSubPen == House->AICurrentSelectedSubPens) {
+								if (FindCorrectSubPen == House->AICurrentSelectedSubPen) {
 									b->AIThisIsPrimaryFactory = true;
 								}
 								else {
@@ -6383,6 +6384,15 @@ void BuildingClass::Factory_AI(void)
 							if (*b == STRUCT_SHIP_YARD) {
 								FindCorrectShipYard++;
 								if (FindCorrectShipYard == House->AICurrentSelectedShipYard) {
+									b->AIThisIsPrimaryFactory = true;
+								}
+								else {
+									b->AIThisIsPrimaryFactory = false;
+								}
+							}
+							if (*b == STRUCT_CONST) {
+								FindCorrectConstYard++;
+								if (FindCorrectConstYard == House->AICurrentSelectedConstYard) {
 									b->AIThisIsPrimaryFactory = true;
 								}
 								else {

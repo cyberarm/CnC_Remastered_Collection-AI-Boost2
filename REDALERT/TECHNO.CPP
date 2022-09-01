@@ -7326,28 +7326,17 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		//			this is an AM<->AM game.
 		// Enable fast build with Aftermath units - Mini Franki
 		if (NewUnitsEnabled && Rule.AIAftermathfastbuild == 0) {
-			if (hptr->IsHuman) {
-				time /= min(divisor, 2);
-			}
-			// Slowdown AI production for fast build OFF
-			else {
-				if (divisor > 1) {
-					time *= divisor;
-					time *= 0.5;
-				}
-			}
+			time /= min(divisor, 2);
 		}
 		else {
-			if (hptr->IsHuman) {
-				time /= divisor;
-			}
+			time /= divisor;
 		}
 #else
 		time /= divisor;
 #endif
 	}
 
-	if (divisor > 1) {
+	if (!hptr->IsHuman && divisor > 1) {
 		//Now AI build at the same speed than human. You want more challenge? Put some hack back - Mini Franki
 		float hackpercent;
 		if (Rule.AIProductionAggressiveness == 1) { hackpercent = (float)1; } // No hack like human, not aggressive

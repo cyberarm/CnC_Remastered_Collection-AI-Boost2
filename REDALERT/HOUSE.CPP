@@ -6629,10 +6629,25 @@ int HouseClass::AI_Building(void)
 {
 	assert(Houses.ID(this) == ID);
 
+	//Run dynamic calculations code one time at the start of the game
+	if (!firstrundone && BQuantity[STRUCT_CONST] > 0) {
+		firstrundone = true;
+		AI_CalcDynamics();
+		DoMyDebugStuff();
+	}
+
 	if (BuildStructure != STRUCT_NONE) return(TICKS_PER_SECOND);
 
 	//If building is in production, skip - Mini Franki
 	if (BuildingInProduction) return(TICKS_PER_SECOND);
+
+	//Primary stuff
+	if (!UnitInProduction) {
+		AICurrentSelectedConstYard++;
+		if (AICurrentSelectedConstYard > AICurrentNrOfConstYards || AICurrentSelectedConstYard < 1) {
+			AICurrentSelectedConstYard = 1;
+		}
+	}
 
 	//We have placed a building, recheck counter:
 	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
@@ -6653,13 +6668,6 @@ int HouseClass::AI_Building(void)
 	if (!IncreaseLimitDone && BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs) {
 		IncreaseLimitDone = true;
 		AI_CalcDynamics();
-	}
-
-	//Run dynamic calculations code one time at the start of the game
-	if (!firstrundone && BQuantity[STRUCT_CONST] > 0) {
-		firstrundone = true;
-		AI_CalcDynamics();
-		//DoMyDebugStuff();
 	}
 
 	if (IsBaseBuilding) {
@@ -7499,9 +7507,9 @@ int HouseClass::AI_Vessel(void)
 
 	//Primary stuff:
 	if (!VesselInProduction) {
-		AICurrentSelectedSubPens++;
-		if (AICurrentSelectedSubPens > AICurrentNrOfSubPens || AICurrentSelectedSubPens < 1) {
-			AICurrentSelectedSubPens = 1;
+		AICurrentSelectedSubPen++;
+		if (AICurrentSelectedSubPen > AICurrentNrOfSubPens || AICurrentSelectedSubPen < 1) {
+			AICurrentSelectedSubPen = 1;
 		}
 		AICurrentSelectedShipYard++;
 		if (AICurrentSelectedShipYard > AICurrentNrOfShipYards || AICurrentSelectedShipYard < 1) {
