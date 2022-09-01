@@ -1342,43 +1342,13 @@ void HouseClass::AI(void)
 		Do_All_To_Hunt();
 	}
 
-	//Let the AI switch primary war factory:
+	//Let the AI switch primary because he started something new:
 	AICurrentNrOfWEAPs = (int)BQuantity[STRUCT_WEAP];
 	AICurrentNrOfBarracks = (int)BQuantity[STRUCT_BARRACKS];
 	AICurrentNrOfTents = (int)BQuantity[STRUCT_TENT];
 	AICurrentNrOfSubPens = (int)BQuantity[STRUCT_SUB_PEN];
 	AICurrentNrOfShipYards = (int)BQuantity[STRUCT_SHIP_YARD];
-	//Switch primaries, when not building something
-	if (!UnitInProduction) {
-		AICurrentSelectedWeap++;
-		if (AICurrentSelectedWeap > AICurrentNrOfWEAPs || AICurrentSelectedWeap < 1) {
-			AICurrentSelectedWeap = 1;
-		}
-	}
-	if (!InfantryInProduction) {
-		AICurrentSelectedBarrack++;
-		if (AICurrentSelectedBarrack > AICurrentNrOfBarracks || AICurrentSelectedBarrack < 1) {
-			AICurrentSelectedBarrack = 1;
-		}
-	}
-	if (!InfantryInProduction) {
-		AICurrentSelectedTent++;
-		if (AICurrentSelectedTent > AICurrentNrOfTents || AICurrentSelectedTent < 1) {
-			AICurrentSelectedTent = 1;
-		}
-	}
-	if (!VesselInProduction) {
-		AICurrentSelectedSubPens++;
-		if (AICurrentSelectedSubPens > AICurrentNrOfSubPens || AICurrentSelectedSubPens < 1) {
-			AICurrentSelectedSubPens = 1;
-		}
-	}
-	if (!VesselInProduction) {
-		AICurrentSelectedShipYard++;
-		if (AICurrentSelectedShipYard > AICurrentNrOfShipYards || AICurrentSelectedShipYard < 1) {
-			AICurrentSelectedShipYard = 1;
-		}
-	}
+
 
 	AI_Building();
 	AI_Unit();
@@ -2664,7 +2634,6 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id)
 				Map.Factory_Link(fptr->ID, type, id);
 			}
 		}
-
 		return(PROD_OK);
 	}
 
@@ -7295,6 +7264,14 @@ int HouseClass::AI_Unit(void)
 		return(TICKS_PER_SECOND);
 	}
 
+	//Primary stuff
+	if (!UnitInProduction) {
+		AICurrentSelectedWeap++;
+		if (AICurrentSelectedWeap > AICurrentNrOfWEAPs || AICurrentSelectedWeap < 1) {
+			AICurrentSelectedWeap = 1;
+		}
+	}
+
 	//Check if AI is allowed to make a new base
 	if (!IsHuman && UQuantity[UNIT_MCV] > 0 && Rule.AIAllowLastMCVToDoSecondBase && AIMaxConYardsAndMCVs > 1) {
 		AllowExtraBaseAtWaypoint = false;
@@ -7520,6 +7497,18 @@ int HouseClass::AI_Vessel(void)
 		}
 	}
 
+	//Primary stuff:
+	if (!VesselInProduction) {
+		AICurrentSelectedSubPens++;
+		if (AICurrentSelectedSubPens > AICurrentNrOfSubPens || AICurrentSelectedSubPens < 1) {
+			AICurrentSelectedSubPens = 1;
+		}
+		AICurrentSelectedShipYard++;
+		if (AICurrentSelectedShipYard > AICurrentNrOfShipYards || AICurrentSelectedShipYard < 1) {
+			AICurrentSelectedShipYard = 1;
+		}
+	}
+
 	if (Session.Type == GAME_NORMAL) {
 
 		int counter[VESSEL_COUNT];
@@ -7680,6 +7669,18 @@ int HouseClass::AI_Infantry(void)
 	//AI Max infantry
 	if (!IsHuman && (int)CurInfantry > AIMaxInfantryNr) {
 		return(TICKS_PER_SECOND);
+	}
+
+	//Primary stuff:
+	if (!InfantryInProduction) {
+		AICurrentSelectedBarrack++;
+		if (AICurrentSelectedBarrack > AICurrentNrOfBarracks || AICurrentSelectedBarrack < 1) {
+			AICurrentSelectedBarrack = 1;
+		}
+		AICurrentSelectedTent++;
+		if (AICurrentSelectedTent > AICurrentNrOfTents || AICurrentSelectedTent < 1) {
+			AICurrentSelectedTent = 1;
+		}
 	}
 
 	//Naval war and no ground war? Don't make too much of this, focus more on naval.
