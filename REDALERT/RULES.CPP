@@ -522,6 +522,7 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
+		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);
@@ -551,7 +552,6 @@ bool RulesClass::General(CCINIClass & ini)
 		AIDynamicBoostIQMin = ini.Get_Int(MOREQOL, "AIDynamicBoostIQMin", 2);
 		AIMoreStartingCash = ini.Get_Int(MOREQOL, "AIMoreStartingCash", 0);
 		AIMoreStartingUnits = ini.Get_Int(MOREQOL, "AIMoreStartingUnits", 0);
-		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
 		AIStrategyMode = ini.Get_Int(MOREQOL, "AIStrategyMode", 0);
 		//AIBOostIQLevelMCVFallback = ini.Get_Int(MOREQOL, "AIBOostIQLevelMCVFallback", 2);
 		AIAttackInterval = ini.Get_Int(MOREQOL, "AIAttackInterval", 5);

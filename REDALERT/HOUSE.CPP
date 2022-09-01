@@ -10021,11 +10021,11 @@ void HouseClass::AI_CalcDynamics(void)
 		//Default dynamic game like we always have/had
 		if (AIPersonalStrategyMode == 1) {
 			if (BQuantity[STRUCT_MSLO] == 0) { //Not all tech, set defense limits at half, to tech up faster
-				AIAirdefenseLimit = (int)(AIAirdefenseLimit / 2);
-				AIPillBoxLimit = (int)(AIPillBoxLimit / 2);
-				AITurretGunLimit = (int)(AITurretGunLimit / 2);
-				AIFlameTurretLimit = (int)(AIFlameTurretLimit / 2);
-				AITeslaGunLimit = (int)(AITeslaGunLimit / 2);
+				AIAirdefenseLimit = (int)(AIAirdefenseLimit * 0.5);
+				AIPillBoxLimit = (int)(AIPillBoxLimit * 0.5);
+				AITurretGunLimit = (int)(AITurretGunLimit * 0.5);
+				AIFlameTurretLimit = (int)(AIFlameTurretLimit * 0.5);
+				AITeslaGunLimit = (int)(AITeslaGunLimit * 0.5);
 			}
 		}
 
@@ -10249,6 +10249,7 @@ void HouseClass::DoMyDebugStuff(void) {
 					}
 				}
 				fprintf(MyFile, "TotalBoost: %d\n", (int)TotalBoost); // %d for decimal
+				fprintf(MyFile, "AIPersonalStrategyMode: %d\n", (int)AIPersonalStrategyMode); // %d for decimal
 
 				fprintf(MyFile, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
 				fprintf(MyFile, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal
