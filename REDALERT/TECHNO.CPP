@@ -7355,9 +7355,6 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const
 		if (Rule.AIProductionAggressiveness == 3) { hackpercent = (float)0.50; } // 50% of the hack, super aggressive
 		if (Rule.AIProductionAggressiveness == 4) { hackpercent = (float)0.30; } // 70% of the hack, Madness
 		if (Rule.AIProductionAggressiveness >= 5) { hackpercent = (float)0.20; } // 80% of the hack, Hell
-		if (!Rule.AIProductionCheatStillAllowed) {
-			hackpercent *= 0.75; //Only primary building allowed, extra hack for AI.
-		}
 		time *= hackpercent;
 	}
 	return(time);

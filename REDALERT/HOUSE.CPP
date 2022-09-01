@@ -7974,6 +7974,7 @@ void HouseClass::Production_Begun(TechnoClass const * product)
 			case RTTI_UNIT:
 				if (*((UnitClass*)product) == BuildUnit) {
 					BuildUnit = UNIT_NONE;
+					UnitInProduction = true;
 				}
 				break;
 

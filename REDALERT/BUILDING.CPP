@@ -6364,7 +6364,7 @@ void BuildingClass::Factory_AI(void)
 				**	money available. In cases where there is no practical money left, then
 				**	production can never complete -- don't bother starting it.
 				*/
-				if (House->IsStarted && House->Available_Money() > 10 && (AIThisIsPrimaryFactory || Rule.AIProductionCheatStillAllowed)) {
+				if (House->IsStarted && House->Available_Money() > 10 && AIThisIsPrimaryFactory) {
 					TechnoTypeClass const * techno = House->Suggest_New_Object(Class->ToBuild, *this == STRUCT_KENNEL);
 
 					/*
@@ -6380,10 +6380,6 @@ void BuildingClass::Factory_AI(void)
 							} else {
 								House->Production_Begun(Factory->Get_Object());
 								Factory->Start();
-
-								if (*this == STRUCT_WEAP) {
-									House->UnitInProduction = true;
-								}
 							}
 						}
 					}
