@@ -1989,6 +1989,8 @@ void HouseClass::Harvested(unsigned tiberium)
 		AICurrentNrOfWEAPs = (int)BQuantity[STRUCT_WEAP];
 		AICurrentNrOfBarracks = (int)BQuantity[STRUCT_BARRACKS];
 		AICurrentNrOfTents = (int)BQuantity[STRUCT_TENT];
+		AICurrentNrOfSubPens = (int)BQuantity[STRUCT_SUB_PEN];
+		AICurrentNrOfShipYards = (int)BQuantity[STRUCT_SHIP_YARD];
 		//Switch primaries, but not to fast
 		if (UQuantity[UNIT_HARVESTER] > 0) { //Should always be this, but just in case
 			int SlowDown = 2 + UQuantity[UNIT_HARVESTER]; //Not to fast
@@ -2019,6 +2021,14 @@ void HouseClass::Harvested(unsigned tiberium)
 				AICurrentSelectedTent++;
 				if (AICurrentSelectedTent > AICurrentNrOfTents || AICurrentSelectedTent < 1) {
 					AICurrentSelectedTent = 1;
+				}
+				AICurrentSelectedSubPens++;
+				if (AICurrentSelectedSubPens > AICurrentNrOfSubPens || AICurrentSelectedSubPens < 1) {
+					AICurrentSelectedSubPens = 1;
+				}
+				AICurrentSelectedShipYard++;
+				if (AICurrentSelectedShipYard > AICurrentNrOfShipYards || AICurrentSelectedShipYard < 1) {
+					AICurrentSelectedShipYard = 1;
 				}
 			}
 		}

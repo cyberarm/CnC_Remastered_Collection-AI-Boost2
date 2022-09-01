@@ -512,6 +512,10 @@ class HouseClass {
 		int AICurrentSelectedBarrack = 0;
 		int AICurrentNrOfTents = 0;
 		int AICurrentSelectedTent = 0;
+		int AICurrentNrOfSubPens = 0;
+		int AICurrentSelectedSubPens = 0;
+		int AICurrentNrOfShipYards = 0;
+		int AICurrentSelectedShipYard = 0;
 
 		/*
 		** Stuff to keep track of the total number of units built by this house.
