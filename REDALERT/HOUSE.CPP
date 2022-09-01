@@ -1986,7 +1986,9 @@ void HouseClass::Harvested(unsigned tiberium)
 		tiberium *= TotalBoost;
 
 		//Let the AI switch primary war factory:
-		AICurrentWEAPs = (int)BQuantity[STRUCT_WEAP];
+		AICurrentNrOfWEAPs = (int)BQuantity[STRUCT_WEAP];
+		AICurrentNrOfBarracks = (int)BQuantity[STRUCT_BARRACKS];
+		AICurrentNrOfTents = (int)BQuantity[STRUCT_TENT];
 		//Switch primaries, but not to fast
 		if (UQuantity[UNIT_HARVESTER] > 0) { //Should always be this, but just in case
 			int SlowDown = 2 + UQuantity[UNIT_HARVESTER]; //Not to fast
@@ -2007,8 +2009,16 @@ void HouseClass::Harvested(unsigned tiberium)
 			}
 			if (Percent_Chance(SlowDown)) {
 				AICurrentSelectedWeap++;
-				if (AICurrentSelectedWeap > AICurrentWEAPs || AICurrentSelectedWeap < 1) {
+				if (AICurrentSelectedWeap > AICurrentNrOfWEAPs || AICurrentSelectedWeap < 1) {
 					AICurrentSelectedWeap = 1;
+				}
+				AICurrentSelectedBarrack++;
+				if (AICurrentSelectedBarrack > AICurrentNrOfBarracks || AICurrentSelectedBarrack < 1) {
+					AICurrentSelectedBarrack = 1;
+				}
+				AICurrentSelectedTent++;
+				if (AICurrentSelectedTent > AICurrentNrOfTents || AICurrentSelectedTent < 1) {
+					AICurrentSelectedTent = 1;
 				}
 			}
 		}

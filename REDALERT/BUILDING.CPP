@@ -6334,18 +6334,35 @@ void BuildingClass::Factory_AI(void)
 			} else {
 
 				//Primary stuff, by Bast75
-				//AIThisIsPrimaryFactory = false;
-				if (*this == STRUCT_WEAP) {
-					int RandomWarFactory = House->AICurrentSelectedWeap;
-					//RandomWarFactory = Random_Pick(1, House->AICurrentWEAPs); // Pick a random factory (this works)
+				if (*this == STRUCT_WEAP || *this == STRUCT_BARRACKS || *this == STRUCT_TENT) {
 					int FindCorrectWeap = 0;
+					int FindCorrectBarrack = 0;
+					int FindCorrectTent = 0;
 					//Primary has been chosen, now set the correct building to this value:
 					for (int BuildingIndex = 0; BuildingIndex < Buildings.Count(); BuildingIndex++) {
 						BuildingClass * b = Buildings.Ptr(BuildingIndex);
 						if (b != NULL && !b->IsInLimbo && b->Strength > 0 && b->House == this->House) {
 							if (*b == STRUCT_WEAP) {
 								FindCorrectWeap++;
-								if (FindCorrectWeap == RandomWarFactory) {
+								if (FindCorrectWeap == House->AICurrentSelectedWeap) {
+									b->AIThisIsPrimaryFactory = true;
+								}
+								else {
+									b->AIThisIsPrimaryFactory = false;
+								}
+							}
+							if (*b == STRUCT_BARRACKS) {
+								FindCorrectBarrack++;
+								if (FindCorrectBarrack == House->AICurrentSelectedBarrack) {
+									b->AIThisIsPrimaryFactory = true;
+								}
+								else {
+									b->AIThisIsPrimaryFactory = false;
+								}
+							}
+							if (*b == STRUCT_TENT) {
+								FindCorrectTent++;
+								if (FindCorrectTent == House->AICurrentSelectedTent) {
 									b->AIThisIsPrimaryFactory = true;
 								}
 								else {
