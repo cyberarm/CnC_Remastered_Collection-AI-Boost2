@@ -1342,6 +1342,44 @@ void HouseClass::AI(void)
 		Do_All_To_Hunt();
 	}
 
+	//Let the AI switch primary war factory:
+	AICurrentNrOfWEAPs = (int)BQuantity[STRUCT_WEAP];
+	AICurrentNrOfBarracks = (int)BQuantity[STRUCT_BARRACKS];
+	AICurrentNrOfTents = (int)BQuantity[STRUCT_TENT];
+	AICurrentNrOfSubPens = (int)BQuantity[STRUCT_SUB_PEN];
+	AICurrentNrOfShipYards = (int)BQuantity[STRUCT_SHIP_YARD];
+	//Switch primaries, when not building something
+	if (!UnitInProduction) {
+		AICurrentSelectedWeap++;
+		if (AICurrentSelectedWeap > AICurrentNrOfWEAPs || AICurrentSelectedWeap < 1) {
+			AICurrentSelectedWeap = 1;
+		}
+	}
+	if (!InfantryInProduction) {
+		AICurrentSelectedBarrack++;
+		if (AICurrentSelectedBarrack > AICurrentNrOfBarracks || AICurrentSelectedBarrack < 1) {
+			AICurrentSelectedBarrack = 1;
+		}
+	}
+	if (!InfantryInProduction) {
+		AICurrentSelectedTent++;
+		if (AICurrentSelectedTent > AICurrentNrOfTents || AICurrentSelectedTent < 1) {
+			AICurrentSelectedTent = 1;
+		}
+	}
+	if (!VesselInProduction) {
+		AICurrentSelectedSubPens++;
+		if (AICurrentSelectedSubPens > AICurrentNrOfSubPens || AICurrentSelectedSubPens < 1) {
+			AICurrentSelectedSubPens = 1;
+		}
+	}
+	if (!VesselInProduction) {
+		AICurrentSelectedShipYard++;
+		if (AICurrentSelectedShipYard > AICurrentNrOfShipYards || AICurrentSelectedShipYard < 1) {
+			AICurrentSelectedShipYard = 1;
+		}
+	}
+
 	AI_Building();
 	AI_Unit();
 	AI_Vessel();
@@ -1984,56 +2022,8 @@ void HouseClass::Harvested(unsigned tiberium)
 	if (!IsHuman) {
 		//Give the AI the boost
 		tiberium *= TotalBoost;
-
-		//Let the AI switch primary war factory:
-		AICurrentNrOfWEAPs = (int)BQuantity[STRUCT_WEAP];
-		AICurrentNrOfBarracks = (int)BQuantity[STRUCT_BARRACKS];
-		AICurrentNrOfTents = (int)BQuantity[STRUCT_TENT];
-		AICurrentNrOfSubPens = (int)BQuantity[STRUCT_SUB_PEN];
-		AICurrentNrOfShipYards = (int)BQuantity[STRUCT_SHIP_YARD];
-		//Switch primaries, but not to fast
-		if (UQuantity[UNIT_HARVESTER] > 0) { //Should always be this, but just in case
-			int SlowDown = 2 + UQuantity[UNIT_HARVESTER]; //Not to fast
-			SlowDown = (int)(100 / SlowDown);
-			// 1 harvester = 100/3 == 33 chance
-			// 2 harvester = 100/4 == 25 chance
-			// 3 harvester = 100/5 == 20 change
-			// 4 harvester = 100/6 == 16.6 change
-			// 5 harvester = 100/7 == 14.3 change
-			// 6 harvester = 100/8 == 12.5 change
-			// 7 harvester = 100/9 == 11.1 change
-			// 8 harvester = 100/10 == 10 change
-			if (SlowDown < 10) {
-				SlowDown = 10;
-			}
-			if (SlowDown > 33) {
-				SlowDown = 33;
-			}
-			if (Percent_Chance(SlowDown)) {
-				AICurrentSelectedWeap++;
-				if (AICurrentSelectedWeap > AICurrentNrOfWEAPs || AICurrentSelectedWeap < 1) {
-					AICurrentSelectedWeap = 1;
-				}
-				AICurrentSelectedBarrack++;
-				if (AICurrentSelectedBarrack > AICurrentNrOfBarracks || AICurrentSelectedBarrack < 1) {
-					AICurrentSelectedBarrack = 1;
-				}
-				AICurrentSelectedTent++;
-				if (AICurrentSelectedTent > AICurrentNrOfTents || AICurrentSelectedTent < 1) {
-					AICurrentSelectedTent = 1;
-				}
-				AICurrentSelectedSubPens++;
-				if (AICurrentSelectedSubPens > AICurrentNrOfSubPens || AICurrentSelectedSubPens < 1) {
-					AICurrentSelectedSubPens = 1;
-				}
-				AICurrentSelectedShipYard++;
-				if (AICurrentSelectedShipYard > AICurrentNrOfShipYards || AICurrentSelectedShipYard < 1) {
-					AICurrentSelectedShipYard = 1;
-				}
-			}
-		}
 	}
-	DoMyDebugStuff();
+	//DoMyDebugStuff();
 
 	Tiberium += tiberium;
 	if (Tiberium > Capacity) {
@@ -6110,6 +6100,7 @@ bool HouseClass::AI_Attack(UrgencyType)
 	int index;
 
 	AI_CalcDynamics();
+	DoMyDebugStuff();
 
 	// Possibility of 5% that we set harvesters a high prio level, otherwise we set it to normal.
 	DoAntiHarvesterRun = (Percent_Chance(Rule.AIHarvesterHuntMadness));
@@ -6677,6 +6668,11 @@ int HouseClass::AI_Building(void)
 	//We have placed a building, recheck counter:
 	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
 
+	// Also re-calc Dynamics, but not always
+	if (Percent_Chance(10)) {
+		AI_CalcDynamics(); 
+	}
+
 	if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
 		BaseNodeClass * node = Base.Next_Buildable();
 		if (node) {
@@ -6694,7 +6690,7 @@ int HouseClass::AI_Building(void)
 	if (!firstrundone && BQuantity[STRUCT_CONST] > 0) {
 		firstrundone = true;
 		AI_CalcDynamics();
-		DoMyDebugStuff();
+		//DoMyDebugStuff();
 	}
 
 	if (IsBaseBuilding) {
@@ -10188,7 +10184,7 @@ void HouseClass::DoMyDebugStuff(void) {
 	assert(Houses.ID(this) == ID);
 
 	// Some debug stuff by Bast75
-	if (Rule.AIBoostDebug == 1) {
+	if (Rule.AIBoostDebug == true) {
 		FILE *MyFile;
 		MyFile = fopen("aiboost-debug.log", "a+");
 		if (MyFile) {
@@ -10249,7 +10245,30 @@ void HouseClass::DoMyDebugStuff(void) {
 					}
 				}
 				fprintf(MyFile, "TotalBoost: %d\n", (int)TotalBoost); // %d for decimal
+
+				//Personal limits:
 				fprintf(MyFile, "AIPersonalStrategyMode: %d\n", (int)AIPersonalStrategyMode); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIDogKennelLimit: %d\n", (int)AIDogKennelLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIBarracksLimit: %d\n", (int)AIBarracksLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIWarFactoryLimit: %d\n", (int)AIWarFactoryLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AINavalLimit: %d\n", (int)AINavalLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIHelipadAlliedLimit: %d\n", (int)AIHelipadAlliedLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIHelipadSovietLimit: %d\n", (int)AIHelipadSovietLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIAirstripLimit: %d\n", (int)AIAirstripLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIAirdefenseLimit: %d\n", (int)AIAirdefenseLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIPillBoxLimit: %d\n", (int)AIPillBoxLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AICamoPillBoxLimit: %d\n", (int)AICamoPillBoxLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AITurretGunLimit: %d\n", (int)AITurretGunLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIFlameTurretLimit: %d\n", (int)AIFlameTurretLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AITeslaGunLimit: %d\n", (int)AITeslaGunLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIRefineryLimit: %d\n", (int)AIRefineryLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AINukeLimit: %d\n", (int)AINukeLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIChronosphereLimit: %d\n", (int)AIChronosphereLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIIronCurtainLimit: %d\n", (int)AIIronCurtainLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIRepairBayLimit: %d\n", (int)AIRepairBayLimit); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIDetectedNavalWar: %d\n", (int)AIDetectedNavalWar); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIDetectHumanGroundWar: %d\n", (int)AIDetectHumanGroundWar); // %d for decimal
+				fprintf(MyFile, "AIPersonal AIGapLimit: %d\n", (int)AIGapLimit); // %d for decimal
 
 				fprintf(MyFile, "Buildings: Construction Yards: %d\n", (int)BQuantity[STRUCT_CONST]); // %d for decimal
 				fprintf(MyFile, "Buildings: Power Plants: %d\n", (int)BQuantity[STRUCT_POWER]); // %d for decimal

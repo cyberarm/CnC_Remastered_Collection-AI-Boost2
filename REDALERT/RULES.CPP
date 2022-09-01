@@ -522,7 +522,7 @@ bool RulesClass::General(CCINIClass & ini)
 	}
 
 	if (ini.Is_Present(MOREQOL)) {
-		AIBoostDebug = ini.Get_Int(MOREQOL, "AIBoostDebug", 0);
+		AIBoostDebug = ini.Get_Bool(MOREQOL, "AIBoostDebug", false);
 		ChronoKillsCargo = ini.Get_Bool(MOREQOL, "ChronoKillsCargo", false);
 		AIAllowDynamicBaseGrow = ini.Get_Bool(MOREQOL, "AIAllowDynamicBaseGrow", true);
 		EngineerInstantCapture = ini.Get_Bool(MOREQOL, "EngineerInstantCapture", true);

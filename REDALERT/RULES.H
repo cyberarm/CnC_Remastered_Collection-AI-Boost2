@@ -77,7 +77,7 @@ class RulesClass {
 
 
 		//By Bast75
-		int AIBoostDebug = 0;
+		bool AIBoostDebug = false;
 		int AIMoreStartingCash = 0;
 		int AIMoreStartingUnits = 0;
 		int AIBoostIQLevel = 3;
