@@ -16,9 +16,8 @@ New:
 - AI no longer builds with all factories at the same time. It's using primary factory now and can switch between them. (Like Humans)
   (This also gives a huge performance boost for the engine that fixes the cannot build issue for human in late games!!!)
 
-
 Fixed/Changed/Improved:
-- 
+- Fixed hack for more aggressive AI(human had it too). Now it's just the AI
 
 ---
 
