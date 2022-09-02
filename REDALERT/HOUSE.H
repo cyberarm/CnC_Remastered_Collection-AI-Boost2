@@ -487,6 +487,7 @@ class HouseClass {
 		bool HouseHasFlag = false; //Not used yet, we need to improve capture the flag for AI in the future....
 
 		void AI_CalcDynamics(void);
+		void AI_StrategySwitcher(void);
 		bool firstrundone = false;
 		bool IncreaseLimitDone = false;
 		int IncreaseLimit = 1;

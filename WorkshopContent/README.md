@@ -1,5 +1,5 @@
 # AI-Boost 3.2 for Red Alert
-Last update at: 1 sept 2022
+Last update at: 2 sept 2022
 
 Please follow the steps below to update and reactivate the mod:
 - Disable the mod in the mods Menu
@@ -18,6 +18,7 @@ New:
 
 Fixed/Changed/Improved:
 - Fixed hack for more aggressive AI(human had it too). Now it's just the AI
+- There was a bug in the dynamic strategy mode, sometimes it selected an strategy thats not possible on the map. Should be fixed now.
 
 ---
 

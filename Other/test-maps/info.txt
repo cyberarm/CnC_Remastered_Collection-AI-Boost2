@@ -6,7 +6,9 @@ You can disable or add extra options in the .mpr file. (Just open this in notepa
 
 ****AItest-Ground****
 Just a large map with a lot of cash and room to build.
-No extra settings and/or buildings
+[AIBoost]
+NoShroud=true
+
 
 ****AItest-GroundCurtainChrono****
 Same map, but with some prebuild buildings for Human and 2 AI's.
@@ -21,6 +23,7 @@ AIAllowMoreMCVsToExtraBase=true
 AIMaxMCVOrConYardsInMainBase=1
 AIAllowChronoSphere=true
 AIAllowIronCurtain=true
+
 
 ****AItest-Naval****
 A naval map with islands, not mutch space, but nice to test Naval and ChronoSphere stuff
@@ -51,12 +54,24 @@ AIAllowIronCurtain=true
 Chrono=2
 GPS=1
 
+
 ***Production Test***
 Map with prebuilt weapon factories for each AI(2,4,6,8)
 Place yourself at the top left
-Place the rest of the AI in order
+Place the rest of the AI in order (left to right, top to bottom)
+[AIBoost]
+NoShroud=true
+AIMoreStartingCash=1000000
+
+
+***Production Test XL and XXL***
+Same as above, but more houses and more factories to test extreme productions in late game
+[AIBoost]
+NoShroud=true
+AIMoreStartingCash=1000000
+AIBoostDebug=true
 
 
 
 Have fun.
-Bast75
+Bast75 and MiniFranki

@@ -6632,6 +6632,7 @@ int HouseClass::AI_Building(void)
 	//Run dynamic calculations code one time at the start of the game
 	if (!firstrundone && BQuantity[STRUCT_CONST] > 0) {
 		firstrundone = true;
+		AI_StrategySwitcher();
 		AI_CalcDynamics();
 		DoMyDebugStuff();
 	}
@@ -6652,9 +6653,10 @@ int HouseClass::AI_Building(void)
 	//We have placed a building, recheck counter:
 	ConstrYardCount = (int)BQuantity[STRUCT_CONST];
 
-	// Also re-calc Dynamics, but not always
+	// Also re-calc Dynamics and strategy, but not always
 	if (Percent_Chance(10)) {
-		AI_CalcDynamics(); 
+		AI_StrategySwitcher();
+		AI_CalcDynamics();
 	}
 
 	if (Session.Type == GAME_NORMAL && Base.House == Class->House) {
@@ -6667,42 +6669,15 @@ int HouseClass::AI_Building(void)
 	//Check if the last yard is built to increase limit by x2(only one time)
 	if (!IncreaseLimitDone && BQuantity[STRUCT_CONST] == AIMaxConYardsAndMCVs) {
 		IncreaseLimitDone = true;
+		AI_StrategySwitcher();
 		AI_CalcDynamics();
 	}
 
 	if (IsBaseBuilding) {
-
 		if (!IsHuman && (int)HumanBuildingCount > 0) {
 			// AI goes over minimal allowed, now check if not too much:
 			if ((int)CurBuildings > (int)AIMaxBuildings || (int)CurBuildings > (int)(HumanBuildingCount * Rule.AIBuildingsMultiplier)) {
 				return(TICKS_PER_SECOND);
-			}
-		}
-
-		// AI Strategy mode selection:
-		/*
-		This allowes the AI to select a random strategy to use for a house.
-		0: Not set, the AI is allowed to select a random one
-		1: Default dynamic strategy like we always have/had
-		2: Naval rush. Build naval, no barracks/tents, warfactories or air stuff.
-		3: Air rush. Helipads/airfields only
-		4: Infantry rush, just barracks/tents
-		5: Tank rush, warfactories only
-		6: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
-		*/
-		if (Rule.AIStrategyMode > 0) {
-			AIPersonalStrategyMode = Rule.AIStrategyMode; //In the .ini we have forced a value, so use this one always
-		}
-		else {
-			bool SetOtherStrategy = false;
-			if (Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0) { //random selection allowed
-				SetOtherStrategy = true;
-			}
-			if (AIDetectedNavalWar && (AIPersonalStrategyMode == 4 || AIPersonalStrategyMode == 5)) { // ground rushes don't combine with naval wars because of islands, re-random selection
-				SetOtherStrategy = true;
-			}
-			if (SetOtherStrategy) {
-				AIPersonalStrategyMode = Random_Pick(1, 6); //Select a new random.
 			}
 		}
 
@@ -6762,11 +6737,11 @@ int HouseClass::AI_Building(void)
 			b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
-				prio = 1;
-				if (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 0) { //infantry rush
-					prio = AIBarracksLimit;
-				}
 				if (choiceptr != NULL) {
+					prio = 1;
+					if (AIPersonalStrategyMode == 5 && BQuantity[STRUCT_REFINERY] > 0) { //infantry rush
+						prio = AIBarracksLimit;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_BARRACKS] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -6777,11 +6752,11 @@ int HouseClass::AI_Building(void)
 			b = &BuildingTypeClass::As_Reference(STRUCT_TENT);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
-				prio = 1;
-				if (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 0) { //infantry rush
-					prio = AIBarracksLimit;
-				}
 				if (choiceptr != NULL) {
+					prio = 1;
+					if (AIPersonalStrategyMode == 5 && BQuantity[STRUCT_REFINERY] > 0) { //infantry rush
+						prio = AIBarracksLimit;
+					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TENT] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -6815,7 +6790,7 @@ int HouseClass::AI_Building(void)
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
 						prio = prio + 1;
 					}
-					if (AIPersonalStrategyMode > 1 && BQuantity[STRUCT_REPAIR] == 0) {
+					if (AIPersonalStrategyMode > 2 && BQuantity[STRUCT_REPAIR] == 0) {
 						prio = 2; //We rush till we have all factores to rush with (after this the AI builds a Repair Depot)
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_REFINERY] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
@@ -6831,17 +6806,17 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = 1 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 2;
+						prio += 2;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
-						prio = prio + 2;
+						prio += 2;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
-						prio = prio + 2;
+						prio += 2;
 					}
-					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+					if (AIPersonalStrategyMode > 2 && AIPersonalStrategyMode < 7) {
 						//We have a rush tactic, no defense at high prio
-						prio = 0;
+						prio = 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_PILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6856,17 +6831,17 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 1;
+						prio += 1;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
-						prio = prio + 1;
+						prio += 1;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
-						prio = prio + 1;
+						prio += 1;
 					}
-					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+					if (AIPersonalStrategyMode > 2 && AIPersonalStrategyMode < 7) {
 						//We have a rush tactic, no defense at high prio
-						prio = 0;
+						prio = 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_CAMOPILLBOX] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6881,17 +6856,17 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = 2 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 3;
+						prio += 3;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
-						prio = prio + 3;
+						prio += 3;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
-						prio = prio + 3;
+						prio += 3;
 					}
-					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
+					if (AIPersonalStrategyMode > 2 && AIPersonalStrategyMode < 7) {
 						//We have a rush tactic, no defense at high prio
-						prio = 0;
+						prio = 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_FLAME_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -6932,12 +6907,12 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = ConstrYardCount; //On deploy increase so new base has this too
 					if (BQuantity[STRUCT_RADAR] > 0) {
-						prio = prio + 1;
+						prio += 1;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
-						prio = prio + 1;
+						prio += 1;
 					}
-					if (AIPersonalStrategyMode == 5) { //tank rush
+					if (AIPersonalStrategyMode == 6) { //tank rush
 						if (BQuantity[STRUCT_REFINERY] == 1) {
 							prio = 2;
 						}
@@ -6945,26 +6920,30 @@ int HouseClass::AI_Building(void)
 							prio = AIWarFactoryLimit;
 						}
 					}
-					if (Rule.AIStrategyMode == 2) { //Naval War by .ini file
-						prio = 0;
+					if (Rule.AIStrategyMode == 3) { //Naval War by .ini file
+						prio = 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_WEAP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
-		//Only try Naval if human does, or if we are in Naval rush mode
-		//and not try always in case we can't place the building.
-		//Allow on Naval war and 80%, or AIPersonalStrategyMode=dynamic and 50%, or AIPersonalStrategyMode=naval rush and 80%
-		// 		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 1 && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && Percent_Chance(80))) {
-		// Dont do Naval always, only when naval rush or dynamic mode and humans uses naval
-		if ((AIDetectedNavalWar && Percent_Chance(50)) || (AIPersonalStrategyMode == 2 && Percent_Chance(80))) {
+		//Naval stuff
+		bool LetsDoNaval = false;
+		LetsDoNaval = (AIDetectedNavalWar && Percent_Chance(50));
+		if (!LetsDoNaval) {
+			LetsDoNaval = (AIPersonalStrategyMode == 2 && Percent_Chance(50)); // Dynamic with naval allowed
+		}
+		if (!LetsDoNaval) {
+			LetsDoNaval = (AIPersonalStrategyMode == 3 && Percent_Chance(80)); // Naval rush
+		}
+		if (LetsDoNaval) {
 			prio = 2;
-			if (AIPersonalStrategyMode == 2) { //Naval rush!!!
+			if (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 1) { //Naval rush!!!
 				prio = AINavalLimit;
 			}
-			if (AIPersonalStrategyMode > 2) { //Other rush, no high prio for this type
-				prio = 0;
+			if (AIPersonalStrategyMode > 1) { //Other rush, no high prio for this type
+				prio = 1;
 			}
 			//naval allies
 			if (BQuantity[STRUCT_SHIP_YARD] < AINavalLimit) {
@@ -6996,17 +6975,17 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = 3 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 4;
+						prio += 4;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
-						prio = prio + 4;
+						prio += 4;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
-						prio = prio + 4;
+						prio += 4;
 					}
-					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
-						//We have a rush tactic, no defense at high prio
-						prio = 0;
+					if (AIPersonalStrategyMode > 2 && AIPersonalStrategyMode < 7) {
+						//We have a rush tactic, defense at lower prio
+						prio = 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TURRET] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -7021,17 +7000,17 @@ int HouseClass::AI_Building(void)
 				if (choiceptr != NULL) {
 					prio = 2 + ConstrYardCount; //On deploy increase so new base has this too
 					if ((int)BQuantity[STRUCT_REFINERY] > 1) {
-						prio = prio + 3;
+						prio += 3;
 					}
 					if ((BQuantity[STRUCT_ADVANCED_TECH] + BQuantity[STRUCT_SOVIET_TECH]) > 0) {
-						prio = prio + 3;
+						prio += 3;
 					}
 					if (BQuantity[STRUCT_MSLO] > 0) {
-						prio = prio + 3;
+						prio += 3;
 					}
-					if (AIPersonalStrategyMode > 1 && AIPersonalStrategyMode < 6) {
-						//We have a rush tactic, no defense at high prio
-						prio = 0;
+					if (AIPersonalStrategyMode > 2 && AIPersonalStrategyMode < 7) {
+						//We have a rush tactic, defense at lower prio
+						prio = 1;
 					}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_TESLA] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
@@ -7062,14 +7041,14 @@ int HouseClass::AI_Building(void)
 
 		//airstrip
 		if (BQuantity[STRUCT_AIRSTRIP] < AIAirstripLimit) {
-			prio = 1;
-			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 0)) { // 3 = air rush
-				prio = AIAirstripLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
-			}
 			b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
+				prio = 1;
+				if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 1)) { // 4 = air rush
+					prio = AIAirstripLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
+				}
 					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_AIRSTRIP] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
@@ -7077,30 +7056,32 @@ int HouseClass::AI_Building(void)
 
 		//helipad allied
 		if ((BQuantity[STRUCT_CAMOPILLBOX] + BQuantity[STRUCT_PILLBOX]) > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadAlliedLimit) {
-			prio = 2;
-			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 0)) { // 3 = air rush
-				prio = AIHelipadAlliedLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
-			}
+
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				prio = 2;
+				if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 1)) { // 4 = air rush
+					prio = AIHelipadAlliedLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
+				}
+				*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
 
 		//helipad soviet
 		if (BQuantity[STRUCT_FLAME_TURRET] > 0 && BQuantity[STRUCT_HELIPAD] < AIHelipadSovietLimit) {
-			prio = 1;
-			if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 3 && BQuantity[STRUCT_REFINERY] > 0)) { // 3 = air rush
-				prio = AIHelipadSovietLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
-			}
+
 			b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
 				if (choiceptr != NULL) {
-					*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
+				prio = 1;
+				if (BQuantity[STRUCT_STORAGE] > 0 || BQuantity[STRUCT_MSLO] > 0 || (AIPersonalStrategyMode == 4 && BQuantity[STRUCT_REFINERY] > 1)) { // 4 = air rush
+					prio = AIHelipadSovietLimit; // we have all type of buldings and/or a lot of cash, so lets build the rest as soon as possible
+				}
+				*choiceptr = BuildChoiceClass(BQuantity[STRUCT_HELIPAD] < prio ? URGENCY_HIGH : URGENCY_MEDIUM, b->Type);
 				}
 			}
 		}
@@ -7204,7 +7185,7 @@ int HouseClass::AI_Building(void)
 		}
 
 		//Build Silo if storage above x %
-		if (Tiberium > Capacity * 0.99) {
+		if (Tiberium > (long)(Capacity * 0.99)) {
 			b = &BuildingTypeClass::As_Reference(STRUCT_STORAGE);
 			if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
 				choiceptr = BuildChoice.Alloc();
@@ -9833,7 +9814,9 @@ void HouseClass::AI_CalcDynamics(void)
 				}
 			}
 		}
-		if (AIPersonalStrategyMode == 2) {
+
+		// Force to naval war ? (dynamic with naval=2, naval rush= 3)
+		if (AIPersonalStrategyMode == 2 || AIPersonalStrategyMode == 3) {
 			AIDetectedNavalWar = true;
 		}
 
@@ -9937,40 +9920,41 @@ void HouseClass::AI_CalcDynamics(void)
 		//Dynamic stuff
 		if (Rule.AIAllowDynamicBaseGrow) {
 			if (enemy != NULL) {
+				// Note we do always '1 +' to be sure the value is never a 0
 				//Refineries
-				TempCalculation = (int)(enemy->BQuantity[STRUCT_REFINERY] / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)(enemy->BQuantity[STRUCT_REFINERY] / CountEnemiesForThisAI);
 				if (TempCalculation > AIRefineryLimit) {
 					AIRefineryLimit = TempCalculation;
 				}
 				//Allied air units
-				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIHelipadAlliedLimit) {
 					AIHelipadAlliedLimit = TempCalculation;
 				}
 				//Soviet air units
-				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIHelipadSovietLimit + AIAirstripLimit) {
 					AIHelipadSovietLimit = (int)(TempCalculation / 2);
 					AIAirstripLimit = (int)(TempCalculation / 2);
 				}
 				//Air defenses
-				TempCalculation = (int)(airthreat_quantity / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)(airthreat_quantity / CountEnemiesForThisAI);
 				if (TempCalculation > AIAirdefenseLimit) {
 					AIAirdefenseLimit = TempCalculation;
 				}
 				//Pillbox & Camo Pillbox
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
 				if (AIPillBoxLimit + AICamoPillBoxLimit < TempCalculation) {
 					AIPillBoxLimit = (int)(TempCalculation / 2);
 					AICamoPillBoxLimit = (int)(TempCalculation / 2);
 				}
 				//Flame turret
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)((enemy->BQuantity[STRUCT_PILLBOX] + enemy->BQuantity[STRUCT_CAMOPILLBOX] + enemy->BQuantity[STRUCT_FLAME_TURRET]) / CountEnemiesForThisAI);
 				if (AIFlameTurretLimit < TempCalculation) {
 					AIFlameTurretLimit = TempCalculation;
 				}
 				//Tesla & Turretgun
-				TempCalculation = (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
+				TempCalculation = 1 + (int)((enemy->BQuantity[STRUCT_TURRET] + enemy->BQuantity[STRUCT_TESLA]) / CountEnemiesForThisAI);
 				if (AITurretGunLimit + (AITeslaGunLimit * 2) < TempCalculation) {
 					AITurretGunLimit = (int)(TempCalculation / 2);
 					AITeslaGunLimit = (int)(TempCalculation / 4);
@@ -10013,18 +9997,19 @@ void HouseClass::AI_CalcDynamics(void)
 
 		/***
 		0: Not set, the AI is allowed to select a random one
-		1 : Default dynamic game like we always have/had
-		2 : Naval rush. Build naval, no barracks / tents, warfactories or air stuff.
-		3 : Air rush.Helipads / airfields only
-		4 : Infantry rush, no tech stuff, just barracks / tents
-		5 : Tank rush, warfactories only
-		6 : Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
-		AIPersonalStrategyMode = Random_Pick(1, 6);
+		1: Default dynamic strategy like we always have/had
+		2: Default dynamic strategy like we always have/had but with naval allowed not to wait for human
+		3: Naval rush. Build naval, no barracks/tents, warfactories or air stuff
+		4: Air rush. Helipads/airfields only
+		5: Infantry rush, just barracks/tents
+		6: Tank rush, warfactories only
+		7: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
+
 		***/
 		//We overwrite the limits depending on the strategy the house has:
 
 		//Default dynamic game like we always have/had
-		if (AIPersonalStrategyMode == 1) {
+		if (AIPersonalStrategyMode == 1 || AIPersonalStrategyMode == 2) {
 			if (BQuantity[STRUCT_MSLO] == 0) { //Not all tech, set defense limits at half, to tech up faster
 				AIAirdefenseLimit = (int)(AIAirdefenseLimit * 0.5);
 				AIPillBoxLimit = (int)(AIPillBoxLimit * 0.5);
@@ -10035,7 +10020,7 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Naval rush
-		if (AIPersonalStrategyMode == 2) {
+		if (AIPersonalStrategyMode == 3) {
 			//AIMaxConYardsAndMCVs = 1;
 			AIDogKennelLimit = 0;
 			AIRefineryLimit = 5;
@@ -10060,7 +10045,7 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Air rush
-		if (AIPersonalStrategyMode == 3) {
+		if (AIPersonalStrategyMode == 4) {
 			//AIMaxConYardsAndMCVs = 1;
 			AIDogKennelLimit = 0;
 			AIRefineryLimit = 5;
@@ -10085,7 +10070,7 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Infantry rush
-		if (AIPersonalStrategyMode == 4) {
+		if (AIPersonalStrategyMode == 5) {
 			//AIMaxConYardsAndMCVs = 1;
 			AIDogKennelLimit = 2;
 			AIRefineryLimit = 5;
@@ -10112,7 +10097,7 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Tank rush
-		if (AIPersonalStrategyMode == 4) {
+		if (AIPersonalStrategyMode == 6) {
 			//AIMaxConYardsAndMCVs = 1;
 			AIDogKennelLimit = 0;
 			AIRefineryLimit = 5;
@@ -10137,7 +10122,7 @@ void HouseClass::AI_CalcDynamics(void)
 		}
 
 		//Defender
-		if (AIPersonalStrategyMode == 6) {
+		if (AIPersonalStrategyMode == 7) {
 			AIMaxConYardsAndMCVs = 2;
 			AIDogKennelLimit = 1;
 			AIRefineryLimit = 5;
@@ -10378,3 +10363,45 @@ void HouseClass::AI_Calc2ndBaseLocations(void)
 		}
 	}
 }
+
+void HouseClass::AI_StrategySwitcher(void)
+{
+	assert(Houses.ID(this) == ID);
+
+	/*
+	This allowes the AI to select a random strategy to use for a house.
+	0: Not set, the AI is allowed to select a random one
+	1: Default dynamic strategy like we always have/had
+	2: Default dynamic strategy like we always have/had but with naval allowed not to wait for human
+	3: Naval rush. Build naval, no barracks/tents, warfactories or air stuff
+	4: Air rush. Helipads/airfields only
+	5: Infantry rush, just barracks/tents
+	6: Tank rush, warfactories only
+	7: Defender, all factories max 1, but 3x defense buildings like turrets, teslacoils, etc.
+	*/
+	if (Rule.AIStrategyMode > 0) { //In the .ini we have forced a value, so use this one always
+		if (AIPersonalStrategyMode != Rule.AIStrategyMode) { //Only change if not set
+			AIPersonalStrategyMode = Rule.AIStrategyMode; 
+		}
+	}
+	else {
+		bool SetOtherStrategy = true;
+		while (SetOtherStrategy) {
+			if (Rule.AIStrategyMode == 0 && AIPersonalStrategyMode == 0) { //random selection didn't run yet
+				SetOtherStrategy = true;
+				AIPersonalStrategyMode = Random_Pick(1, 7); //Select a new random.
+			}
+			else if (AIDetectedNavalWar && (AIPersonalStrategyMode == 5 || AIPersonalStrategyMode == 6)) { // ground rushes don't combine with naval wars because of possible islands, re-random selection
+				SetOtherStrategy = true;
+				AIPersonalStrategyMode = Random_Pick(1, 7); //Select a new random.
+			}
+			else if (!AIDetectedNavalWar && AIPersonalStrategyMode == 3) {
+				//AI uses naval rush, but human currently not.
+			}
+			else {
+				SetOtherStrategy = false; // We have a valid strategy
+			}
+		}
+	}
+}
+

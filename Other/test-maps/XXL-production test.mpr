@@ -1,6 +1,8 @@
 [AIBoost]
 NoShroud=true
 AIMoreStartingCash=1000000
+AIBoostDebug=true
+
 
 [Digest]
 1=w/q6noTEOj0WRXpMLgniOn/azbE=
