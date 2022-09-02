@@ -15,10 +15,13 @@ Latest changes:
 New:
 - AI no longer builds with all factories at the same time. It's using primary factory now and can switch between them. (Like Humans)
   (This also gives a huge performance boost for the engine that fixes the cannot build issue for human in late games!!!)
+- New strategy mode, default dynamic where AI don't wait human to build naval
 
 Fixed/Changed/Improved:
 - Fixed hack for more aggressive AI(human had it too). Now it's just the AI
 - There was a bug in the dynamic strategy mode, sometimes it selected an strategy thats not possible on the map. Should be fixed now.
+- Sometimes AI don't build barracks or base defenses, should be fixed now
+- Fixed dynamic calculations. Sometimes, AI didn't see the right amount of bases
 
 ---
 
