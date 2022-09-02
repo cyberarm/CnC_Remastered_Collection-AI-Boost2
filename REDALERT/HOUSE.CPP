@@ -10009,8 +10009,8 @@ void HouseClass::AI_CalcDynamics(void)
 		//We overwrite the limits depending on the strategy the house has:
 
 		//Default dynamic game like we always have/had
-		if (AIPersonalStrategyMode == 1 || AIPersonalStrategyMode == 2) {
-			if (BQuantity[STRUCT_MSLO] == 0) { //Not all tech, set defense limits at half, to tech up faster
+		if (AIPersonalStrategyMode == 1 || AIPersonalStrategyMode == 2) {			
+			if (BQuantity[STRUCT_RADAR] == 0) {//On really low tech, set defense limits at half, to tech up faster
 				AIAirdefenseLimit = (int)(AIAirdefenseLimit * 0.5);
 				AIPillBoxLimit = (int)(AIPillBoxLimit * 0.5);
 				AITurretGunLimit = (int)(AITurretGunLimit * 0.5);
