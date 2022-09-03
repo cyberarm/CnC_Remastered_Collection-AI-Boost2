@@ -635,7 +635,7 @@ void UnitClass::AI(void)
 			}
 		}
 
-		if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance) {
+		if (ClosestOwnBuilding > Rule.AIMadTankSafeToDeployDistance) {
 			if (!IsUnderAttack) {
 				//It's not attacked, try to unload the closer you can, to make more damage
 				if (ClosestEnemyBuilding < 5) {

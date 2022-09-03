@@ -114,7 +114,7 @@ class RulesClass {
 		int AIMCVWaypointFreeRadius = 20;
 		int AIProductionAggressiveness = 3;
 
-		int AIMadTankSaveToDeployDistance = 22;
+		int AIMadTankSafeToDeployDistance = 22;
 		int AIMadTankCloseEnoughToEnemyDistance = 18;
 		bool AIMadTankWriteDebugInfoToFile = false;
 		bool EngineerInstantCapture = true;

@@ -2931,7 +2931,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id)
 						ClosestOwnBuilding = ClosestOwnBuilding / 265;
 						ClosestEnemyBuildingDist = ClosestEnemyBuildingDist / 265;
 						//If a MAD tank is close enough of the enemy base, far enough of own base or attacked, worth to protect it
-						if (ClosestOwnBuilding > Rule.AIMadTankSaveToDeployDistance && ((u->Health_Ratio() <= Rule.ConditionYellow && u->IsUnderAttack) || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 2)) {
+						if (ClosestOwnBuilding > Rule.AIMadTankSafeToDeployDistance && ((u->Health_Ratio() <= Rule.ConditionYellow && u->IsUnderAttack) || ClosestEnemyBuildingDist < Rule.AIMadTankCloseEnoughToEnemyDistance + 2)) {
 							u->IsIronCurtainProtected = true;
 							unittoprotect = u;
 							break; // stop scanning other units, we have select one.
